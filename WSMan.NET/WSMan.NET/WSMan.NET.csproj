@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B649731C-C299-45AE-A0AC-9AFC2B8B0072}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WSMan.NET</RootNamespace>
+    <AssemblyName>WSMan.NET</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Enumeration\Const.cs" />
+    <Compile Include="Enumeration\EndOfSequence.cs" />
+    <Compile Include="Enumeration\EnumerateRequest.cs" />
+    <Compile Include="Enumeration\EnumerateResponse.cs" />
+    <Compile Include="Enumeration\EnumerationClient.cs" />
+    <Compile Include="Enumeration\EnumerationContext.cs" />
+    <Compile Include="Enumeration\EnumerationContextHolder.cs" />
+    <Compile Include="Enumeration\EnumerationMode.cs" />
+    <Compile Include="Enumeration\FilterMap.cs" />
+    <Compile Include="Enumeration\FilterMapExtension.cs" />
+    <Compile Include="Enumeration\FilterMapExtensionServiceBehaviorAttribute.cs" />
+    <Compile Include="Enumeration\IFilterMapProvider.cs" />
+    <Compile Include="Enumeration\MaxElements.cs" />
+    <Compile Include="Enumeration\EnumerationServer.cs" />
+    <Compile Include="Enumeration\Expires.cs" />
+    <Compile Include="Enumeration\Filter.cs" />
+    <Compile Include="Enumeration\GetStatusRequest.cs" />
+    <Compile Include="Enumeration\GetStatusResponse.cs" />
+    <Compile Include="Eventing\Delivery.cs" />
+    <Compile Include="Eventing\EndpointReference.cs" />
+    <Compile Include="Eventing\EventBuffer.cs" />
+    <Compile Include="Eventing\eventing.cs" />
+    <Compile Include="Eventing\EventingServer.cs" />
+    <Compile Include="Eventing\IdentifierHeader.cs" />
+    <Compile Include="Eventing\IEventingRequestHandler.cs" />
+    <Compile Include="Enumeration\IEnumerationRequestHandler.cs" />
+    <Compile Include="Enumeration\ItemList.cs" />
+    <Compile Include="Enumeration\IWSEnumerationContract.cs" />
+    <Compile Include="Enumeration\LanguageSpecificStringType.cs" />
+    <Compile Include="Enumeration\OptimizeEnumeration.cs" />
+    <Compile Include="Enumeration\PullRequest.cs" />
+    <Compile Include="Enumeration\PullResponse.cs" />
+    <Compile Include="Enumeration\Release.cs" />
+    <Compile Include="Enumeration\RenewRequest.cs" />
+    <Compile Include="Enumeration\RenewResponse.cs" />
+    <Compile Include="Enumeration\EnumerationEnd.cs" />
+    <Compile Include="Enumeration\RequestTotalItemsTotalCountEstimate.cs" />
+    <Compile Include="Enumeration\TotalItemsTotalCountEstimate.cs" />
+    <Compile Include="Enumeration\WsEnumerationTypesLogic.cs" />
+    <Compile Include="Eventing\Const.cs" />
+    <Compile Include="Eventing\IEventingRequestHandlerContext.cs" />
+    <Compile Include="Eventing\ISubscriptionManager.cs" />
+    <Compile Include="Eventing\IWSEventingContract.cs" />
+    <Compile Include="Eventing\PullDeliverySubscriptionManager.cs" />
+    <Compile Include="Eventing\PullSubscription.cs" />
+    <Compile Include="Eventing\Subsciption.cs" />
+    <Compile Include="Eventing\SubscribeRequest.cs" />
+    <Compile Include="Eventing\SubscribeResponse.cs" />
+    <Compile Include="Eventing\UnsubscribeRequest.cs" />
+    <Compile Include="Management\Const.cs" />
+    <Compile Include="Management\FragmentTransferHeader.cs" />
+    <Compile Include="Management\IManagementRequestHandler.cs" />
+    <Compile Include="Management\ManagementClient.cs" />
+    <Compile Include="Management\ResourceUriHeader.cs" />
+    <Compile Include="Management\ManagementServer.cs" />
+    <Compile Include="Management\XmlFragment.cs" />
+    <Compile Include="Enumeration\IPullRequestRouter.cs" />
+    <Compile Include="Transfer\Const.cs" />
+    <Compile Include="Transfer\CreateRsponseBodyWriter.cs" />
+    <Compile Include="Transfer\ITransferRequestHandler.cs" />
+    <Compile Include="Transfer\ITransferContract.cs" />
+    <Compile Include="Transfer\MessageFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Management\Selector.cs" />
+    <Compile Include="Management\SelectorSetHeader.cs" />
+    <Compile Include="Transfer\SerializerBodyWriter.cs" />
+    <Compile Include="Transfer\TransferClient.cs" />
+    <Compile Include="ClientContext.cs" />
+    <Compile Include="Transfer\TransferServer.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSMan.NET", "WSMan.NET\WSMan.NET.csproj", "{B649731C-C299-45AE-A0AC-9AFC2B8B0072}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnumerationDemo", "EnumerationDemo\EnumerationDemo.csproj", "{2BC90CCF-258F-44C9-B9DE-A10649B2C7DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementDemo", "ManagementDemo\ManagementDemo.csproj", "{AA7875C9-D29F-43E7-8B7F-F7846987C932}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs02.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = EnumerationDemo\\EnumerationDemo.csproj
+		SccProjectName1 = EnumerationDemo
+		SccLocalPath1 = EnumerationDemo
+		SccProjectUniqueName2 = ManagementDemo\\ManagementDemo.csproj
+		SccProjectName2 = ManagementDemo
+		SccLocalPath2 = ManagementDemo
+		SccProjectUniqueName3 = WSMan.NET\\WSMan.NET.csproj
+		SccProjectName3 = WSMan.NET
+		SccLocalPath3 = WSMan.NET
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B649731C-C299-45AE-A0AC-9AFC2B8B0072}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B649731C-C299-45AE-A0AC-9AFC2B8B0072}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B649731C-C299-45AE-A0AC-9AFC2B8B0072}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B649731C-C299-45AE-A0AC-9AFC2B8B0072}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BC90CCF-258F-44C9-B9DE-A10649B2C7DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BC90CCF-258F-44C9-B9DE-A10649B2C7DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BC90CCF-258F-44C9-B9DE-A10649B2C7DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BC90CCF-258F-44C9-B9DE-A10649B2C7DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA7875C9-D29F-43E7-8B7F-F7846987C932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA7875C9-D29F-43E7-8B7F-F7846987C932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA7875C9-D29F-43E7-8B7F-F7846987C932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA7875C9-D29F-43E7-8B7F-F7846987C932}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
