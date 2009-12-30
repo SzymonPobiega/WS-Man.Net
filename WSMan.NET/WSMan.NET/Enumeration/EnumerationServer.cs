@@ -10,46 +10,56 @@ namespace WSMan.NET.Enumeration
    {     
       public EnumerateResponse Enumerate(EnumerateRequest request)
       {
-         EnumerationContext context = EnumerationContext.Unique();
+         EnumerationContextKey contextKey = EnumerationContextKey.Unique();         
+         EnumerationContext context = new EnumerationContext(contextKey.Text, request.Filter);
          if (request.OptimizeEnumeration != null)
          {
-            int maxElements = request.MaxElements != null 
-               ? request.MaxElements.Value 
-               : 1;
-
-            if (request.EnumerationMode == EnumerationMode.EnumerateEPR)
-            {
-               IEnumerator<object> enumerator = GetHandler(request.Filter.Dialect).Enumerate(context.Text, request.Filter).GetEnumerator();
-
-               bool endOfSequence;
-               List<EndpointAddress10> items = PullItems(maxElements, enumerator, out endOfSequence);
-               if (!endOfSequence)
-               {
-                  _activeEnumerations[context] = new EnumerationContextHolder(enumerator);
-               }
-               return new EnumerateResponse
-                         {
-                            EnumerateEPRItems = items,
-                            EndOfSequence = endOfSequence ? new EndOfSequence() : null,
-                            EnumerationContext = endOfSequence ? null : context
-                         };
-            }
+            return HandleOptimizedEnumerate(contextKey, request, context);
          }
-         _activeEnumerations[context] = new EnumerationContextHolder(GetHandler(request.Filter.Dialect).Enumerate(context.Text, request.Filter).GetEnumerator());
+
+         IEnumerator<object> enumerator = GetHandler(request.Filter.Dialect).Enumerate(context).GetEnumerator();
+         _activeEnumerations[contextKey] = new EnumerationState(enumerator);
          return new EnumerateResponse
                    {
-                      EnumerationContext = context,
+                      EnumerationContext = contextKey,
                       Expires = request.Expires
                    };
       }
 
+      private EnumerateResponse HandleOptimizedEnumerate(EnumerationContextKey contextKey, EnumerateRequest request, EnumerationContext context)
+      {
+         int maxElements = request.MaxElements != null 
+                              ? request.MaxElements.Value 
+                              : 1;
+
+         if (request.EnumerationMode == EnumerationMode.EnumerateEPR)
+         {
+            IEnumerator<object> enumerator = GetHandler(request.Filter.Dialect).Enumerate(context).GetEnumerator();
+
+            bool endOfSequence;
+            List<EndpointAddress10> items = PullItems(maxElements, enumerator, out endOfSequence);
+            if (!endOfSequence)
+            {
+               _activeEnumerations[contextKey] = new EnumerationState(enumerator);
+            }
+            return new EnumerateResponse
+                      {
+                         EnumerateEPRItems = items,
+                         EndOfSequence = endOfSequence ? new EndOfSequence() : null,
+                         EnumerationContext = endOfSequence ? null : contextKey
+                      };
+         }
+         throw new NotSupportedException();
+      }
+
       public PullResponse Pull(PullRequest request)
       {
-         EnumerationContextHolder holder;
+         EnumerationState holder;
          if (!_activeEnumerations.TryGetValue(request.EnumerationContext, out holder))
          {
             return new PullResponse
             {
+               //TODO: Return fault
                EndOfSequence = new EndOfSequence()
             };
          }
@@ -97,14 +107,14 @@ namespace WSMan.NET.Enumeration
          _filterMap.Bind(dialect, filterType);
          _handlerMap[dialect] = handler;
          return this;
-      }
+      }      
 
       public FilterMap ProvideFilterMap()
       {
          return _filterMap;
       }      
 
-      private readonly Dictionary<EnumerationContext, EnumerationContextHolder> _activeEnumerations = new Dictionary<EnumerationContext, EnumerationContextHolder>();
+      private readonly Dictionary<EnumerationContextKey, EnumerationState> _activeEnumerations = new Dictionary<EnumerationContextKey, EnumerationState>();
       private readonly Dictionary<string, IEnumerationRequestHandler> _handlerMap = new Dictionary<string, IEnumerationRequestHandler>();
       private readonly FilterMap _filterMap = new FilterMap();
    }

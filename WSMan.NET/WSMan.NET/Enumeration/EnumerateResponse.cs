@@ -18,7 +18,7 @@ namespace WSMan.NET.Enumeration
 
       [MessageBodyMember]
       [XmlElement(Namespace = Const.Namespace)]
-      public EnumerationContext EnumerationContext { get; set; }
+      public EnumerationContextKey EnumerationContext { get; set; }
 
       [MessageBodyMember]
       [XmlArray(ElementName = "Items", Namespace = Management.Const.Namespace)]

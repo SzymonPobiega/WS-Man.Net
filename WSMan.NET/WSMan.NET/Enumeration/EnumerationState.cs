@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace WSMan.NET.Enumeration
 {
-   public class EnumerationContextHolder
+   public class EnumerationState
    {
       private readonly IEnumerator<object> _enumerator;
-
-      public EnumerationContextHolder(IEnumerator<object> enumerator)
+      
+      public EnumerationState(IEnumerator<object> enumerator)
       {
          _enumerator = enumerator;
-      }     
+      }
 
       public IEnumerator<object> Enumerator
       {

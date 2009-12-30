@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnumerationDemo", "Enumerat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementDemo", "ManagementDemo\ManagementDemo.csproj", "{AA7875C9-D29F-43E7-8B7F-F7846987C932}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventingDemo", "EventingDemo\EventingDemo.csproj", "{7DA9F930-6F62-4DE4-9275-64821933578D}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs02.codeplex.com/
 		SccLocalPath0 = .
@@ -22,6 +24,9 @@ Global
 		SccProjectUniqueName3 = WSMan.NET\\WSMan.NET.csproj
 		SccProjectName3 = WSMan.NET
 		SccLocalPath3 = WSMan.NET
+		SccProjectUniqueName4 = EventingDemo\\EventingDemo.csproj
+		SccProjectName4 = EventingDemo
+		SccLocalPath4 = EventingDemo
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +45,10 @@ Global
 		{AA7875C9-D29F-43E7-8B7F-F7846987C932}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA7875C9-D29F-43E7-8B7F-F7846987C932}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA7875C9-D29F-43E7-8B7F-F7846987C932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA9F930-6F62-4DE4-9275-64821933578D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA9F930-6F62-4DE4-9275-64821933578D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA9F930-6F62-4DE4-9275-64821933578D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA9F930-6F62-4DE4-9275-64821933578D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -20,12 +20,12 @@ namespace WSMan.NET.Enumeration
       private XmlAttribute[] anyAttrField;
       private XmlElement[] anyField;
       private string codeField;
-      private EnumerationContext enumerationContextField;
+      private EnumerationContextKey enumerationContextField;
 
       private LanguageSpecificString[] reasonField;
 
 
-      public EnumerationContext EnumerationContext
+      public EnumerationContextKey EnumerationContext
       {
          get { return enumerationContextField; }
          set { enumerationContextField = value; }

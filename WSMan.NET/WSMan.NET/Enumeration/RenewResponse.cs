@@ -13,7 +13,7 @@ namespace WSMan.NET.Enumeration
    {
       private XmlAttribute[] anyAttrField;
       private XmlElement[] anyField;
-      private EnumerationContext enumerationContextField;
+      private EnumerationContextKey enumerationContextField;
       private string expiresField;
 
 
@@ -24,7 +24,7 @@ namespace WSMan.NET.Enumeration
       }
 
 
-      public EnumerationContext EnumerationContext
+      public EnumerationContextKey EnumerationContext
       {
          get { return enumerationContextField; }
          set { enumerationContextField = value; }

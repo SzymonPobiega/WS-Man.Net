@@ -5,21 +5,16 @@ using WSMan.NET.Enumeration;
 
 namespace WSMan.NET.Eventing
 {
-   public class PullDeliverySubscriptionManager : 
-      IEnumerationRequestHandler,
+   public class PullDeliverySubscriptionManager :       
       ISubscriptionManager,
       IDisposable
-   {      
-      public IEnumerable<object> Enumerate(string context, Filter filter)
-      {
-         PullSubscription subscription = null;
-         return subscription.Enumerate(filter);
-      }
-
-      public Subsciption Subscribe()
+   {            
+      public Subsciption Subscribe(Filter filter)
       {         
          PullSubscription subscription = new PullSubscription(Guid.NewGuid().ToString(), this);
-         _handler.Bind(subscription.Buffer);
+         _handler.Bind(subscription.Buffer);         
+         _deliveryServer.AddSubscription(subscription);         
+         _subscriptions[subscription.Identifier] = subscription;
          return subscription;
       }
 
@@ -27,6 +22,8 @@ namespace WSMan.NET.Eventing
       {
          PullSubscription pullSubscription = (PullSubscription) subsciption;
          _handler.Unbind(pullSubscription.Buffer);
+         _deliveryServer.RemoveSubscription(pullSubscription);
+         _subscriptions.Remove(subsciption.Identifier);
          subsciption.Dispose();
       }
 
@@ -36,15 +33,23 @@ namespace WSMan.NET.Eventing
          {
             return;
          }
+         foreach (PullSubscription subscription in _subscriptions.Values)
+         {
+            _handler.Unbind(subscription.Buffer);
+            subscription.Dispose();            
+         }
          _disposed = true;
       }
       
-      public PullDeliverySubscriptionManager(IEventingRequestHandler handler)
-      {
+      public PullDeliverySubscriptionManager(EventingPullDeliveryServer deliveryServer, IEventingRequestHandler handler)
+      {         
          _handler = handler;
-      }      
+         _deliveryServer = deliveryServer;
+      }
 
       private bool _disposed;
+      private readonly EventingPullDeliveryServer _deliveryServer;
       private readonly IEventingRequestHandler _handler;      
+      private readonly Dictionary<string, PullSubscription> _subscriptions = new Dictionary<string, PullSubscription>();
    }
 }

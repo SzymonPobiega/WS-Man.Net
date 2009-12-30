@@ -10,11 +10,12 @@ namespace WSMan.NET.Enumeration
    public class PullRequest
    {
       [MessageBodyMember(Order = 0)]
-      public EnumerationContext EnumerationContext { get; set; }
+      [XmlElement(Namespace = Const.Namespace)]
+      public EnumerationContextKey EnumerationContext { get; set; }
 
       [MessageBodyMember(Order = 1)]
-      [XmlElement(DataType = "duration")]
-      public string MaxTime { get; set; }
+      [XmlElement(Namespace = Const.Namespace)]
+      public MaxTime MaxTime { get; set; }
 
       [MessageBodyMember(Order = 2)]
       [XmlElement(Namespace = Management.Const.Namespace)]

@@ -21,7 +21,7 @@ namespace WSMan.NET.Eventing
 
       [MessageBodyMember(Order = 2)]
       [XmlElement(Namespace = Enumeration.Const.Namespace)]
-      public EnumerationContext EnumerationContext { get; set; }
+      public EnumerationContextKey EnumerationContext { get; set; }
 
       [XmlAnyElement]
       public XmlElement[] Any { get; set; }

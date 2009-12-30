@@ -1,39 +1,29 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   [XmlType(Namespace = Const.Namespace)]
-   public class EnumerationContext
+   public class EnumerationContext : IEnumerationContext
    {
-      [XmlText]
-      public string Text { get; set; }
+      private readonly string _context;
+      private readonly Filter _filter;
 
-      public EnumerationContext()
-      {         
-      }
-
-      public EnumerationContext(string value)
+      public EnumerationContext(string context, Filter filter)
       {
-         Text = value;
+         _context = context;
+         _filter = filter;
       }
 
-      public static EnumerationContext Unique()
+      public string Context
       {
-         return new EnumerationContext(Guid.NewGuid().ToString());
+         get { return _context; }
       }
 
-      public override int GetHashCode()
+      public Filter Filter
       {
-         return Text.GetHashCode();
+         get { return _filter; }
       }
 
-      public override bool Equals(object obj)
-      {
-         EnumerationContext other = obj as EnumerationContext;
-         return other != null && Text.Equals(other.Text);
-      }
    }
 }

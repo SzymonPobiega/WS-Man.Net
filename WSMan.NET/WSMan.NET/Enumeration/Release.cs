@@ -18,10 +18,10 @@ namespace WSMan.NET.Enumeration
    public class Release
    {
       private XmlAttribute[] anyAttrField;
-      private EnumerationContext enumerationContextField;
+      private EnumerationContextKey enumerationContextField;
 
 
-      public EnumerationContext EnumerationContext
+      public EnumerationContextKey EnumerationContext
       {
          get { return enumerationContextField; }
          set { enumerationContextField = value; }

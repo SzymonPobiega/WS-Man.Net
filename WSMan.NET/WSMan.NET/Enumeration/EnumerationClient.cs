@@ -29,7 +29,7 @@ namespace WSMan.NET.Enumeration
             response = ctx.Channel.Enumerate(new EnumerateRequest
                                      {
                                         EnumerationMode = EnumerationMode.EnumerateEPR,
-                                        OptimizeEnumeration = _optimizeEnumeration ? new OptimizeEnumeration() : null,
+                                        OptimizeEnumeration = _optimize ? new OptimizeEnumeration() : null,
                                         Filter = filter,
                                         MaxElements = new MaxElements(maxElements)
                                      });            
@@ -41,7 +41,7 @@ namespace WSMan.NET.Enumeration
                yield return item.ToEndpointAddress();
             }
          }
-         EnumerationContext context = response.EnumerationContext;
+         EnumerationContextKey context = response.EnumerationContext;
          bool endOfSequence = response.EndOfSequence != null;
          while (!endOfSequence)
          {
@@ -55,7 +55,7 @@ namespace WSMan.NET.Enumeration
          }
       }
 
-      private PullResponse PullNextBatch(EnumerationContext context, int maxElements, IEnumerable<Selector> selectors)
+      private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
       {
          using (ClientContext<IWSEnumerationContract> ctx =
             new ClientContext<IWSEnumerationContract>(_endpointUri, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
@@ -69,32 +69,33 @@ namespace WSMan.NET.Enumeration
          }
       }
       
-      public EnumerationClient(bool optimizeEnumeration, Uri endpointUri, Binding binding)
+      public EnumerationClient(bool optimize, Uri endpointUri, Binding binding)
       {
-         _optimizeEnumeration = optimizeEnumeration;
          _endpointUri = endpointUri;
+         _optimize = optimize;
          _proxyFactory = new ChannelFactory<IWSEnumerationContract>(binding);
       }
 
       public void Dispose()
       {
-         if (!_disposed)
+         if (_disposed)
          {
-            try
-            {
-               _proxyFactory.Close();
-            }
-            catch (Exception)
-            {
-               _proxyFactory.Abort();
-            }
-            _disposed = true;
+            return;
          }
+         try
+         {
+            _proxyFactory.Close();
+         }
+         catch (Exception)
+         {
+            _proxyFactory.Abort();
+         }
+         _disposed = true;
       }
 
       private bool _disposed;
-      private readonly bool _optimizeEnumeration;
       private readonly Uri _endpointUri;
+      private readonly bool _optimize;
       private readonly IChannelFactory<IWSEnumerationContract> _proxyFactory;
       private readonly FilterMap _filterMap = new FilterMap();
    }

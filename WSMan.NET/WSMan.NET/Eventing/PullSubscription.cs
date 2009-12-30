@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 using WSMan.NET.Enumeration;
 
 namespace WSMan.NET.Eventing
@@ -11,19 +12,7 @@ namespace WSMan.NET.Eventing
          : base(identifier, manager)
       {
       }
-
-      public IEnumerable<object> Enumerate(Filter filter)
-      {
-         if (!_buffer.IsEmpty)
-         {
-            return _buffer.FetchNotifications();
-         }
-         else
-         {
-            throw new NotImplementedException();
-         }
-      }
-
+      
       public EventBuffer Buffer
       {
          get { return _buffer; }

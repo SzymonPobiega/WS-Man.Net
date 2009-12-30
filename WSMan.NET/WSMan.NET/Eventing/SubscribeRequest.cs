@@ -24,7 +24,7 @@ namespace WSMan.NET.Eventing
       public Expires Expires { get; set; }
 
       [MessageBodyMember(Order = 3)]
-      [XmlElement(Namespace = Const.Namespace)]
+      [XmlElement(Namespace = Enumeration.Const.Namespace)]
       public Filter Filter { get; set; }
 
       [XmlAnyElement]

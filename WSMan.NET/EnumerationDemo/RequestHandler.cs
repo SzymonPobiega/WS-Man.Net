@@ -7,7 +7,7 @@ namespace EnumerationTests
 {
    public class RequestHandler : IEnumerationRequestHandler
    {
-      public IEnumerable<object> Enumerate(string context, Filter filter)
+      public IEnumerable<object> Enumerate(IEnumerationContext context)
       {
          Console.WriteLine("Server: Returning item");
          yield return new EndpointAddress("http://tempuri-1.org");

@@ -61,7 +61,8 @@
     <Compile Include="Enumeration\EnumerateResponse.cs" />
     <Compile Include="Enumeration\EnumerationClient.cs" />
     <Compile Include="Enumeration\EnumerationContext.cs" />
-    <Compile Include="Enumeration\EnumerationContextHolder.cs" />
+    <Compile Include="Enumeration\EnumerationContextKey.cs" />
+    <Compile Include="Enumeration\EnumerationState.cs" />
     <Compile Include="Enumeration\EnumerationMode.cs" />
     <Compile Include="Enumeration\FilterMap.cs" />
     <Compile Include="Enumeration\FilterMapExtension.cs" />
@@ -73,10 +74,13 @@
     <Compile Include="Enumeration\Filter.cs" />
     <Compile Include="Enumeration\GetStatusRequest.cs" />
     <Compile Include="Enumeration\GetStatusResponse.cs" />
+    <Compile Include="Enumeration\MaxTime.cs" />
     <Compile Include="Eventing\Delivery.cs" />
     <Compile Include="Eventing\EndpointReference.cs" />
     <Compile Include="Eventing\EventBuffer.cs" />
     <Compile Include="Eventing\eventing.cs" />
+    <Compile Include="Eventing\EventingClient.cs" />
+    <Compile Include="Eventing\EventingPullDeliveryServer.cs" />
     <Compile Include="Eventing\EventingServer.cs" />
     <Compile Include="Eventing\IdentifierHeader.cs" />
     <Compile Include="Eventing\IEventingRequestHandler.cs" />
@@ -96,10 +100,13 @@
     <Compile Include="Enumeration\WsEnumerationTypesLogic.cs" />
     <Compile Include="Eventing\Const.cs" />
     <Compile Include="Eventing\IEventingRequestHandlerContext.cs" />
+    <Compile Include="Eventing\IPullSubscription.cs" />
     <Compile Include="Eventing\ISubscriptionManager.cs" />
     <Compile Include="Eventing\IWSEventingContract.cs" />
+    <Compile Include="Eventing\IWSEventingPullDeliveryContract.cs" />
     <Compile Include="Eventing\PullDeliverySubscriptionManager.cs" />
     <Compile Include="Eventing\PullSubscription.cs" />
+    <Compile Include="Eventing\PullSubscriptionImpl.cs" />
     <Compile Include="Eventing\Subsciption.cs" />
     <Compile Include="Eventing\SubscribeRequest.cs" />
     <Compile Include="Eventing\SubscribeResponse.cs" />

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace WSMan.NET.Eventing
 {
@@ -8,42 +9,40 @@ namespace WSMan.NET.Eventing
    {
       public const int DefaultSize = 100;
 
-      public event EventHandler<EventArgs> ItemPushed;
-
       public bool IsEmpty
       {
          get { return _storage.Count == 0; }
-      }
+      }      
       
       public void Push(object @event)
       {         
          lock (_storage)
-         {
+         {            
             _storage.Enqueue(@event);            
             if (_storage.Count > _maxSize)
             {
                _storage.Dequeue();
             }
-            OnItemPushed();
-         }
+            _event.Set();
+         }         
       }
-      public IEnumerable<object> FetchNotifications()
+      public IEnumerable<object> FetchNotifications(int maxElements, TimeSpan maxTime)
       {
-         lock (_storage)
+         if (_event.WaitOne(maxTime))
          {
-            while (_storage.Count > 0)
+            lock (_storage)
             {
-               yield return _storage.Dequeue();
+               int i = 0;
+               while (i < maxElements && _storage.Count > 0 )
+               {
+                  yield return _storage.Dequeue();
+                  i++;
+               }
+               if (_storage.Count == 0)
+               {
+                  _event.Reset();
+               }
             }
-         }
-      }
-
-      private void OnItemPushed()
-      {
-         EventHandler<EventArgs> itemPushed = ItemPushed;
-         if (itemPushed != null)
-         {
-            itemPushed(this, new EventArgs());
          }
       }
 
@@ -56,6 +55,7 @@ namespace WSMan.NET.Eventing
          _maxSize = maxSize;
       }
 
+      private readonly ManualResetEvent _event = new ManualResetEvent(false);
       private readonly Queue<object> _storage = new Queue<object>();
       private readonly int _maxSize;      
    }

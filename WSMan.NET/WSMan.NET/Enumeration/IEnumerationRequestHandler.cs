@@ -5,8 +5,14 @@ using System.Text;
 
 namespace WSMan.NET.Enumeration
 {
+   public interface IEnumerationContext
+   {
+      string Context { get; }
+      Filter Filter { get; }
+   }
+
    public interface IEnumerationRequestHandler
    {
-      IEnumerable<object> Enumerate(string context, Filter filter);
+      IEnumerable<object> Enumerate(IEnumerationContext context);
    }
 }
