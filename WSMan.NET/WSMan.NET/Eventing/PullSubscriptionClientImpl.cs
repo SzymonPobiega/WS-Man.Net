@@ -35,7 +35,7 @@ namespace WSMan.NET.Eventing
       private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
       {
          using (ClientContext<IWSEnumerationContract> ctx =
-            new ClientContext<IWSEnumerationContract>(_endpointUri, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
+            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
          {
             FilterMapExtension.Activate(_filterMap);
             return ctx.Channel.Pull(new PullRequest
@@ -69,6 +69,7 @@ namespace WSMan.NET.Eventing
          _endpointUri = endpointUri;
          _context = context;
          _filterMap = filterMap;
+         _binding = binding;
          _proxyFactory = new ChannelFactory<IWSEnumerationContract>(binding);
       }
 
@@ -76,6 +77,7 @@ namespace WSMan.NET.Eventing
       private readonly Uri _endpointUri;
       private readonly IChannelFactory<IWSEnumerationContract> _proxyFactory;
       private readonly FilterMap _filterMap = new FilterMap();
+      private readonly Binding _binding;
       private EnumerationContextKey _context;
    }
 }

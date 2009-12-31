@@ -23,7 +23,7 @@ namespace WSMan.NET.Enumeration
       {
          EnumerateResponse response;
          using (ClientContext<IWSEnumerationContract> ctx = 
-            new ClientContext<IWSEnumerationContract>(_endpointUri, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
+            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing,  _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
          {
             FilterMapExtension.Activate(_filterMap);
             response = ctx.Channel.Enumerate(new EnumerateRequest
@@ -58,7 +58,7 @@ namespace WSMan.NET.Enumeration
       private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
       {
          using (ClientContext<IWSEnumerationContract> ctx =
-            new ClientContext<IWSEnumerationContract>(_endpointUri, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
+            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
          {
             FilterMapExtension.Activate(_filterMap);
             return ctx.Channel.Pull(new PullRequest
@@ -73,6 +73,7 @@ namespace WSMan.NET.Enumeration
       {
          _endpointUri = endpointUri;
          _optimize = optimize;
+         _binding = binding;
          _proxyFactory = new ChannelFactory<IWSEnumerationContract>(binding);
       }
 
@@ -97,6 +98,7 @@ namespace WSMan.NET.Enumeration
       private readonly Uri _endpointUri;
       private readonly bool _optimize;
       private readonly IChannelFactory<IWSEnumerationContract> _proxyFactory;
+      private readonly Binding _binding;
       private readonly FilterMap _filterMap = new FilterMap();
    }
 }

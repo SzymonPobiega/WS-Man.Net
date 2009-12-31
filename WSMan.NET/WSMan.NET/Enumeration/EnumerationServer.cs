@@ -6,6 +6,7 @@ using System.ServiceModel;
 namespace WSMan.NET.Enumeration
 {
    [FilterMapExtensionServiceBehavior]
+   [AddressingVersionExtensionServiceBehavior]
    public class EnumerationServer : IWSEnumerationContract, IFilterMapProvider
    {     
       public EnumerateResponse Enumerate(EnumerateRequest request)

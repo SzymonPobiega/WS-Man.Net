@@ -18,6 +18,11 @@ namespace WSMan.NET.Management
          _resourceUri = resourceUri;
       }
 
+      public static ResourceUriHeader GetFrom(AddressHeaderCollection headerCollection)
+      {
+         return (ResourceUriHeader)headerCollection.FindHeader(ElementName, Const.Namespace);
+      }
+
       public static ResourceUriHeader ReadFrom(XmlDictionaryReader reader)
       {
          reader.ReadStartElement(ElementName, Const.Namespace);

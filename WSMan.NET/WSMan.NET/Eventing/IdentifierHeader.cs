@@ -23,6 +23,11 @@ namespace WSMan.NET.Eventing
          return new IdentifierHeader(Guid.NewGuid().ToString());
       }
 
+      public static IdentifierHeader GetFrom(AddressHeaderCollection headerCollection)
+      {
+         return (IdentifierHeader)headerCollection.FindHeader(ElementName, Const.Namespace);
+      }
+
       public static IdentifierHeader ReadFrom(XmlDictionaryReader reader)
       {
          reader.ReadStartElement(ElementName, Const.Namespace);

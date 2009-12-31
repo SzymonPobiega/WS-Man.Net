@@ -10,6 +10,7 @@ namespace WSMan.NET.Eventing
    {      
       public PullResponse Pull(PullRequest request)
       {
+         //TODO: Check URI
          PullSubscription subsciption;
          if (!_subscriptions.TryGetValue(request.EnumerationContext.Text, out subsciption))
          {

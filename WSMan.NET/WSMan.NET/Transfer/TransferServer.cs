@@ -5,7 +5,8 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 
 namespace WSMan.NET.Transfer
-{   
+{
+   [AddressingVersionExtensionServiceBehavior]
    public class TransferServer : ITransferContract
    {
       private readonly ITransferRequestHandler _handler;

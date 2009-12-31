@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace WSMan.NET.Eventing
 {
-   public class EventBuffer : IEventingRequestHandlerContext
+   public class EventBuffer
    {
       public const int DefaultSize = 100;
 

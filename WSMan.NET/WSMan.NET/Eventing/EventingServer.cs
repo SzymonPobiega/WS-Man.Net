@@ -3,44 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using WSMan.NET.Enumeration;
+using WSMan.NET.Management;
 
 namespace WSMan.NET.Eventing
 {
    [FilterMapExtensionServiceBehavior]
+   [AddressingVersionExtensionServiceBehavior]
    public class EventingServer : 
       IWSEventingContract, 
       IWSEventingPullDeliveryContract,
       IFilterMapProvider
-   {      
-      public void BindWithPullDelivery(string dialect, Type filterType, IEventingRequestHandler eventSource)
+   {
+      public void BindWithPullDelivery(
+         Uri listeningResourceUri, 
+         Uri deliveryResourceUri,
+         IEventingRequestHandler eventSource, 
+         string dialect, 
+         Type filterType)
       {
-         PullDeliverySubscriptionManager enumHandler = new PullDeliverySubscriptionManager(_pullDeliveryServer, eventSource);
+         PullDeliverySubscriptionManager enumHandler = new PullDeliverySubscriptionManager(deliveryResourceUri.ToString(), _pullDeliveryServer, eventSource);
          _filterMap.Bind(dialect, filterType);
-         _enumHandlers[dialect] = enumHandler;
+         _enumHandlers[listeningResourceUri.ToString()] = enumHandler;
       }
 
       public SubscribeResponse Subscribe(SubscribeRequest request)
       {
-         Subsciption subsciption = GetManager(request.Filter.Dialect).Subscribe(request.Filter);
-         IdentifierHeader identifierHeader = new IdentifierHeader(subsciption.Identifier);
+         //Check
+         SelectorSetHeader selectorSetHeader =
+            SelectorSetHeader.ReadFrom(OperationContext.Current.IncomingMessageHeaders);
+
+         //Check
+         ResourceUriHeader resourceUriHeader =
+            ResourceUriHeader.ReadFrom(OperationContext.Current.IncomingMessageHeaders);
+
+         Subsciption subsciption = GetManager(resourceUriHeader.ResourceUri).Subscribe(
+            request.Filter,
+            selectorSetHeader != null ? selectorSetHeader.Selectors : (IEnumerable<Selector>)new Selector[] {});
          
          lock (_activeSubscriptions)
          {            
-            _activeSubscriptions[identifierHeader.Value] = subsciption;            
+            _activeSubscriptions[subsciption.Identifier] = subsciption;            
          }
-
-         //R7.2.4-1
-         var subscriptionManagerAddress = new EndpointAddressBuilder
-                                             {                                                
-                                                Uri = OperationContext.Current.IncomingMessageHeaders.To,                                                
-                                             };
-         subscriptionManagerAddress.Headers.Add(identifierHeader);
-
+         
          return new SubscribeResponse
                    {
-                      SubscriptionManager = new EndpointReference(subscriptionManagerAddress),                      
+                      //R7.2.4-1
+                      SubscriptionManager = new SubscriptionManager(subsciption.Identifier, OperationContext.Current.IncomingMessageHeaders.To, subsciption.DeliveryResourceUri),                      
                       EnumerationContext = request.Delivery.Mode == Const.DeliveryModePull 
-                         ? new EnumerationContextKey(identifierHeader.Value) 
+                         ? new EnumerationContextKey(subsciption.Identifier) 
                          : null
                    };
       }
@@ -66,10 +76,10 @@ namespace WSMan.NET.Eventing
          return _pullDeliveryServer.Pull(request);
       }
 
-      private ISubscriptionManager GetManager(string filterDialect)
+      private ISubscriptionManager GetManager(string resourceUri)
       {
          //TODO: Add fault
-         return _enumHandlers[filterDialect];
+         return _enumHandlers[resourceUri];
       }
 
       public FilterMap ProvideFilterMap()

@@ -13,7 +13,7 @@ namespace WSMan.NET.Eventing
    {
       [MessageBodyMember(Order = 0)]
       [XmlElement(Namespace = Const.Namespace)]
-      public EndpointReference SubscriptionManager { get; set; }      
+      public SubscriptionManager SubscriptionManager { get; set; }      
 
       [MessageBodyMember(Order = 1)]
       [XmlElement(Namespace = Const.Namespace)]

@@ -15,16 +15,19 @@ namespace WSMan.NET.Eventing
          _filterMap.Bind(dialect, implementationType);
       }
 
-      public IPullSubscriptionClient SubscribeWithPullDelivery(Filter filter, params Selector[] selectors)
+      public IPullSubscriptionClient SubscribeWithPullDelivery(Uri resourceUri, Filter filter, params Selector[] selectors)
       {
-         return SubscribeWithPullDelivery(filter, (IEnumerable<Selector>)selectors);
+         return SubscribeWithPullDelivery(resourceUri, filter, (IEnumerable<Selector>)selectors);
       }
 
-      public IPullSubscriptionClient SubscribeWithPullDelivery(Filter filter, IEnumerable<Selector> selectors)
+      public IPullSubscriptionClient SubscribeWithPullDelivery(Uri resourceUri, Filter filter, IEnumerable<Selector> selectors)
       {
          SubscribeResponse response;
          using (ClientContext<IWSEventingContract> ctx =
-            new ClientContext<IWSEventingContract>(_endpointUri, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
+            new ClientContext<IWSEventingContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory, mx => {
+               mx.Add(new SelectorSetHeader(selectors)); 
+               mx.Add(new ResourceUriHeader(resourceUri.ToString()));
+            }))
          {
             FilterMapExtension.Activate(_filterMap);
             response = ctx.Channel.Subscribe(new SubscribeRequest

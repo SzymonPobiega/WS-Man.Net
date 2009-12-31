@@ -1,62 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
-using System.Threading;
-using System.Xml.Serialization;
+using WSMan.NET;
 using WSMan.NET.Enumeration;
 using WSMan.NET.Eventing;
 using WSMan.NET.Management;
 
 namespace EventingDemo
-{
-   [XmlRoot(ElementName = "NotificationFilter", Namespace = "http://jsr262.dev.java.net")]
-   public class JmxNotificationFilter
-   {
-
-   }
-
-   public class RequestHandler : IEventingRequestHandler
-   {
-      private Timer _timer;
-      private readonly List<IEventingRequestHandlerContext> _subscribers = new List<IEventingRequestHandlerContext>();
-
-      public RequestHandler()
-      {
-         _timer = new Timer(Publish, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));         
-      }
-
-      public void Bind(IEventingRequestHandlerContext context)
-      {             
-         _subscribers.Add(context);
-      }
-
-      public void Unbind(IEventingRequestHandlerContext context)
-      {
-         _subscribers.Remove(context);
-      }
-
-      private void Publish(object state)
-      {
-         foreach (IEventingRequestHandlerContext subscriber in _subscribers)
-         {
-            subscriber.Push(new EndpointAddress("http://tempuri.org"));
-         }
-      }
-   }
-
+{   
    class Program
    {
+      private const string ResourceUri = "http://jsr262.dev.java.net/DynamicMBeanResource";
+      private const string ResourceDeliveryUri = "http://jsr262.dev.java.net/MBeanNotificationSubscriptionManager";
+
       static void Main(string[] args)
       {
          EventingServer eventingServer = new EventingServer();
-         eventingServer.BindWithPullDelivery(FilterMap.DefaultDialect, typeof(JmxNotificationFilter ), new RequestHandler());
+         eventingServer.BindWithPullDelivery(new Uri(ResourceUri), new Uri(ResourceDeliveryUri),  new RequestHandler(), FilterMap.DefaultDialect, typeof(JmxNotificationFilter ));
          
          ServiceHost sh = new ServiceHost(eventingServer);
 
-         Binding binding = new BasicHttpBinding();
+         Binding binding = new WSHttpBindingAugust2004(SecurityMode.None);
          sh.AddServiceEndpoint(typeof(IWSEventingPullDeliveryContract), binding, "http://simon-hp:80/Contract");
          sh.AddServiceEndpoint(typeof(IWSEventingContract), binding, "http://simon-hp:80/Contract");
 
@@ -64,14 +30,17 @@ namespace EventingDemo
          behavior.ConcurrencyMode = ConcurrencyMode.Multiple;
          behavior.InstanceContextMode = InstanceContextMode.Single;
          behavior.IncludeExceptionDetailInFaults = true;
+         behavior.AddressFilterMode = AddressFilterMode.Any;
 
          sh.Open();
 
-         EventingClient client = new EventingClient(new Uri("http://localhost:8888/Contract"), new BasicHttpBinding());
+         EventingClient client = new EventingClient(new Uri("http://localhost:8888/Contract"), binding);
          client.BindFilterDialect(FilterMap.DefaultDialect, typeof(JmxNotificationFilter));
 
          IPullSubscriptionClient subscriptionClient =
-            client.SubscribeWithPullDelivery(new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()));
+            client.SubscribeWithPullDelivery(new Uri(ResourceUri), 
+            new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()),
+            new Selector("name", "value"));
 
          foreach (EndpointAddress item in subscriptionClient.Pull())
          {

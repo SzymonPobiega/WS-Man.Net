@@ -12,7 +12,7 @@ namespace WSMan.NET
       private readonly T _channel;
       private readonly OperationContextScope _scope;
 
-      public ClientContext(Uri endpointUri, IChannelFactory<T> proxyFactory, AddressHeaderCreatorDelegate addressHeaderCreatorDelegate)
+      public ClientContext(Uri endpointUri, AddressingVersion addressingVersion, IChannelFactory<T> proxyFactory, AddressHeaderCreatorDelegate addressHeaderCreatorDelegate)
       {
          EndpointAddressBuilder builder = new EndpointAddressBuilder();
          addressHeaderCreatorDelegate(builder.Headers);
@@ -20,6 +20,7 @@ namespace WSMan.NET
 
          _channel = proxyFactory.CreateChannel(builder.ToEndpointAddress());
          _scope = new OperationContextScope((IContextChannel)_channel);
+         AddressingVersionExtension.Activate(addressingVersion);
       }
 
       public T Channel
