@@ -25,6 +25,11 @@ namespace WSMan.NET
          _address = addressBuilder.ToEndpointAddress();
       }
 
+      public EndpointAddress Address
+      {
+         get { return _address; }
+      }
+
       #region IXmlSerializable Members
       public System.Xml.Schema.XmlSchema GetSchema()
       {

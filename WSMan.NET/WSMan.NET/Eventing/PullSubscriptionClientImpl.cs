@@ -8,24 +8,24 @@ using WSMan.NET.Management;
 
 namespace WSMan.NET.Eventing
 {
-   public class PullSubscriptionClientImpl : IPullSubscriptionClient
+   public class PullSubscriptionClientImpl<T> : IPullSubscriptionClient<T>
    {
-      public IEnumerable<object> PullOnce()
+      public IEnumerable<T> PullOnce()
       {
          PullResponse pullResponse = PullNextBatch(_context, 100, new Selector[] {});
          _context = pullResponse.EnumerationContext;
-         return pullResponse.EnumerateEPRItems.Select(x => x.ToEndpointAddress()).Cast<object>();         
+         return pullResponse.Items.Items.Select(x => x.ObjectValue).Cast<T>();         
       }      
 
-      public IEnumerable<object> Pull()
+      public IEnumerable<T> Pull()
       {
          bool endOfSequence = false;
          while (!endOfSequence)
          {
             PullResponse pullResponse = PullNextBatch(_context, 100, new Selector[] { });
-            foreach (EndpointAddress10 item in pullResponse.EnumerateEPRItems)
+            foreach (EnumerationItem item in pullResponse.Items.Items)
             {
-               yield return item.ToEndpointAddress();
+               yield return (T)item.ObjectValue;
             }
             endOfSequence = pullResponse.EndOfSequence != null;
             _context = pullResponse.EnumerationContext;
@@ -38,6 +38,7 @@ namespace WSMan.NET.Eventing
             new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
          {
             FilterMapExtension.Activate(_filterMap);
+            EnumerationModeExtension.Activate(EnumerationMode.EnumerateObjectAndEPR, typeof(T));
             return ctx.Channel.Pull(new PullRequest
             {
                MaxTime = new MaxTime(TimeSpan.FromSeconds(1)),

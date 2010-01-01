@@ -10,7 +10,7 @@ namespace WSMan.NET.Enumeration
    public class EnumerationServer : IWSEnumerationContract, IFilterMapProvider
    {     
       public EnumerateResponse Enumerate(EnumerateRequest request)
-      {
+      {         
          EnumerationContextKey contextKey = EnumerationContextKey.Unique();         
          EnumerationContext context = new EnumerationContext(contextKey.Text, request.Filter);
          if (request.OptimizeEnumeration != null)
@@ -19,7 +19,7 @@ namespace WSMan.NET.Enumeration
          }
 
          IEnumerator<object> enumerator = GetHandler(request.Filter.Dialect).Enumerate(context).GetEnumerator();
-         _activeEnumerations[contextKey] = new EnumerationState(enumerator);
+         _activeEnumerations[contextKey] = new EnumerationState(enumerator, request.EnumerationMode);
          return new EnumerateResponse
                    {
                       EnumerationContext = contextKey,
@@ -38,14 +38,14 @@ namespace WSMan.NET.Enumeration
             IEnumerator<object> enumerator = GetHandler(request.Filter.Dialect).Enumerate(context).GetEnumerator();
 
             bool endOfSequence;
-            List<EndpointAddress10> items = PullItems(maxElements, enumerator, out endOfSequence);
+            EnumerationItemList items = new EnumerationItemList(PullItems(maxElements, request.EnumerationMode,enumerator, out endOfSequence));
             if (!endOfSequence)
             {
-               _activeEnumerations[contextKey] = new EnumerationState(enumerator);
+               _activeEnumerations[contextKey] = new EnumerationState(enumerator, request.EnumerationMode);
             }
             return new EnumerateResponse
                       {
-                         EnumerateEPRItems = items,
+                         Items = items,
                          EndOfSequence = endOfSequence ? new EndOfSequence() : null,
                          EnumerationContext = endOfSequence ? null : contextKey
                       };
@@ -70,27 +70,46 @@ namespace WSMan.NET.Enumeration
                               : 1;
 
          bool endOfSequence;
-         List<EndpointAddress10> items = PullItems(maxElements, holder.Enumerator, out endOfSequence);
+         EnumerationItemList items = new EnumerationItemList(PullItems(maxElements, holder.Mode, holder.Enumerator, out endOfSequence));
          if (endOfSequence)
          {
             _activeEnumerations.Remove(request.EnumerationContext);
          }
          return new PullResponse
                    {
-                      EnumerateEPRItems = items,
+                      Items = items,
                       EndOfSequence = endOfSequence ? new EndOfSequence() : null,
                       EnumerationContext = endOfSequence ? null : request.EnumerationContext
                    };
       }
 
-      private static List<EndpointAddress10> PullItems(int maximum, IEnumerator<object> enumerator, out bool endOfSequence)
+      private static IEnumerable<EnumerationItem> PullItems(int maximum, EnumerationMode mode, IEnumerator<object> enumerator, out bool endOfSequence)
       {
          int i = 0;         
-         List<EndpointAddress10> result = new List<EndpointAddress10>();
+         List<EnumerationItem> result = new List<EnumerationItem>();
          bool moveNext = false;
          while (i < maximum && (moveNext = enumerator.MoveNext()))
          {
-            result.Add(EndpointAddress10.FromEndpointAddress((EndpointAddress)enumerator.Current));
+
+            if (mode == EnumerationMode.EnumerateEPR)
+            {
+               if (i == 0)
+               {
+                  EnumerationModeExtension.Activate(EnumerationMode.EnumerateEPR, null);
+               }
+               result.Add(new EnumerationItem((EndpointAddress)enumerator.Current));
+            }
+            else
+            {
+               if (i == 0)
+               {
+                  EnumerationModeExtension.Activate(EnumerationMode.EnumerateObjectAndEPR,
+                                                    enumerator.Current.GetType());
+               }
+               result.Add(new EnumerationItem(
+                             new EndpointAddress("http://tempuri.org"),
+                             enumerator.Current));
+            }                        
             i++;
          }
          endOfSequence = !moveNext || i < maximum;

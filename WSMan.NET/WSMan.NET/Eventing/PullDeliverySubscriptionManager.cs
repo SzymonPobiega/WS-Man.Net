@@ -9,10 +9,10 @@ namespace WSMan.NET.Eventing
    public class PullDeliverySubscriptionManager :       
       ISubscriptionManager,
       IDisposable
-   {            
+   {
       public Subsciption Subscribe(Filter filter, IEnumerable<Selector> selectors)
       {         
-         PullSubscription subscription = new PullSubscription(Guid.NewGuid().ToString(), _deliveryResourceUri, filter, selectors, this);
+         PullSubscription subscription = new PullSubscription(Guid.NewGuid().ToString(), _deliveryResourceUri, _eventType, filter, selectors, this);
          _handler.Bind(subscription);         
          _deliveryServer.AddSubscription(subscription);         
          _subscriptions[subscription.Identifier] = subscription;
@@ -44,12 +44,20 @@ namespace WSMan.NET.Eventing
       
       public PullDeliverySubscriptionManager(string deliveryResourceUri, EventingPullDeliveryServer deliveryServer, IEventingRequestHandler handler)
       {
+         Type eventingRequestHandlerGenericInterface =
+            handler.GetType().GetInterface(typeof (IEventingRequestHandler<>).Name);
+         if (eventingRequestHandlerGenericInterface == null)
+         {
+            throw new InvalidOperationException("Eventing request handler must implement generic version of IEventingRequestHandler interface.");
+         }
+         _eventType = eventingRequestHandlerGenericInterface.GetGenericArguments()[0];
          _deliveryResourceUri = deliveryResourceUri;
          _handler = handler;
          _deliveryServer = deliveryServer;
       }
 
       private bool _disposed;
+      private readonly Type _eventType;
       private readonly EventingPullDeliveryServer _deliveryServer;
       private readonly string _deliveryResourceUri;
       private readonly IEventingRequestHandler _handler;      

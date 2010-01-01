@@ -15,7 +15,7 @@ namespace EnumerationTests
 {
    class Program
    {
-      const int BatchSize = 3;
+      const int BatchSize = 1;
       const bool Optimize = true;
 
       static void Main(string[] args)
@@ -27,7 +27,7 @@ namespace EnumerationTests
 
          ServiceHost sh = new ServiceHost(server);
 
-         Binding binding = new BasicHttpBinding();
+         Binding binding = new WSHttpBinding(SecurityMode.None);
          sh.AddServiceEndpoint(typeof(IWSEnumerationContract), binding, "http://localhost/Contract");
 
          ServiceBehaviorAttribute behavior = sh.Description.Behaviors.Find<ServiceBehaviorAttribute>();
@@ -39,7 +39,7 @@ namespace EnumerationTests
 
          Console.WriteLine("Client: Enumerating with batch size {0}, {1}optimizing enumeration", BatchSize, !Optimize ? "not ": "");
          Console.WriteLine();
-         EnumerationClient client = new EnumerationClient(Optimize, new Uri("http://localhost/Contract"), new BasicHttpBinding());
+         EnumerationClient client = new EnumerationClient(Optimize, new Uri("http://localhost/Contract"), binding);
          client.BindFilterDialect(FilterMap.DefaultDialect, typeof(JmxNotificationFilter));
 
          foreach (EndpointAddress item in client.EnumerateEPR(new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()), BatchSize))

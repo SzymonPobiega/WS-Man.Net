@@ -26,6 +26,7 @@ namespace WSMan.NET.Enumeration
             new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing,  _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
          {
             FilterMapExtension.Activate(_filterMap);
+            EnumerationModeExtension.Activate(EnumerationMode.EnumerateEPR, null);
             response = ctx.Channel.Enumerate(new EnumerateRequest
                                      {
                                         EnumerationMode = EnumerationMode.EnumerateEPR,
@@ -34,33 +35,34 @@ namespace WSMan.NET.Enumeration
                                         MaxElements = new MaxElements(maxElements)
                                      });            
          }
-         if (response.EnumerateEPRItems != null)
+         if (response.Items != null)
          {
-            foreach (EndpointAddress10 item in response.EnumerateEPRItems)
+            foreach (EnumerationItem item in response.Items.Items)
             {
-               yield return item.ToEndpointAddress();
+               yield return item.EprValue;
             }
          }
          EnumerationContextKey context = response.EnumerationContext;
          bool endOfSequence = response.EndOfSequence != null;
          while (!endOfSequence)
          {
-            PullResponse pullResponse = PullNextBatch(context, maxElements, selectors);            
-            foreach (EndpointAddress10 item in pullResponse.EnumerateEPRItems)
+            PullResponse pullResponse = PullNextEPRBatch(context, maxElements, selectors);            
+            foreach (EnumerationItem item in pullResponse.Items.Items)
             {
-               yield return item.ToEndpointAddress();
+               yield return item.EprValue;
             }
             endOfSequence = pullResponse.EndOfSequence != null;
             context = pullResponse.EnumerationContext;
          }
       }
 
-      private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
+      private PullResponse PullNextEPRBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
       {
          using (ClientContext<IWSEnumerationContract> ctx =
             new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
          {
             FilterMapExtension.Activate(_filterMap);
+            EnumerationModeExtension.Activate(EnumerationMode.EnumerateEPR, null);
             return ctx.Channel.Pull(new PullRequest
             {
                EnumerationContext = context,               

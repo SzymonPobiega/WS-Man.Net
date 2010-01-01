@@ -7,7 +7,7 @@ using WSMan.NET.Eventing;
 
 namespace EventingDemo
 {
-   public class RequestHandler : IEventingRequestHandler
+   public class RequestHandler : IEventingRequestHandler<EventData>
    {
       private Timer _timer;
       private readonly List<IEventingRequestHandlerContext> _subscribers = new List<IEventingRequestHandlerContext>();
@@ -32,7 +32,7 @@ namespace EventingDemo
       {
          foreach (IEventingRequestHandlerContext subscriber in _subscribers)
          {
-            subscriber.Push(new EndpointAddress("http://tempuri.org"));
+            subscriber.Push(new EventData {Value = "Some data"});
          }
       }
    }

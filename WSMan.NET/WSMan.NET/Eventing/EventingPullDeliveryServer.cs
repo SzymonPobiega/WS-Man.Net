@@ -9,7 +9,7 @@ namespace WSMan.NET.Eventing
    public class EventingPullDeliveryServer : IWSEventingPullDeliveryContract
    {      
       public PullResponse Pull(PullRequest request)
-      {
+      {                  
          //TODO: Check URI
          PullSubscription subsciption;
          if (!_subscriptions.TryGetValue(request.EnumerationContext.Text, out subsciption))
@@ -21,6 +21,8 @@ namespace WSMan.NET.Eventing
                       };
          }
 
+         EnumerationModeExtension.Activate(EnumerationMode.EnumerateObjectAndEPR, subsciption.EventType);
+
          int maxElements = request.MaxElements != null
                               ? request.MaxElements.Value
                               : 1;
@@ -28,22 +30,22 @@ namespace WSMan.NET.Eventing
          TimeSpan maxTime = request.MaxTime != null 
             ? request.MaxTime.Value 
             : TimeSpan.FromSeconds(5);
-         
-         List<EndpointAddress10> items = PullItems(subsciption.Buffer.FetchNotifications(maxElements, maxTime));
+
+         EnumerationItemList items = new EnumerationItemList(PullItems(subsciption.Buffer.FetchNotifications(maxElements, maxTime)));                  
 
          return new PullResponse
                    {
-                      EnumerateEPRItems = items,
+                      Items = items,
                       EndOfSequence = null,
                       EnumerationContext = request.EnumerationContext
                    };
       }
 
-      private static List<EndpointAddress10> PullItems(IEnumerable<object> enumerable)
-      {
-         return enumerable.Cast<EndpointAddress>()
-            .Select(x => EndpointAddress10.FromEndpointAddress(x))
-            .ToList();
+      private static IEnumerable<EnumerationItem> PullItems(IEnumerable<object> enumerable)
+      {         
+         return enumerable.Select(x => new EnumerationItem(
+                                          new EndpointAddress("http://tempuri.org"),
+                                          x));
       }
 
       public void AddSubscription(PullSubscription subscription)

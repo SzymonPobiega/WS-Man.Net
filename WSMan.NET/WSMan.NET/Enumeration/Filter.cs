@@ -42,7 +42,7 @@ namespace WSMan.NET.Enumeration
       public void ReadXml(XmlReader reader)
       {
          _dialect = reader.GetAttribute(DialectAttribute);
-         Type type = FilterMapExtension.MapDialect(_dialect);
+         Type type = FilterMapExtension.GetDialectType(_dialect);
          if (type == null)
          {
             throw CreateNotSupportedDialectException();         

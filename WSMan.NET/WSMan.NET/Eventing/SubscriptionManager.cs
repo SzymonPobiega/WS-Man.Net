@@ -23,7 +23,7 @@ namespace WSMan.NET.Eventing
       {
          get
          {
-            return IdentifierHeader.GetFrom(_address.Headers).Value;
+            return IdentifierHeader.GetFrom(Address.Headers).Value;
          }
       }
 
@@ -31,7 +31,7 @@ namespace WSMan.NET.Eventing
       {
          get
          {
-            return ResourceUriHeader.GetFrom(_address.Headers).ResourceUri;
+            return ResourceUriHeader.GetFrom(Address.Headers).ResourceUri;
          }
       }
 

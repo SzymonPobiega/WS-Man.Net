@@ -37,14 +37,14 @@ namespace EventingDemo
          EventingClient client = new EventingClient(new Uri("http://localhost:8888/Contract"), binding);
          client.BindFilterDialect(FilterMap.DefaultDialect, typeof(JmxNotificationFilter));
 
-         IPullSubscriptionClient subscriptionClient =
-            client.SubscribeWithPullDelivery(new Uri(ResourceUri), 
+         IPullSubscriptionClient<EventData> subscriptionClient =
+            client.SubscribeWithPullDelivery<EventData>(new Uri(ResourceUri), 
             new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()),
             new Selector("name", "value"));
 
-         foreach (EndpointAddress item in subscriptionClient.Pull())
+         foreach (EventData item in subscriptionClient.Pull())
          {
-            Console.WriteLine(item);
+            Console.WriteLine(item.Value);
          }
 
          Console.ReadKey();

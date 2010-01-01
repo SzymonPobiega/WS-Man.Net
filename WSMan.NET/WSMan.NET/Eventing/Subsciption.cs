@@ -28,6 +28,11 @@ namespace WSMan.NET.Eventing
          get { return _deliveryResourceUri; }
       }
 
+      public Type EventType
+      {
+         get { return _eventType; }
+      }
+
       public abstract void Push(object @event);
       
       public void Unsubscribe()
@@ -35,10 +40,11 @@ namespace WSMan.NET.Eventing
          _manager.Unsubscribe(this);
       }
 
-      protected Subsciption(string identifier, string deliveryResourceUri, Filter filter, IEnumerable<Selector> selectors, ISubscriptionManager manager)
+      protected Subsciption(string identifier, string deliveryResourceUri, Type eventType, Filter filter, IEnumerable<Selector> selectors, ISubscriptionManager manager)
       {
          _identifier = identifier;
          _deliveryResourceUri = deliveryResourceUri;
+         _eventType = eventType;
          _filter = filter;
          _selectors = selectors;
          _manager = manager;
@@ -64,6 +70,7 @@ namespace WSMan.NET.Eventing
       private bool _disposed;
       private readonly string _identifier;
       private readonly string _deliveryResourceUri;
+      private readonly Type _eventType;
       private readonly Filter _filter;
       private readonly IEnumerable<Selector> _selectors;
       private readonly ISubscriptionManager _manager;      

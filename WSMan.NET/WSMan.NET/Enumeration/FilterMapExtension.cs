@@ -14,9 +14,14 @@ namespace WSMan.NET.Enumeration
          OperationContext.Current.Extensions.Add(new FilterMapExtension(map));
       }
 
-      public static Type MapDialect(string dialect)
+      public static Type GetDialectType(string dialect)
       {
-         return OperationContext.Current.Extensions.Find<FilterMapExtension>()._map.MapDialect(dialect);
+         return OperationContext.Current.Extensions.Find<FilterMapExtension>()._map.GetFilterType(dialect);
+      }
+
+      public static Type GetEnumeratedObjectType(string dialect)
+      {
+         return OperationContext.Current.Extensions.Find<FilterMapExtension>()._map.GetEnumeratedObjectType(dialect);
       }
 
       private FilterMapExtension(FilterMap map)

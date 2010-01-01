@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace WSMan.NET.Eventing
 {
-   public interface IPullSubscriptionClient : IDisposable
+   public interface IPullSubscriptionClient<T> : IDisposable
    {
-      IEnumerable<object> Pull();
+      IEnumerable<T> Pull();
    }
 }

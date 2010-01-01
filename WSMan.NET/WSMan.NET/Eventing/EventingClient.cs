@@ -15,12 +15,12 @@ namespace WSMan.NET.Eventing
          _filterMap.Bind(dialect, implementationType);
       }
 
-      public IPullSubscriptionClient SubscribeWithPullDelivery(Uri resourceUri, Filter filter, params Selector[] selectors)
+      public IPullSubscriptionClient<T> SubscribeWithPullDelivery<T>(Uri resourceUri, Filter filter, params Selector[] selectors)
       {
-         return SubscribeWithPullDelivery(resourceUri, filter, (IEnumerable<Selector>)selectors);
+         return SubscribeWithPullDelivery<T>(resourceUri, filter, (IEnumerable<Selector>)selectors);
       }
 
-      public IPullSubscriptionClient SubscribeWithPullDelivery(Uri resourceUri, Filter filter, IEnumerable<Selector> selectors)
+      public IPullSubscriptionClient<T> SubscribeWithPullDelivery<T>(Uri resourceUri, Filter filter, IEnumerable<Selector> selectors)
       {
          SubscribeResponse response;
          using (ClientContext<IWSEventingContract> ctx =
@@ -36,7 +36,7 @@ namespace WSMan.NET.Eventing
                                                    Filter = filter                                                   
                                                 });            
          }
-         return new PullSubscriptionClientImpl(_endpointUri, _binding, _filterMap, response.EnumerationContext);
+         return new PullSubscriptionClientImpl<T>(_endpointUri, _binding, _filterMap, response.EnumerationContext);
       }      
       
       public EventingClient(Uri endpointUri, Binding binding)

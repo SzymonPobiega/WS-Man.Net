@@ -57,6 +57,8 @@
   <ItemGroup>
     <Compile Include="AddressingVersionExtension.cs" />
     <Compile Include="AddressingVersionExtensionServiceBehaviorAttribute.cs" />
+    <Compile Include="Enumeration\EnumerationItemList.cs" />
+    <Compile Include="Enumeration\EnumerationModeExtension.cs" />
     <Compile Include="Eventing\SubscriptionManager.cs" />
     <Compile Include="WSHttpBindingAugust2004.cs" />
     <Compile Include="Enumeration\Const.cs" />
@@ -89,7 +91,7 @@
     <Compile Include="Eventing\IdentifierHeader.cs" />
     <Compile Include="Eventing\IEventingRequestHandler.cs" />
     <Compile Include="Enumeration\IEnumerationRequestHandler.cs" />
-    <Compile Include="Enumeration\ItemList.cs" />
+    <Compile Include="Enumeration\EnumerationItem.cs" />
     <Compile Include="Enumeration\IWSEnumerationContract.cs" />
     <Compile Include="Enumeration\LanguageSpecificStringType.cs" />
     <Compile Include="Enumeration\OptimizeEnumeration.cs" />

@@ -14,10 +14,8 @@ namespace WSMan.NET.Enumeration
       public EnumerationContextKey EnumerationContext { get; set; }
 
       [MessageBodyMember(Order = 1)]
-      [XmlArray(ElementName = "Items", Namespace = Const.Namespace)]
-      [XmlArrayItem(ElementName = "EndpointReference", Type = typeof (EndpointAddress10),
-         Namespace = Const.WSAddressing200408Namespace)]
-      public List<EndpointAddress10> EnumerateEPRItems { get; set; }
+      [XmlElement(Namespace = Const.Namespace)]      
+      public EnumerationItemList Items { get; set; }
 
       [MessageBodyMember(Order = 2)]
       [XmlElement(Namespace = Const.Namespace)]
