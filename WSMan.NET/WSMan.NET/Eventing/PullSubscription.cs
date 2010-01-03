@@ -9,8 +9,8 @@ namespace WSMan.NET.Eventing
 {
    public class PullSubscription : Subsciption
    {
-      public PullSubscription(string identifier, string deliveryUri, Type eventType, Filter filter, IEnumerable<Selector> selectors, ISubscriptionManager manager) 
-         : base(identifier, deliveryUri, eventType, filter, selectors, manager)
+      public PullSubscription(string identifier, string deliveryUri, Type eventType, Filter filter, Expires expires, IEnumerable<Selector> selectors, ISubscriptionManager manager) 
+         : base(identifier, deliveryUri, eventType, filter, expires, selectors, manager)
       {
       }
 

@@ -7,15 +7,15 @@ using System.ServiceModel.Channels;
 namespace WSMan.NET.Transfer
 {
    [AddressingVersionExtensionServiceBehavior]
-   public class TransferServer : ITransferContract
+   public class TransferServer : IWSTransferContract
    {
       private readonly ITransferRequestHandler _handler;
       private readonly MessageFactory _factory;
 
-      public TransferServer(ITransferRequestHandler handler, MessageVersion version)
+      public TransferServer(ITransferRequestHandler handler)
       {
          _handler = handler;
-         _factory = new MessageFactory(version);
+         _factory = new MessageFactory();
       }
 
       public Message Get(Message getRequest)

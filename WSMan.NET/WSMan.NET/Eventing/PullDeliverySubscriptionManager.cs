@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.ServiceModel;
 using WSMan.NET.Enumeration;
 using WSMan.NET.Management;
 
@@ -10,10 +11,13 @@ namespace WSMan.NET.Eventing
       ISubscriptionManager,
       IDisposable
    {
-      public Subsciption Subscribe(Filter filter, IEnumerable<Selector> selectors)
+      public Subsciption Subscribe(Filter filter, 
+         IEnumerable<Selector> selectors, 
+         Expires expires,
+         EndpointAddressBuilder susbcriptionManagerEndpointAddress)
       {         
-         PullSubscription subscription = new PullSubscription(Guid.NewGuid().ToString(), _deliveryResourceUri, _eventType, filter, selectors, this);
-         _handler.Bind(subscription);         
+         PullSubscription subscription = new PullSubscription(Guid.NewGuid().ToString(), _deliveryResourceUri, _eventType, filter, expires, selectors, this);
+         _handler.Bind(subscription, susbcriptionManagerEndpointAddress);         
          _deliveryServer.AddSubscription(subscription);         
          _subscriptions[subscription.Identifier] = subscription;
          return subscription;

@@ -2,29 +2,44 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel;
+using WSMan.NET.Faults;
+using WSMan.NET.Management;
 
 namespace WSMan.NET.Enumeration
 {
    [FilterMapExtensionServiceBehavior]
    [AddressingVersionExtensionServiceBehavior]
    public class EnumerationServer : IWSEnumerationContract, IFilterMapProvider
-   {     
+   {           
       public EnumerateResponse Enumerate(EnumerateRequest request)
       {         
          EnumerationContextKey contextKey = EnumerationContextKey.Unique();         
-         EnumerationContext context = new EnumerationContext(contextKey.Text, request.Filter);
+         EnumerationContext context = new EnumerationContext(contextKey.Text, request.Filter, SelectorSetHeader.GetCurrent());
+         if (RequestTotalItemsCountEstimate.IsPresent)
+         {
+            HandleCountEnumerate(contextKey.Text, request.Filter);
+            return new EnumerateResponse
+            {
+               EnumerationContext = contextKey
+            };
+         }
          if (request.OptimizeEnumeration != null)
          {
             return HandleOptimizedEnumerate(contextKey, request, context);
-         }
+         }         
 
-         IEnumerator<object> enumerator = GetHandler(request.Filter.Dialect).Enumerate(context).GetEnumerator();
+         IEnumerator<object> enumerator = GetHandler(request.Filter).Enumerate(context).GetEnumerator();
          _activeEnumerations[contextKey] = new EnumerationState(enumerator, request.EnumerationMode);
          return new EnumerateResponse
                    {
                       EnumerationContext = contextKey,
                       Expires = request.Expires
                    };
+      }
+      private void HandleCountEnumerate(string context, Filter filter)
+      {
+         int count = GetHandler(filter).EstimateRemainingItemsCount(new EnumerationContext(context, filter, SelectorSetHeader.GetCurrent()));
+         OperationContextProxy.Current.AddHeader(new TotalItemsCountEstimate(count));         
       }
 
       private EnumerateResponse HandleOptimizedEnumerate(EnumerationContextKey contextKey, EnumerateRequest request, EnumerationContext context)
@@ -35,7 +50,7 @@ namespace WSMan.NET.Enumeration
 
          if (request.EnumerationMode == EnumerationMode.EnumerateEPR)
          {
-            IEnumerator<object> enumerator = GetHandler(request.Filter.Dialect).Enumerate(context).GetEnumerator();
+            IEnumerator<object> enumerator = GetHandler(request.Filter).Enumerate(context).GetEnumerator();
 
             bool endOfSequence;
             EnumerationItemList items = new EnumerationItemList(PullItems(maxElements, request.EnumerationMode,enumerator, out endOfSequence));
@@ -58,13 +73,9 @@ namespace WSMan.NET.Enumeration
          EnumerationState holder;
          if (!_activeEnumerations.TryGetValue(request.EnumerationContext, out holder))
          {
-            return new PullResponse
-            {
-               //TODO: Return fault
-               EndOfSequence = new EndOfSequence()
-            };
+            throw new InvalidEnumerationContextException();            
          }
-
+         
          int maxElements = request.MaxElements != null
                               ? request.MaxElements.Value
                               : 1;
@@ -88,9 +99,9 @@ namespace WSMan.NET.Enumeration
          int i = 0;         
          List<EnumerationItem> result = new List<EnumerationItem>();
          bool moveNext = false;
+         Func<object> o;         
          while (i < maximum && (moveNext = enumerator.MoveNext()))
-         {
-
+         {            
             if (mode == EnumerationMode.EnumerateEPR)
             {
                if (i == 0)
@@ -116,16 +127,22 @@ namespace WSMan.NET.Enumeration
          return result;
       }
 
-      private IEnumerationRequestHandler GetHandler(string filterDialect)
+      private IEnumerationRequestHandler GetHandler(Filter filter)
       {
          //TODO: Add fault if not found
-         return _handlerMap[filterDialect];
+         ResourceUriHeader resourceUriHeader = OperationContextProxy.Current.FindHeader<ResourceUriHeader>();            
+
+         string dialect = (filter != null && filter.Dialect != null) 
+            ? filter.Dialect 
+            : FilterMap.DefaultDialect;
+
+         return _handlerMap[new HandlerMapKey(resourceUriHeader.ResourceUri, dialect)];
       }
 
-      public EnumerationServer Bind(string dialect, Type filterType, IEnumerationRequestHandler handler)
+      public EnumerationServer Bind(Uri resourceUri, string dialect, Type filterType, IEnumerationRequestHandler handler)
       {         
          _filterMap.Bind(dialect, filterType);
-         _handlerMap[dialect] = handler;
+         _handlerMap[new HandlerMapKey(resourceUri.ToString(), dialect)] = handler;
          return this;
       }      
 
@@ -135,7 +152,7 @@ namespace WSMan.NET.Enumeration
       }      
 
       private readonly Dictionary<EnumerationContextKey, EnumerationState> _activeEnumerations = new Dictionary<EnumerationContextKey, EnumerationState>();
-      private readonly Dictionary<string, IEnumerationRequestHandler> _handlerMap = new Dictionary<string, IEnumerationRequestHandler>();
+      private readonly Dictionary<HandlerMapKey, IEnumerationRequestHandler> _handlerMap = new Dictionary<HandlerMapKey, IEnumerationRequestHandler>();
       private readonly FilterMap _filterMap = new FilterMap();
    }
 }

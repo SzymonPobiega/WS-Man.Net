@@ -21,12 +21,12 @@ namespace ManagementDemo
 
       static void Main(string[] args)
       {         
-         ServiceHost sh = new ServiceHost(
-            new TransferServer(
-               new ManagementServer(new List<IManagementRequestHandler>{ new WsManHandler()}), MessageVersion.Soap11));
+         ManagementTransferRequestHandler handler = new ManagementTransferRequestHandler();
+         handler.Bind(new Uri(ResourceUri), new WsManHandler());
+         ServiceHost sh = new ServiceHost(new TransferServer(handler));               
 
          Binding binding = new BasicHttpBinding();
-         sh.AddServiceEndpoint(typeof(ITransferContract), binding, "http://localhost/Contract");
+         sh.AddServiceEndpoint(typeof(IWSTransferContract), binding, "http://localhost/Contract");
 
          ServiceBehaviorAttribute behavior = sh.Description.Behaviors.Find<ServiceBehaviorAttribute>();
          behavior.ConcurrencyMode = ConcurrencyMode.Multiple;
@@ -34,7 +34,7 @@ namespace ManagementDemo
 
          sh.Open();
 
-         ChannelFactory<ITransferContract> cf = new ChannelFactory<ITransferContract>(new BasicHttpBinding());
+         ChannelFactory<IWSTransferContract> cf = new ChannelFactory<IWSTransferContract>(new BasicHttpBinding());
          ManagementClient client = new ManagementClient(new Uri("http://localhost/Contract"), cf, MessageVersion.Soap11);
 
          Console.WriteLine("Client: requesting fragment {0} of resource {1} with selector [{2}/{3}]", ResourceUri, "a", "name", "value");

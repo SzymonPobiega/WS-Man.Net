@@ -16,5 +16,10 @@ namespace EnumerationTests
          Console.WriteLine("Server: Returning item");
          yield return new EndpointAddress("http://tempuri-3.org");         
       }
+
+      public int EstimateRemainingItemsCount(IEnumerationContext context)
+      {
+         return 3;
+      }
    }
 }

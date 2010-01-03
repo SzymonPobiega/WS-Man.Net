@@ -14,7 +14,7 @@ namespace WSMan.NET.Enumeration
       public EndpointAddress10 EndTo { get; set; }
 
       [MessageBodyMember(Order = 1)]      
-      [XmlElement(Namespace = Const.Namespace)]
+      [XmlElement(Namespace = Management.Const.Namespace)]
       public Filter Filter { get; set; }
 
       [MessageBodyMember(Order = 2)]

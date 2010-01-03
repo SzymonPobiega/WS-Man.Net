@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel;
 using WSMan.NET.Enumeration;
+using WSMan.NET.Faults;
 
 namespace WSMan.NET.Eventing
 {   
@@ -14,11 +15,7 @@ namespace WSMan.NET.Eventing
          PullSubscription subsciption;
          if (!_subscriptions.TryGetValue(request.EnumerationContext.Text, out subsciption))
          {
-            return new PullResponse
-                      {
-                         //TODO: Return fault
-                         EndOfSequence = new EndOfSequence()
-                      };
+            throw new InvalidEnumerationContextException();            
          }
 
          EnumerationModeExtension.Activate(EnumerationMode.EnumerateObjectAndEPR, subsciption.EventType);
@@ -31,8 +28,13 @@ namespace WSMan.NET.Eventing
             ? request.MaxTime.Value 
             : TimeSpan.FromSeconds(5);
 
-         EnumerationItemList items = new EnumerationItemList(PullItems(subsciption.Buffer.FetchNotifications(maxElements, maxTime)));                  
+         EnumerationItemList items = new EnumerationItemList(PullItems(subsciption.Buffer.FetchNotifications(maxElements, maxTime)));
 
+         //R7.2.13-5
+         if (items.Items.Count() == 0)
+         {
+            throw new TimedOutException();
+         }
          return new PullResponse
                    {
                       Items = items,

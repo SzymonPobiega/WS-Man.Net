@@ -17,12 +17,12 @@ namespace WSMan.NET
 
       public static void Activate(AddressingVersion version)
       {
-         OperationContext.Current.Extensions.Add(new AddressingVersionExtension(version));
+         OperationContextProxy.Current.AddExtension(new AddressingVersionExtension(version));
       }
 
       public static AddressingVersion CurrentVersion
       {
-         get { return OperationContext.Current.Extensions.Find<AddressingVersionExtension>()._version; }
+         get { return OperationContextProxy.Current.FindExtension<AddressingVersionExtension>()._version; }
       }
 
       public void Attach(OperationContext owner)

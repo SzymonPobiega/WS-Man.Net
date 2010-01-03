@@ -10,19 +10,20 @@ namespace WSMan.NET.Enumeration
    [MessageContract(IsWrapped = true, WrapperName = "EnumerateResponse", WrapperNamespace = Const.Namespace)]
    public class EnumerateResponse
    {
-      [MessageBodyMember]
+      [MessageBodyMember(Order = 0)]
       [XmlElement(Namespace = Const.Namespace)]
       public Expires Expires { get; set; }
 
-      [MessageBodyMember]
+      [MessageBodyMember(Order = 1)]
       [XmlElement(Namespace = Const.Namespace)]
       public EnumerationContextKey EnumerationContext { get; set; }
 
-      [MessageBodyMember]
-      [XmlElement(Namespace = Const.Namespace)]      
+      [MessageBodyMember(Order = 2)]
+      [XmlElement(Namespace = Management.Const.Namespace)]      
       public EnumerationItemList Items { get; set; }
 
-      [MessageBodyMember, XmlElement(Namespace = Management.Const.Namespace)]
+      [MessageBodyMember(Order = 3)]
+      [XmlElement(Namespace = Management.Const.Namespace)]
       public EndOfSequence EndOfSequence { get; set; }
    }
 }

@@ -9,9 +9,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementDemo", "Managemen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventingDemo", "EventingDemo\EventingDemo.csproj", "{7DA9F930-6F62-4DE4-9275-64821933578D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{DB9D11BB-CA19-460F-920B-122BACE0F1EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{6F20649C-184D-4735-BAE1-783DAFD1067B}"
+	ProjectSection(SolutionItems) = preProject
+		Libs\nunit.framework.dll = Libs\nunit.framework.dll
+		Libs\Rhino.Mocks.dll = Libs\Rhino.Mocks.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs02.codeplex.com/
 		SccLocalPath0 = .
@@ -27,6 +35,9 @@ Global
 		SccProjectUniqueName4 = EventingDemo\\EventingDemo.csproj
 		SccProjectName4 = EventingDemo
 		SccLocalPath4 = EventingDemo
+		SccProjectUniqueName5 = Tests\\Tests.csproj
+		SccProjectName5 = Tests
+		SccLocalPath5 = Tests
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +60,10 @@ Global
 		{7DA9F930-6F62-4DE4-9275-64821933578D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DA9F930-6F62-4DE4-9275-64821933578D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DA9F930-6F62-4DE4-9275-64821933578D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB9D11BB-CA19-460F-920B-122BACE0F1EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB9D11BB-CA19-460F-920B-122BACE0F1EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB9D11BB-CA19-460F-920B-122BACE0F1EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB9D11BB-CA19-460F-920B-122BACE0F1EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

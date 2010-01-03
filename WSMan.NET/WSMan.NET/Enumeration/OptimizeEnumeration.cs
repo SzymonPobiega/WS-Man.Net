@@ -10,12 +10,13 @@ namespace WSMan.NET.Enumeration
    [XmlType(Namespace = Const.Namespace)]
    public class OptimizeEnumeration
    {      
-      //[XmlText]
-      //public string Value { get; set; }
-
-      //public OptimizeEnumeration()
-      //{
-      //   Value = "aaa";
-      //}
+      public static OptimizeEnumeration True
+      {
+         get { return new OptimizeEnumeration(); }
+      }
+      public static OptimizeEnumeration False
+      {
+         get { return null;}
+      }
    }
 }

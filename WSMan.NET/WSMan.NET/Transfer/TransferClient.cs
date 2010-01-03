@@ -14,11 +14,11 @@ namespace WSMan.NET.Transfer
    public class TransferClient
    {
       private readonly Uri _endpointUri;
-      private readonly IChannelFactory<ITransferContract> _proxyFactory;
+      private readonly IChannelFactory<IWSTransferContract> _proxyFactory;
       private readonly MessageFactory _factory;
       private readonly AddressingVersion _addressingVersion;
 
-      public TransferClient(Uri endpointUri, IChannelFactory<ITransferContract> proxyFactory, MessageVersion version)
+      public TransferClient(Uri endpointUri, IChannelFactory<IWSTransferContract> proxyFactory, MessageVersion version)
       {
          _endpointUri = endpointUri;
          _proxyFactory = proxyFactory;
@@ -28,7 +28,7 @@ namespace WSMan.NET.Transfer
 
       public T Get<T>(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback)
       {
-         using (ClientContext<ITransferContract> ctx = new ClientContext<ITransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
+         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
             headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
             return (T)_factory.DeserializeMessageWithPayload(ctx.Channel.Get(_factory.CreateGetRequest()), typeof(T));
@@ -37,7 +37,7 @@ namespace WSMan.NET.Transfer
 
       public T Put<T>(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback, object payload)
       {
-         using (ClientContext<ITransferContract> ctx = new ClientContext<ITransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
+         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
             headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);            
             return (T)_factory.DeserializeMessageWithPayload(ctx.Channel.Put(_factory.CreatePutRequest(payload)), typeof(T));
@@ -46,7 +46,7 @@ namespace WSMan.NET.Transfer
 
       public EndpointAddress Create(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback, object payload)
       {
-         using (ClientContext<ITransferContract> ctx = new ClientContext<ITransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
+         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
             headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
             return _factory.DeserializeCreateResponse(ctx.Channel.Create(_factory.CreateCreateRequest(payload)));
@@ -55,7 +55,7 @@ namespace WSMan.NET.Transfer
 
       public void Delete(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback)
       {
-         using (ClientContext<ITransferContract> ctx = new ClientContext<ITransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
+         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
             headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
             ctx.Channel.Delete(_factory.CreateDeleteRequest());

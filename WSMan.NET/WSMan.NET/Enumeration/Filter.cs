@@ -7,14 +7,14 @@ using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   public class Filter : IXmlSerializable      
+   public class Filter : IXmlSerializable
    {
       private const string DialectAttribute = "Dialect";
       private string _dialect;
       private object _value;
 
       public Filter(string dialect, object value)
-      {         
+      {
          //TODO: Add test if value can be serialized using provided dialect.
          _value = value;
          _dialect = dialect;
@@ -45,31 +45,41 @@ namespace WSMan.NET.Enumeration
          Type type = FilterMapExtension.GetDialectType(_dialect);
          if (type == null)
          {
-            throw CreateNotSupportedDialectException();         
+            throw CreateNotSupportedDialectException();
+         }
+         if (type == typeof(void))
+         {
+            return;
          }
          if (typeof(IXmlSerializable).IsAssignableFrom(type))
          {
-            IXmlSerializable serializable = (IXmlSerializable) Activator.CreateInstance(type);
+            IXmlSerializable serializable = (IXmlSerializable)Activator.CreateInstance(type);
             serializable.ReadXml(reader);
             return;
          }
          XmlSerializer serializer = new XmlSerializer(type);
-         reader.ReadStartElement("Filter", Const.Namespace);
-         _value = serializer.Deserialize(reader);
-         reader.ReadEndElement();
-      }      
+         if (!reader.IsEmptyElement)
+         {
+            reader.ReadStartElement("Filter", reader.NamespaceURI);
+            _value = serializer.Deserialize(reader);
+            reader.ReadEndElement();
+         }
+      }
 
       public void WriteXml(XmlWriter writer)
       {
-         writer.WriteAttributeString(DialectAttribute, _dialect);                  
+         writer.WriteAttributeString(DialectAttribute, _dialect);
          IXmlSerializable serializable = _value as IXmlSerializable;
          if (serializable != null)
          {
-            serializable.WriteXml(writer);            
+            serializable.WriteXml(writer);
             return;
          }
-         XmlSerializer serializer = new XmlSerializer(_value.GetType());
-         serializer.Serialize(writer, _value);         
+         if (_value != null)
+         {
+            XmlSerializer serializer = new XmlSerializer(_value.GetType());
+            serializer.Serialize(writer, _value);
+         }
       }
 
       private static Exception CreateNotSupportedDialectException()
@@ -78,5 +88,5 @@ namespace WSMan.NET.Enumeration
                                   FaultCode.CreateSenderFaultCode("FilterDialectRequestedUnavailable", Const.Namespace),
                                   "http://schemas.xmlsoap.org/ws/2004/09/enumeration/fault");
       }
-   }   
+   }
 }

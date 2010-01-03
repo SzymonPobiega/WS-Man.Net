@@ -7,7 +7,7 @@ using System.ServiceModel.Channels;
 namespace WSMan.NET.Transfer
 {
    [ServiceContract(Namespace = Const.Namespace)]
-   public interface ITransferContract
+   public interface IWSTransferContract
    {
       [OperationContract(Action = Const.GetAction, ReplyAction = Const.GetResponseAction)]
       Message Get(Message getRequest);

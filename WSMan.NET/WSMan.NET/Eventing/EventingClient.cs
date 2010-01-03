@@ -36,7 +36,7 @@ namespace WSMan.NET.Eventing
                                                    Filter = filter                                                   
                                                 });            
          }
-         return new PullSubscriptionClientImpl<T>(_endpointUri, _binding, _filterMap, response.EnumerationContext);
+         return new PullSubscriptionClientImpl<T>(_endpointUri, _binding, _filterMap, response.EnumerationContext, resourceUri.ToString(), _proxyFactory);
       }      
       
       public EventingClient(Uri endpointUri, Binding binding)

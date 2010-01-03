@@ -11,7 +11,7 @@ namespace WSMan.NET.Management
    {
       private readonly TransferClient _transferClient;
 
-      public ManagementClient(Uri endpointUri, IChannelFactory<ITransferContract> proxyFactory, MessageVersion version)
+      public ManagementClient(Uri endpointUri, IChannelFactory<IWSTransferContract> proxyFactory, MessageVersion version)
       {
          _transferClient = new TransferClient(endpointUri, proxyFactory, version);
       }

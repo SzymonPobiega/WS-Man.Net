@@ -33,14 +33,31 @@ namespace WSMan.NET.Eventing
          get { return _eventType; }
       }
 
+      public DateTime ExpirationDate
+      {
+         get { return _expirationDate; }
+      }
+
       public abstract void Push(object @event);
+
+      public void Renew(Expires expires)
+      {         
+         if (expires.Value is DateTime)
+         {
+            _expirationDate = (DateTime) expires.Value;
+         }
+         else
+         {
+            _expirationDate = DateTime.Now + (TimeSpan) expires.Value;
+         }
+      }
       
       public void Unsubscribe()
       {
          _manager.Unsubscribe(this);
       }
 
-      protected Subsciption(string identifier, string deliveryResourceUri, Type eventType, Filter filter, IEnumerable<Selector> selectors, ISubscriptionManager manager)
+      protected Subsciption(string identifier, string deliveryResourceUri, Type eventType, Filter filter, Expires expires, IEnumerable<Selector> selectors, ISubscriptionManager manager)
       {
          _identifier = identifier;
          _deliveryResourceUri = deliveryResourceUri;
@@ -48,6 +65,7 @@ namespace WSMan.NET.Eventing
          _filter = filter;
          _selectors = selectors;
          _manager = manager;
+         Renew(expires);
       }
 
       protected virtual void Dispose(bool disposing)
@@ -71,6 +89,7 @@ namespace WSMan.NET.Eventing
       private readonly string _identifier;
       private readonly string _deliveryResourceUri;
       private readonly Type _eventType;
+      private DateTime _expirationDate;
       private readonly Filter _filter;
       private readonly IEnumerable<Selector> _selectors;
       private readonly ISubscriptionManager _manager;      

@@ -13,6 +13,9 @@ namespace WSMan.NET.Eventing
       SubscribeResponse Subscribe(SubscribeRequest request);
 
       [OperationContract(Action = Const.UnsubscribeAction, IsOneWay = true)]
-      void Unsubscribe(UnsubscribeRequest request);      
+      void Unsubscribe(UnsubscribeRequest request);
+
+      [OperationContract(Action = Const.RenewAction, ReplyAction = Const.RenewResponseAction)]
+      RenewResponse Renew(RenewRequest request);
    }
 }

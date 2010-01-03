@@ -35,10 +35,10 @@ namespace WSMan.NET.Enumeration
       {
          if (reader.IsEmptyElement)
          {
-            reader.ReadStartElement("Items", Const.Namespace);
+            reader.ReadStartElement("Items", reader.NamespaceURI);
             return;
          }
-         reader.ReadStartElement("Items", Const.Namespace);
+         reader.ReadStartElement("Items", reader.NamespaceURI);
          while (reader.NodeType != XmlNodeType.EndElement)
          {
             EnumerationItem item = new EnumerationItem();

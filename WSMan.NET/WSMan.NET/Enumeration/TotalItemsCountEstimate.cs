@@ -3,34 +3,34 @@ using System.Xml;
 
 namespace WSMan.NET.Enumeration
 {
-   public sealed class TotalItemsTotalCountEstimate : MessageHeader
+   public sealed class TotalItemsCountEstimate : MessageHeader
    {
-      private const string ElementName = "TotalItemsTotalCountEstimate";
+      private const string ElementName = "TotalItemsCountEstimate";
 
       private readonly int _value;
 
-      public TotalItemsTotalCountEstimate(int value)
+      public TotalItemsCountEstimate(int value)
       {
          _value = value;
       }
 
-      public static TotalItemsTotalCountEstimate ReadFrom(XmlDictionaryReader reader)
+      public static TotalItemsCountEstimate ReadFrom(XmlDictionaryReader reader)
       {
          reader.ReadStartElement(ElementName, Const.Namespace);
          int value = XmlConvert.ToInt32(reader.ReadString());
-         TotalItemsTotalCountEstimate result = new TotalItemsTotalCountEstimate(value);
+         TotalItemsCountEstimate result = new TotalItemsCountEstimate(value);
          reader.ReadEndElement();
          return result;
       }
 
-      public static TotalItemsTotalCountEstimate ReadFrom(Message message)
+      public static TotalItemsCountEstimate ReadFrom(Message message)
       {
          return ReadFrom(message.Headers);
       }
 
-      public static TotalItemsTotalCountEstimate ReadFrom(MessageHeaders messageHeaders)
+      public static TotalItemsCountEstimate ReadFrom(MessageHeaders messageHeaders)
       {
-         TotalItemsTotalCountEstimate result;
+         TotalItemsCountEstimate result;
          int index = messageHeaders.FindHeader(ElementName, Const.Namespace);
          if (index < 0)
          {

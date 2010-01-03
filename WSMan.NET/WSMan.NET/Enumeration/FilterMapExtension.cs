@@ -11,17 +11,17 @@ namespace WSMan.NET.Enumeration
 
       public static void Activate(FilterMap map)
       {
-         OperationContext.Current.Extensions.Add(new FilterMapExtension(map));
+         OperationContextProxy.Current.AddExtension(new FilterMapExtension(map));
       }
 
       public static Type GetDialectType(string dialect)
       {
-         return OperationContext.Current.Extensions.Find<FilterMapExtension>()._map.GetFilterType(dialect);
+         return OperationContextProxy.Current.FindExtension<FilterMapExtension>()._map.GetFilterType(dialect);
       }
 
       public static Type GetEnumeratedObjectType(string dialect)
       {
-         return OperationContext.Current.Extensions.Find<FilterMapExtension>()._map.GetEnumeratedObjectType(dialect);
+         return OperationContextProxy.Current.FindExtension<FilterMapExtension>()._map.GetEnumeratedObjectType(dialect);
       }
 
       private FilterMapExtension(FilterMap map)

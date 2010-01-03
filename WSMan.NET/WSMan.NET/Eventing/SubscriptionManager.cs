@@ -8,15 +8,17 @@ namespace WSMan.NET.Eventing
 {
    public class SubscriptionManager : EndpointReference
    {
-      public SubscriptionManager(string identifier, Uri toUri, string deliveryResourceUri)
+      public SubscriptionManager(EndpointAddressBuilder existingAddressBuilder, string identifier, Uri toUri, string deliveryResourceUri)
       {
-         var subscriptionManagerAddress = new EndpointAddressBuilder
-         {
-            Uri = toUri
-         };
-         subscriptionManagerAddress.Headers.Add(new IdentifierHeader(identifier));
-         subscriptionManagerAddress.Headers.Add(new ResourceUriHeader(deliveryResourceUri));
-         _address = subscriptionManagerAddress.ToEndpointAddress();
+         existingAddressBuilder.Uri = toUri;
+         existingAddressBuilder.Headers.Add(new IdentifierHeader(identifier));
+         existingAddressBuilder.Headers.Add(new ResourceUriHeader(deliveryResourceUri));
+         _address = existingAddressBuilder.ToEndpointAddress();
+      }
+
+      public SubscriptionManager(string identifier, Uri toUri, string deliveryResourceUri)
+         : this(new EndpointAddressBuilder(), identifier, toUri, deliveryResourceUri )
+      {         
       }
 
       public string Identifier

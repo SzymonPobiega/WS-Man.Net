@@ -14,16 +14,51 @@ namespace WSMan.NET.Enumeration
          _filterMap.Bind(dialect, implementationType);
       }
 
-      public IEnumerable<EndpointAddress> EnumerateEPR(Filter filter, int maxElements, params Selector[] selectors)
+      public IEnumerable<EndpointAddress> EnumerateEPR(Uri resourceUri, Filter filter, int maxElements, params Selector[] selectors)
       {
-         return EnumerateEPR(filter, maxElements, (IEnumerable<Selector>) selectors);
+         return EnumerateEPR(resourceUri, filter, maxElements, (IEnumerable<Selector>)selectors);
       }
 
-      public IEnumerable<EndpointAddress> EnumerateEPR(Filter filter, int maxElements, IEnumerable<Selector> selectors)
+      public int EstimateCount(Uri resourceUri, Filter filter, params Selector[] selectors)
+      {
+         return EstimateCount(resourceUri, filter, (IEnumerable<Selector>) selectors);
+      }
+
+      public int EstimateCount(Uri resourceUri, Filter filter, IEnumerable<Selector> selectors)
+      {         
+         using (ClientContext<IWSEnumerationContract> ctx =
+            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory,
+               mx =>
+               {                  
+                  mx.Add(new ResourceUriHeader(resourceUri.ToString()));
+                  mx.Add(new SelectorSetHeader(selectors));
+               }))
+         {
+            OperationContextProxy.Current.AddHeader(new RequestTotalItemsCountEstimate());
+            FilterMapExtension.Activate(_filterMap);
+            EnumerationModeExtension.Activate(EnumerationMode.EnumerateEPR, null);
+            ctx.Channel.Enumerate(new EnumerateRequest
+            {
+               EnumerationMode = EnumerationMode.EnumerateEPR,
+               OptimizeEnumeration = _optimize ? new OptimizeEnumeration() : null,
+               Filter = filter,
+            });
+            TotalItemsCountEstimate totalItemsCountEstimate =
+               OperationContextProxy.Current.FindHeader<TotalItemsCountEstimate>();               
+            return totalItemsCountEstimate.Value;
+         }
+      }
+
+      public IEnumerable<EndpointAddress> EnumerateEPR(Uri resourceUri, Filter filter, int maxElements, IEnumerable<Selector> selectors)
       {
          EnumerateResponse response;
          using (ClientContext<IWSEnumerationContract> ctx = 
-            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing,  _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
+            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing,  _proxyFactory,
+               mx =>
+                  {
+                     mx.Add(new ResourceUriHeader(resourceUri.ToString()));
+                     mx.Add(new SelectorSetHeader(selectors));
+                  }))
          {
             FilterMapExtension.Activate(_filterMap);
             EnumerationModeExtension.Activate(EnumerationMode.EnumerateEPR, null);
@@ -46,7 +81,7 @@ namespace WSMan.NET.Enumeration
          bool endOfSequence = response.EndOfSequence != null;
          while (!endOfSequence)
          {
-            PullResponse pullResponse = PullNextEPRBatch(context, maxElements, selectors);            
+            PullResponse pullResponse = PullNextEPRBatch(context, resourceUri.ToString(), maxElements, selectors);            
             foreach (EnumerationItem item in pullResponse.Items.Items)
             {
                yield return item.EprValue;
@@ -56,10 +91,15 @@ namespace WSMan.NET.Enumeration
          }
       }
 
-      private PullResponse PullNextEPRBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
+      private PullResponse PullNextEPRBatch(EnumerationContextKey context, string resourceUri, int maxElements, IEnumerable<Selector> selectors)
       {
          using (ClientContext<IWSEnumerationContract> ctx =
-            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory, mx => mx.Add(new SelectorSetHeader(selectors))))
+            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _proxyFactory,
+               mx =>
+                  {
+                     mx.Add(new ResourceUriHeader(resourceUri));
+                     mx.Add(new SelectorSetHeader(selectors));
+                  }))
          {
             FilterMapExtension.Activate(_filterMap);
             EnumerationModeExtension.Activate(EnumerationMode.EnumerateEPR, null);
@@ -73,7 +113,7 @@ namespace WSMan.NET.Enumeration
       
       public EnumerationClient(bool optimize, Uri endpointUri, Binding binding)
       {
-         _endpointUri = endpointUri;
+         _endpointUri = endpointUri;         
          _optimize = optimize;
          _binding = binding;
          _proxyFactory = new ChannelFactory<IWSEnumerationContract>(binding);
@@ -97,7 +137,7 @@ namespace WSMan.NET.Enumeration
       }
 
       private bool _disposed;
-      private readonly Uri _endpointUri;
+      private readonly Uri _endpointUri;      
       private readonly bool _optimize;
       private readonly IChannelFactory<IWSEnumerationContract> _proxyFactory;
       private readonly Binding _binding;

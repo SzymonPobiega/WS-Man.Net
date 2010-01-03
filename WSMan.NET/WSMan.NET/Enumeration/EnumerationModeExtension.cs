@@ -18,17 +18,17 @@ namespace WSMan.NET.Enumeration
 
       public static void Activate(EnumerationMode mode, Type enumeratedType)
       {
-         OperationContext.Current.Extensions.Add(new EnumerationModeExtension(mode, enumeratedType));
+         OperationContextProxy.Current.AddExtension(new EnumerationModeExtension(mode, enumeratedType));
       }
 
       public static EnumerationMode CurrentEnumerationMode
       {
-         get { return OperationContext.Current.Extensions.Find<EnumerationModeExtension>()._mode; }
+         get { return OperationContextProxy.Current.FindExtension<EnumerationModeExtension>()._mode; }
       }
 
       public static Type CurrentEnumeratedType
       {
-         get { return OperationContext.Current.Extensions.Find<EnumerationModeExtension>()._enumeratedType; }
+         get { return OperationContextProxy.Current.FindExtension<EnumerationModeExtension>()._enumeratedType; }
       }
 
       public void Attach(OperationContext owner)

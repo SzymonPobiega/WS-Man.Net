@@ -17,7 +17,7 @@ namespace EventingDemo
          _timer = new Timer(Publish, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));         
       }
 
-      public void Bind(IEventingRequestHandlerContext context)
+      public void Bind(IEventingRequestHandlerContext context, EndpointAddressBuilder addressBuilder)
       {             
          Console.WriteLine("Got subscription with filter {0}.", context.Filter);
          _subscribers.Add(context);

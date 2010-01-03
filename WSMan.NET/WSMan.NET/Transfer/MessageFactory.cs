@@ -10,8 +10,12 @@ using System.Xml.Serialization;
 namespace WSMan.NET.Transfer
 {
    public class MessageFactory
-   {      
+   {
       private readonly MessageVersion _version;
+
+      public MessageFactory()
+      {
+      }
 
       public MessageFactory(MessageVersion version)
       {
@@ -45,8 +49,8 @@ namespace WSMan.NET.Transfer
 
       public Message CreateCreateResponse(EndpointAddress result)
       {
-         return Message.CreateMessage(_version, Const.CreateResponseAction,
-                                      new CreateRsponseBodyWriter(result, _version));
+         return Message.CreateMessage(GetMessageVersion(), Const.CreateResponseAction,
+                                      new CreateRsponseBodyWriter(result, GetMessageVersion().Addressing));
       }
 
       public Message CreateDeleteRequest()
@@ -92,8 +96,13 @@ namespace WSMan.NET.Transfer
 
       public Message CreateMessageWithPayload(object payload, string action)
       {
-         Message respose = Message.CreateMessage(_version, action, new SerializerBodyWriter(payload));         
+         Message respose = Message.CreateMessage(GetMessageVersion(), action, new SerializerBodyWriter(payload));         
          return respose;
-      }      
+      }  
+    
+      private MessageVersion GetMessageVersion()
+      {
+         return _version ?? OperationContext.Current.IncomingMessageVersion;
+      }
    }
 }

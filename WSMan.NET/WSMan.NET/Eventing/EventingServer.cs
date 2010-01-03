@@ -16,49 +16,57 @@ namespace WSMan.NET.Eventing
    {
       public void BindWithPullDelivery(
          Uri listeningResourceUri, 
-         Uri deliveryResourceUri,
-         IEventingRequestHandler eventSource, 
          string dialect, 
-         Type filterType)
+         Type filterType,
+         IEventingRequestHandler eventSource,
+         Uri deliveryResourceUri         
+         )
       {
          PullDeliverySubscriptionManager enumHandler = new PullDeliverySubscriptionManager(deliveryResourceUri.ToString(), _pullDeliveryServer, eventSource);
          _filterMap.Bind(dialect, filterType);
-         _enumHandlers[listeningResourceUri.ToString()] = enumHandler;
+         _enumHandlers[new HandlerMapKey(listeningResourceUri.ToString(), dialect)] = enumHandler;
       }
 
       public SubscribeResponse Subscribe(SubscribeRequest request)
       {
          //Check
-         SelectorSetHeader selectorSetHeader =
-            SelectorSetHeader.ReadFrom(OperationContext.Current.IncomingMessageHeaders);
-
+         SelectorSetHeader selectorSetHeader = OperationContextProxy.Current.FindHeader<SelectorSetHeader>();         
          //Check
-         ResourceUriHeader resourceUriHeader =
-            ResourceUriHeader.ReadFrom(OperationContext.Current.IncomingMessageHeaders);
+         ResourceUriHeader resourceUriHeader = OperationContextProxy.Current.FindHeader<ResourceUriHeader>();            
 
-         Subsciption subsciption = GetManager(resourceUriHeader.ResourceUri).Subscribe(
+         return Subscribe(resourceUriHeader.ResourceUri, selectorSetHeader != null ? selectorSetHeader.Selectors : (IEnumerable<Selector>)new Selector[] { }, request);
+      }
+
+      public SubscribeResponse Subscribe(string resourceUri, IEnumerable<Selector> selectors, SubscribeRequest request)
+      {
+         EndpointAddressBuilder susbcriptionManagerEndpointAddress = new EndpointAddressBuilder();
+
+         Expires expiration = request.Expires ?? Expires.FromTimeSpan(DefaultExpirationTime);
+
+         Subsciption subsciption = GetManager(resourceUri, request.Filter).Subscribe(
             request.Filter,
-            selectorSetHeader != null ? selectorSetHeader.Selectors : (IEnumerable<Selector>)new Selector[] {});
+            selectors,
+            expiration,
+            susbcriptionManagerEndpointAddress);
          
          lock (_activeSubscriptions)
          {            
             _activeSubscriptions[subsciption.Identifier] = subsciption;            
          }
-         
+         //R7.2.4-1
          return new SubscribeResponse
-                   {
-                      //R7.2.4-1
-                      SubscriptionManager = new SubscriptionManager(subsciption.Identifier, OperationContext.Current.IncomingMessageHeaders.To, subsciption.DeliveryResourceUri),                      
-                      EnumerationContext = request.Delivery.Mode == Const.DeliveryModePull 
+                   {                      
+                      SubscriptionManager = new SubscriptionManager(susbcriptionManagerEndpointAddress, subsciption.Identifier, OperationContextProxy.Current.LocalAddress, subsciption.DeliveryResourceUri),                      
+                      EnumerationContext = request.Delivery.Mode == Delivery.DeliveryModePull 
                          ? new EnumerationContextKey(subsciption.Identifier) 
-                         : null
+                         : null,
+                      Expires = expiration
                    };
       }
 
       public void Unsubscribe(UnsubscribeRequest request)
       {
-         IdentifierHeader identifierHeader =
-            IdentifierHeader.ReadFrom(OperationContext.Current.IncomingMessageHeaders);
+         IdentifierHeader identifierHeader = OperationContextProxy.Current.FindHeader<IdentifierHeader>();            
          
          lock (_activeSubscriptions)
          {
@@ -71,15 +79,38 @@ namespace WSMan.NET.Eventing
          }         
       }
 
+      public RenewResponse Renew(RenewRequest request)
+      {
+         IdentifierHeader identifierHeader = OperationContextProxy.Current.FindHeader<IdentifierHeader>();            
+
+         lock (_activeSubscriptions)
+         {
+            Subsciption toRenew;
+            if (_activeSubscriptions.TryGetValue(identifierHeader.Value, out toRenew))
+            {
+               toRenew.Renew(request.Expires ?? Expires.FromTimeSpan(DefaultExpirationTime));               
+            }
+         }
+         return new RenewResponse
+                   {
+                      Expires = request.Expires
+                   };
+      }
+
       public PullResponse Pull(PullRequest request)
       {
+         //TODO: Check expiration and fault if expired.
          return _pullDeliveryServer.Pull(request);
       }
 
-      private ISubscriptionManager GetManager(string resourceUri)
+      private ISubscriptionManager GetManager(string resourceUri, Filter filter)
       {
-         //TODO: Add fault
-         return _enumHandlers[resourceUri];
+         string dialect = (filter != null && filter.Dialect != null)
+            ? filter.Dialect
+            : FilterMap.DefaultDialect;
+
+         //TODO: Fault is no existing
+         return _enumHandlers[new HandlerMapKey(resourceUri, dialect)];
       }
 
       public FilterMap ProvideFilterMap()
@@ -87,9 +118,21 @@ namespace WSMan.NET.Eventing
          return _filterMap;
       }
 
+      public EventingServer(EventingPullDeliveryServer pullDeliveryServer)
+      {
+         _pullDeliveryServer = pullDeliveryServer;
+         DefaultExpirationTime = TimeSpan.FromHours(1);
+      }
+
+      public EventingServer() : this(new EventingPullDeliveryServer())         
+      {         
+      }
+
+      public TimeSpan DefaultExpirationTime { get; set; }
+
       private readonly FilterMap _filterMap = new FilterMap();
       private readonly Dictionary<string, Subsciption> _activeSubscriptions = new Dictionary<string, Subsciption>();
-      private readonly Dictionary<string, ISubscriptionManager> _enumHandlers = new Dictionary<string, ISubscriptionManager>();      
-      private readonly EventingPullDeliveryServer _pullDeliveryServer = new EventingPullDeliveryServer();      
+      private readonly Dictionary<HandlerMapKey, ISubscriptionManager> _enumHandlers = new Dictionary<HandlerMapKey, ISubscriptionManager>();
+      private readonly EventingPullDeliveryServer _pullDeliveryServer;
    }
 }

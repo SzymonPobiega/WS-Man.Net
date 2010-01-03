@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using WSMan.NET.Management;
 
 namespace WSMan.NET.Enumeration
 {
@@ -8,10 +9,12 @@ namespace WSMan.NET.Enumeration
    {
       private readonly string _context;
       private readonly Filter _filter;
+      private readonly IEnumerable<Selector> _selectors;
 
-      public EnumerationContext(string context, Filter filter)
+      public EnumerationContext(string context, Filter filter, IEnumerable<Selector> selectors)
       {
          _context = context;
+         _selectors = selectors;
          _filter = filter;
       }
 
@@ -25,5 +28,9 @@ namespace WSMan.NET.Enumeration
          get { return _filter; }
       }
 
+      public IEnumerable<Selector> Selectors
+      {
+         get { return _selectors; }
+      }
    }
 }

@@ -12,11 +12,11 @@ namespace WSMan.NET.Transfer
       private readonly EndpointAddress _body;
       private readonly AddressingVersion _version;
 
-      public CreateRsponseBodyWriter(EndpointAddress body, MessageVersion version)
+      public CreateRsponseBodyWriter(EndpointAddress body, AddressingVersion version)
          : base(false)
       {
          _body = body;
-         _version = version.Addressing;
+         _version = version;
       }
 
       protected override void OnWriteBodyContents(XmlDictionaryWriter writer)

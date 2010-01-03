@@ -41,6 +41,16 @@ namespace WSMan.NET.Management
       {
          _selectors = new List<Selector>();
       }
+
+      public static IEnumerable<Selector> GetCurrent()
+      {
+         SelectorSetHeader header = OperationContextProxy.Current.FindHeader<SelectorSetHeader>();
+         if (header == null)
+         {
+            return new Selector[] {};
+         }
+         return header.Selectors;
+      }
       
       public static SelectorSetHeader ReadFrom(XmlReader reader)
       {
@@ -56,25 +66,8 @@ namespace WSMan.NET.Management
             reader.ReadEndElement();
          }
          return result;
-      }
-      public static SelectorSetHeader ReadFrom(Message message)
-      {
-         return ReadFrom(message.Headers);
-      }
-
-      public static SelectorSetHeader ReadFrom(EndpointAddress address)
-      {
-         AddressHeader header = address.Headers.FindHeader(ElementName, Const.Namespace);
-         if (header == null)
-         {
-            return null;
-         }
-         using (XmlDictionaryReader readerAtHeader = header.GetAddressHeaderReader())
-         {
-            return ReadFrom(readerAtHeader);
-         }
-      }
-
+      }      
+      
       public static SelectorSetHeader ReadFrom(MessageHeaders messageHeaders)
       {
          SelectorSetHeader result;

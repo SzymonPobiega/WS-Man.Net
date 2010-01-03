@@ -21,6 +21,7 @@ namespace EnumerationTests
       static void Main(string[] args)
       {
          EnumerationServer server = new EnumerationServer().Bind(
+            new Uri("http://tempuri.org"), 
             FilterMap.DefaultDialect, 
             typeof(JmxNotificationFilter),
             new RequestHandler());         
@@ -42,7 +43,11 @@ namespace EnumerationTests
          EnumerationClient client = new EnumerationClient(Optimize, new Uri("http://localhost/Contract"), binding);
          client.BindFilterDialect(FilterMap.DefaultDialect, typeof(JmxNotificationFilter));
 
-         foreach (EndpointAddress item in client.EnumerateEPR(new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()), BatchSize))
+         int countEstimate = client.EstimateCount(new Uri("http://tempuri.org"),
+                                                  new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()));         
+         Console.WriteLine("Client: Total items estimate: {0}", countEstimate);
+
+         foreach (EndpointAddress item in client.EnumerateEPR(new Uri("http://tempuri.org"), new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()), BatchSize))
          {
             Console.WriteLine("Client: Got item {0}", item);
          }
