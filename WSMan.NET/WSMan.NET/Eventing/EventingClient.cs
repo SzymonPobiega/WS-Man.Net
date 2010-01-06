@@ -15,6 +15,18 @@ namespace WSMan.NET.Eventing
          _filterMap.Bind(dialect, implementationType);
       }
 
+      public IDisposable SubscribeWithPullDelivery<T>(Action<T> callback, bool synchronizeCallbackThread, Uri resourceUri, Filter filter, params Selector[] selectors)
+      {
+         IPullSubscriptionClient<T> impl = SubscribeWithPullDelivery<T>(resourceUri, filter, (IEnumerable<Selector>)selectors);
+         return new CallbackThreadPoolPullSubscriptionClient<T>(callback, impl, synchronizeCallbackThread);
+      }
+
+      public IDisposable SubscribeWithPullDelivery<T>(Action<T> callback, Uri resourceUri, Filter filter, params Selector[] selectors)
+      {
+         IPullSubscriptionClient<T> impl = SubscribeWithPullDelivery<T>(resourceUri, filter, (IEnumerable<Selector>)selectors);
+         return new CallbackThreadPoolPullSubscriptionClient<T>(callback, impl, true);
+      }
+
       public IPullSubscriptionClient<T> SubscribeWithPullDelivery<T>(Uri resourceUri, Filter filter, params Selector[] selectors)
       {
          return SubscribeWithPullDelivery<T>(resourceUri, filter, (IEnumerable<Selector>)selectors);

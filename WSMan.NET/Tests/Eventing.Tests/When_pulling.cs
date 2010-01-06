@@ -16,7 +16,7 @@ namespace WSMan.NET.Eventing.Tests
       private static readonly Uri ResourceUri = new Uri("http://tempuri.org");
 
       [Test(Description = "R7.2.13-5")]
-      [ExpectedException(typeof(TimedOutException))]
+      [ExpectedException(typeof(FaultException<TimedOutException>))]
       public void If_pull_returns_no_items_exception_is_thrown()
       {
          IEventingRequestHandler<int> mockHandler = MockRepository.GenerateMock<IEventingRequestHandler<int>>();

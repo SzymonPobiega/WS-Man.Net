@@ -15,6 +15,10 @@ namespace WSMan.NET.Eventing
       {
          PullResponse pullResponse = PullNextBatch(_context, 100, new Selector[] {});
          _context = pullResponse.EnumerationContext;
+         if (pullResponse.Items == null)
+         {
+            return new T[] {};
+         }
          return pullResponse.Items.Items.Select(x => x.ObjectValue).Cast<T>();         
       }      
 
@@ -24,9 +28,12 @@ namespace WSMan.NET.Eventing
          while (!endOfSequence)
          {
             PullResponse pullResponse = PullNextBatch(_context, 100, new Selector[] { });
-            foreach (EnumerationItem item in pullResponse.Items.Items)
+            if (pullResponse.Items != null)
             {
-               yield return (T)item.ObjectValue;
+               foreach (EnumerationItem item in pullResponse.Items.Items)
+               {
+                  yield return (T) item.ObjectValue;
+               }
             }
             endOfSequence = pullResponse.EndOfSequence != null;
             _context = pullResponse.EnumerationContext;
@@ -35,8 +42,8 @@ namespace WSMan.NET.Eventing
 
       private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
       {
-         using (ClientContext<IWSEnumerationContract> ctx =
-            new ClientContext<IWSEnumerationContract>(_endpointUri, _binding.MessageVersion.Addressing, _enumerationProxyFactory,
+         using (ClientContext<IWSEventingPullDeliveryContract> ctx =
+            new ClientContext<IWSEventingPullDeliveryContract>(_endpointUri, _binding.MessageVersion.Addressing, _enumerationProxyFactory,
                mx =>
                   {
                      mx.Add(new ResourceUriHeader(_resourceUri));
@@ -54,9 +61,13 @@ namespace WSMan.NET.Eventing
                   MaxElements = new MaxElements(maxElements)
                });
             }
-            catch (TimedOutException)
-            {   
-               return new PullResponse {EnumerationContext = context};
+            catch (FaultException ex)
+            {
+               if (ex.IsTimedOut())
+               {
+                  return new PullResponse {EnumerationContext = context};
+               }
+               throw;
             }            
          }
       }
@@ -104,13 +115,13 @@ namespace WSMan.NET.Eventing
          _context = context;
          _filterMap = filterMap;
          _binding = binding;
-         _enumerationProxyFactory = new ChannelFactory<IWSEnumerationContract>(binding);
+         _enumerationProxyFactory = new ChannelFactory<IWSEventingPullDeliveryContract>(binding);
       }
 
       private bool _disposed;
       private readonly Uri _endpointUri;
       private readonly string _resourceUri;
-      private readonly IChannelFactory<IWSEnumerationContract> _enumerationProxyFactory;
+      private readonly IChannelFactory<IWSEventingPullDeliveryContract> _enumerationProxyFactory;
       private readonly IChannelFactory<IWSEventingContract> _eventingProxyFactory;
       private readonly FilterMap _filterMap = new FilterMap();
       private readonly Binding _binding;

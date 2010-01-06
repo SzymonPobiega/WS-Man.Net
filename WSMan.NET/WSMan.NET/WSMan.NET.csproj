@@ -59,6 +59,7 @@
     <Compile Include="AddressingVersionExtensionServiceBehaviorAttribute.cs" />
     <Compile Include="Enumeration\EnumerationItemList.cs" />
     <Compile Include="Enumeration\EnumerationModeExtension.cs" />
+    <Compile Include="Eventing\CallbackThreadPoolPullSubscriptionClient.cs" />
     <Compile Include="Faults\TimedOutException.cs" />
     <Compile Include="Faults\InvalidEnumerationContextException.cs" />
     <Compile Include="Enumeration\HandlerMapKey.cs" />
