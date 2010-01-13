@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel;
-using WSMan.NET.Faults;
 using WSMan.NET.Management;
 
 namespace WSMan.NET.Enumeration
@@ -73,7 +72,7 @@ namespace WSMan.NET.Enumeration
          EnumerationState holder;
          if (!_activeEnumerations.TryGetValue(request.EnumerationContext, out holder))
          {
-            throw new InvalidEnumerationContextException();            
+            throw Faults.InvalidEnumerationContext.Create();            
          }
          
          int maxElements = request.MaxElements != null

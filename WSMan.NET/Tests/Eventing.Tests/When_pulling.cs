@@ -6,7 +6,6 @@ using System.Text;
 using NUnit.Framework;
 using Rhino.Mocks;
 using WSMan.NET.Enumeration;
-using WSMan.NET.Faults;
 
 namespace WSMan.NET.Eventing.Tests
 {
@@ -16,7 +15,7 @@ namespace WSMan.NET.Eventing.Tests
       private static readonly Uri ResourceUri = new Uri("http://tempuri.org");
 
       [Test(Description = "R7.2.13-5")]
-      [ExpectedException(typeof(FaultException<TimedOutException>))]
+      [ExpectedException(typeof(FaultException<FaultException>))]
       public void If_pull_returns_no_items_exception_is_thrown()
       {
          IEventingRequestHandler<int> mockHandler = MockRepository.GenerateMock<IEventingRequestHandler<int>>();
@@ -36,7 +35,7 @@ namespace WSMan.NET.Eventing.Tests
       }
 
       [Test]
-      [ExpectedException(typeof(InvalidEnumerationContextException))]
+      [ExpectedException(typeof(FaultException))]
       public void If_invalid_subscription_context_specified_exception_is_thrown()
       {
          OperationContextProxy.Dummy.LocalAddress = ResourceUri;

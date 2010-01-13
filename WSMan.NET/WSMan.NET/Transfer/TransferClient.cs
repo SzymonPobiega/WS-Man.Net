@@ -17,10 +17,14 @@ namespace WSMan.NET.Transfer
       private readonly IChannelFactory<IWSTransferContract> _proxyFactory;
       private readonly MessageFactory _factory;
       private readonly AddressingVersion _addressingVersion;
+      private readonly IWSTransferFaultHandler _faultHandler;
 
-      public TransferClient(Uri endpointUri, IChannelFactory<IWSTransferContract> proxyFactory, MessageVersion version)
+      public TransferClient(Uri endpointUri, 
+         IChannelFactory<IWSTransferContract> proxyFactory, 
+         MessageVersion version, IWSTransferFaultHandler faultHandler)
       {
          _endpointUri = endpointUri;
+         _faultHandler = faultHandler;
          _proxyFactory = proxyFactory;
          _factory = new MessageFactory(version);
          _addressingVersion = version.Addressing;
@@ -31,7 +35,12 @@ namespace WSMan.NET.Transfer
          using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
             headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
-            return (T)_factory.DeserializeMessageWithPayload(ctx.Channel.Get(_factory.CreateGetRequest()), typeof(T));
+            Message response = ctx.Channel.Get(_factory.CreateGetRequest());
+            if (response.IsFault)
+            {
+               throw _faultHandler.HandleFault(response);
+            }
+            return (T)_factory.DeserializeMessageWithPayload(response, typeof(T));
          }
       }
 
@@ -39,8 +48,13 @@ namespace WSMan.NET.Transfer
       {
          using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
-            headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);            
-            return (T)_factory.DeserializeMessageWithPayload(ctx.Channel.Put(_factory.CreatePutRequest(payload)), typeof(T));
+            headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
+            Message response = ctx.Channel.Put(_factory.CreatePutRequest(payload));
+            if (response.IsFault)
+            {
+               throw _faultHandler.HandleFault(response);
+            }
+            return (T)_factory.DeserializeMessageWithPayload(response, typeof(T));
          }
       }
 
@@ -49,7 +63,12 @@ namespace WSMan.NET.Transfer
          using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
             headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
-            return _factory.DeserializeCreateResponse(ctx.Channel.Create(_factory.CreateCreateRequest(payload)));
+            Message response = ctx.Channel.Create(_factory.CreateCreateRequest(payload));
+            if (response.IsFault)
+            {
+               throw _faultHandler.HandleFault(response);
+            }
+            return _factory.DeserializeCreateResponse(response);
          }
       }
 
@@ -58,7 +77,11 @@ namespace WSMan.NET.Transfer
          using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
          {
             headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
-            ctx.Channel.Delete(_factory.CreateDeleteRequest());
+            Message response = ctx.Channel.Delete(_factory.CreateDeleteRequest());
+            if (response.IsFault)
+            {
+               throw _faultHandler.HandleFault(response);
+            }
          }
       }      
    }

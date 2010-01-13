@@ -23,8 +23,8 @@ namespace EventingDemo
          ServiceHost sh = new ServiceHost(eventingServer);
 
          Binding binding = new WSHttpBindingAugust2004(SecurityMode.None);
-         sh.AddServiceEndpoint(typeof(IWSEventingPullDeliveryContract), binding, "http://simon-hp:80/Contract");
-         sh.AddServiceEndpoint(typeof(IWSEventingContract), binding, "http://simon-hp:80/Contract");
+         sh.AddServiceEndpoint(typeof(IWSEventingPullDeliveryContract), binding, "http://localhost/Contract");
+         sh.AddServiceEndpoint(typeof(IWSEventingContract), binding, "http://localhost/Contract");
 
          ServiceBehaviorAttribute behavior = sh.Description.Behaviors.Find<ServiceBehaviorAttribute>();
          behavior.ConcurrencyMode = ConcurrencyMode.Multiple;
@@ -39,23 +39,11 @@ namespace EventingDemo
          Console.WriteLine("with F5 while debugging.");
          Console.WriteLine();
 
-         EventingClient client = new EventingClient(new Uri("http://localhost:8888/Contract"), binding);
-         client.BindFilterDialect(FilterMap.DefaultDialect, typeof(JmxNotificationFilter));
-
-         //IPullSubscriptionClient<EventData> subscriptionClient =
-         //   client.SubscribeWithPullDelivery<EventData>(new Uri(ResourceUri),
-         //                                               new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()),
-         //                                               new Selector("name", "value"));
-
-         //foreach (EventData item in subscriptionClient.Pull())
-         //{
-         //   Console.WriteLine(item.Value);
-         //}
-
-         //subscriptionClient.Dispose();
+         EventingClient client = new EventingClient(new Uri("http://localhost/Contract"), binding);
+         client.BindFilterDialect(FilterMap.DefaultDialect, typeof(JmxNotificationFilter));         
 
          using (
-            client.SubscribeWithPullDelivery<EventData>(
+            client.SubscribeUsingPullDelivery<EventData>(
                x => Console.WriteLine(x.Value),
                true,
                new Uri(ResourceUri),

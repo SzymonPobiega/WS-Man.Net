@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using NUnit.Framework;
-using WSMan.NET.Faults;
 
 namespace WSMan.NET.Enumeration.Tests
 {
@@ -11,7 +11,7 @@ namespace WSMan.NET.Enumeration.Tests
    public class When_pulling
    {      
       [Test]
-      [ExpectedException(typeof(InvalidEnumerationContextException))]
+      [ExpectedException(typeof(FaultException))]
       public void If_invalid_subscription_context_specified_exception_is_thrown()
       {
          EnumerationServer server = new EnumerationServer();

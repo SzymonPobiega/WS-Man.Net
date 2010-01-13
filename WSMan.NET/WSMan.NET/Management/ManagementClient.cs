@@ -8,14 +8,7 @@ using WSMan.NET.Transfer;
 namespace WSMan.NET.Management
 {
    public class ManagementClient
-   {
-      private readonly TransferClient _transferClient;
-
-      public ManagementClient(Uri endpointUri, IChannelFactory<IWSTransferContract> proxyFactory, MessageVersion version)
-      {
-         _transferClient = new TransferClient(endpointUri, proxyFactory, version);
-      }
-
+   {      
       public T Get<T>(string resourceUri, string fragmentTransferExpression, params Selector[] selectors)
       {
          return Get<T>(resourceUri, fragmentTransferExpression, (IEnumerable<Selector>)selectors);
@@ -65,5 +58,19 @@ namespace WSMan.NET.Management
                                       x.Add(new ResourceUriHeader(resourceUri));
                                    }, x =>{});
       }
+
+      public ManagementClient(Uri endpointUri, IChannelFactory<IWSTransferContract> proxyFactory, MessageVersion version, IWSTransferFaultHandler faultHandler)
+      {
+         _transferClient = new TransferClient(endpointUri, proxyFactory, version, faultHandler);
+      }
+
+      public ManagementClient(Uri endpointUri, IChannelFactory<IWSTransferContract> proxyFactory, MessageVersion version)
+         : this(endpointUri, proxyFactory, version, new ManagementWSTransferFaultHandler())
+      {         
+      }
+
+
+      private readonly TransferClient _transferClient;
+
    }
 }

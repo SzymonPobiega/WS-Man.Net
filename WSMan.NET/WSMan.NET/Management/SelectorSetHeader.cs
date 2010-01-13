@@ -51,6 +51,24 @@ namespace WSMan.NET.Management
          }
          return header.Selectors;
       }
+
+      public static SelectorSetHeader ReadFrom(Message message)
+      {
+         return ReadFrom(message.Headers);
+      }
+
+      public static SelectorSetHeader ReadFrom(EndpointAddress address)
+      {
+         AddressHeader header = address.Headers.FindHeader(ElementName, Const.Namespace);
+         if (header == null)
+         {
+            return null;
+         }
+         using (XmlDictionaryReader readerAtHeader = header.GetAddressHeaderReader())
+         {
+            return ReadFrom(readerAtHeader);
+         }
+      }
       
       public static SelectorSetHeader ReadFrom(XmlReader reader)
       {

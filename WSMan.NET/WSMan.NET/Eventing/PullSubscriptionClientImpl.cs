@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using WSMan.NET.Enumeration;
-using WSMan.NET.Faults;
 using WSMan.NET.Management;
 
 namespace WSMan.NET.Eventing
@@ -63,7 +62,7 @@ namespace WSMan.NET.Eventing
             }
             catch (FaultException ex)
             {
-               if (ex.IsTimedOut())
+               if (ex.IsA(Faults.TimedOut))
                {
                   return new PullResponse {EnumerationContext = context};
                }
