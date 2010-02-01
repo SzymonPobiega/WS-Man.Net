@@ -44,7 +44,8 @@ namespace WSMan.NET.Enumeration
             EnumerationItem item = new EnumerationItem();
             item.ReadXml(reader);
             _items.Add(item);
-         }         
+         }
+         reader.ReadEndElement();
       }
 
       public void WriteXml(XmlWriter writer)

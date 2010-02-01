@@ -15,7 +15,7 @@ namespace EnumerationTests
 {
    class Program
    {
-      const int BatchSize = 1;
+      const int BatchSize = 100;
       const bool Optimize = true;
 
       static void Main(string[] args)
