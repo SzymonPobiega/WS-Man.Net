@@ -75,7 +75,8 @@ namespace WSMan.NET.Eventing
             return;
          }
          if (disposing)
-         {               
+         {       
+            Unsubscribe();
          }
          _disposed = true;
       }
