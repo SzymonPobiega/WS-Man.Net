@@ -47,6 +47,7 @@ namespace EventingDemo
                x => Console.WriteLine(x.Value),
                true,
                new Uri(ResourceUri),
+               new Uri(ResourceUri),
                new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()),
                new Selector("name", "value")))
          {
