@@ -16,7 +16,7 @@ namespace WSMan.NET.Enumeration
 
       public static TotalItemsCountEstimate ReadFrom(XmlDictionaryReader reader)
       {
-         reader.ReadStartElement(ElementName, Const.Namespace);
+         reader.ReadStartElement(ElementName, Management.Const.Namespace);
          int value = XmlConvert.ToInt32(reader.ReadString());
          TotalItemsCountEstimate result = new TotalItemsCountEstimate(value);
          reader.ReadEndElement();
@@ -31,7 +31,7 @@ namespace WSMan.NET.Enumeration
       public static TotalItemsCountEstimate ReadFrom(MessageHeaders messageHeaders)
       {
          TotalItemsCountEstimate result;
-         int index = messageHeaders.FindHeader(ElementName, Const.Namespace);
+         int index = messageHeaders.FindHeader(ElementName, Management.Const.Namespace);
          if (index < 0)
          {
             return null;
@@ -55,7 +55,7 @@ namespace WSMan.NET.Enumeration
 
       public override string Namespace
       {
-         get { return Const.Namespace; }
+         get { return Management.Const.Namespace; }
       }
 
       public int Value

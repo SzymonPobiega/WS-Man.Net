@@ -19,7 +19,7 @@ namespace WSMan.NET.Enumeration
 
       public static RequestTotalItemsCountEstimate ReadFrom(MessageHeaders messageHeaders)
       {
-         int index = messageHeaders.FindHeader(ElementName, Const.Namespace);
+         int index = messageHeaders.FindHeader(ElementName, Management.Const.Namespace);
          if (index < 0)
          {
             return null;
@@ -39,7 +39,7 @@ namespace WSMan.NET.Enumeration
 
       public override string Namespace
       {
-         get { return Const.Namespace; }
+         get { return Management.Const.Namespace; }
       }
 
       protected override void OnWriteHeaderContents(XmlDictionaryWriter writer, MessageVersion messageVersion)
