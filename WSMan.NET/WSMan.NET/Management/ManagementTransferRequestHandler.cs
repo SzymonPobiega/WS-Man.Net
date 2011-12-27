@@ -6,62 +6,64 @@ using WSMan.NET.Transfer;
 
 namespace WSMan.NET.Management
 {
-   public class ManagementTransferRequestHandler : ITransferRequestHandler
-   {            
-      public object HandleGet()
-      {
-         FragmentTransferHeader fragmentTransferHeader =
-            OperationContextProxy.Current.FindHeader<FragmentTransferHeader>();
+    public class ManagementTransferRequestHandler : ITransferRequestHandler
+    {
+        public object HandleGet()
+        {
+            return GetHandler().HandleGet(GetFragmentExpression(), GetSelectors());
+        }
 
-         OperationContextProxy.Current.AddHeader(fragmentTransferHeader);         
+        public object HandlePut(ExtractBodyDelegate extractBodyCallback)
+        {
+            return GetHandler().HandlePut(GetFragmentExpression(), GetSelectors(), extractBodyCallback);
+        }
 
-         return GetHandler().HandleGet(fragmentTransferHeader.Expression, GetSelectors());
-      }     
+        public EndpointAddress HandleCreate(ExtractBodyDelegate extractBodyCallback)
+        {
+            return GetHandler().HandleCreate(extractBodyCallback);
+        }
 
-      public object HandlePut(ExtractBodyDelegate extractBodyCallback)
-      {
-         FragmentTransferHeader fragmentTransferHeader =
-            OperationContextProxy.Current.FindHeader<FragmentTransferHeader>();
+        public void HandlerDelete()
+        {
+            GetHandler().HandlerDelete(GetSelectors());
+        }
 
-         OperationContextProxy.Current.AddHeader(fragmentTransferHeader);         
+        public void Bind(Uri resourceUri, IManagementRequestHandler handler)
+        {
+            _handlers[resourceUri.ToString()] = handler;
+        }
 
-         return GetHandler().HandlePut(fragmentTransferHeader.Expression, GetSelectors(), extractBodyCallback);
-      }
+        private static string GetFragmentExpression()
+        {
+            var fragmentTransferHeader = OperationContextProxy.Current.FindHeader<FragmentTransferHeader>();
+            string fragmentExpression = null;
+            if (fragmentTransferHeader != null)
+            {
+                OperationContextProxy.Current.AddHeader(fragmentTransferHeader);
+                fragmentExpression = fragmentTransferHeader.Expression;
+            }
+            return fragmentExpression;
+        }
 
-      public EndpointAddress HandleCreate(ExtractBodyDelegate extractBodyCallback)
-      {
-         return GetHandler().HandleCreate(extractBodyCallback);
-      }
+        private IManagementRequestHandler GetHandler()
+        {
+            ResourceUriHeader resourceUriHeader = OperationContextProxy.Current.FindHeader<ResourceUriHeader>();
 
-      public void HandlerDelete()
-      {         
-         GetHandler().HandlerDelete(GetSelectors());
-      }
-
-      public void Bind(Uri resourceUri, IManagementRequestHandler handler)
-      {
-         _handlers[resourceUri.ToString()] = handler;
-      }
-
-      private IManagementRequestHandler GetHandler()
-      {
-         ResourceUriHeader resourceUriHeader = OperationContextProxy.Current.FindHeader<ResourceUriHeader>();
-         
-         //TODO: Fault
-         return _handlers[resourceUriHeader.ResourceUri];
-      }
+            //TODO: Fault
+            return _handlers[resourceUriHeader.ResourceUri];
+        }
 
 
-      private static List<Selector> GetSelectors()
-      {
-         SelectorSetHeader selectorSetHeader = OperationContextProxy.Current.FindHeader<SelectorSetHeader>();         
+        private static List<Selector> GetSelectors()
+        {
+            SelectorSetHeader selectorSetHeader = OperationContextProxy.Current.FindHeader<SelectorSetHeader>();
 
-         List<Selector> selectors = selectorSetHeader != null 
-            ? selectorSetHeader.Selectors 
-            : new List<Selector>();
-         return selectors;
-      }
+            List<Selector> selectors = selectorSetHeader != null
+               ? selectorSetHeader.Selectors
+               : new List<Selector>();
+            return selectors;
+        }
 
-      private readonly Dictionary<string, IManagementRequestHandler> _handlers = new Dictionary<string, IManagementRequestHandler>();
-   }
+        private readonly Dictionary<string, IManagementRequestHandler> _handlers = new Dictionary<string, IManagementRequestHandler>();
+    }
 }

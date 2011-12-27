@@ -6,50 +6,55 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
+using System.Text;
+using System.Xml;
+using WSMan.NET.Management;
 
 namespace WSMan.NET
 {
-   public class AddressingVersionExtensionServiceBehaviorAttribute : Attribute, IServiceBehavior
-   {
-      public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
-      {         
-      }
+    public class AddressingVersionExtensionServiceBehaviorAttribute : Attribute, IServiceBehavior
+    {
+        public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
+        {
+        }
 
-      public void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
-      {
-      }
+        public void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
+        {
+        }
 
-      public void ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
-      {         
-         foreach (ChannelDispatcher dispatcher in serviceHostBase.ChannelDispatchers)
-         {
-            foreach (EndpointDispatcher endpointDispatcher in dispatcher.Endpoints)
+        public void ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
+        {
+            foreach (ChannelDispatcher dispatcher in serviceHostBase.ChannelDispatchers)
             {
-               ServiceEndpoint endpoint = serviceDescription.Endpoints.Find(endpointDispatcher.EndpointAddress.Uri);
-               var inspector = new MessageInspector(endpoint.Binding.MessageVersion.Addressing);
-               endpointDispatcher.DispatchRuntime.MessageInspectors.Add(inspector);
+                foreach (EndpointDispatcher endpointDispatcher in dispatcher.Endpoints)
+                {
+                    ServiceEndpoint endpoint = serviceDescription.Endpoints.Find(endpointDispatcher.EndpointAddress.Uri);
+                    var inspector = new MessageInspector(endpoint.Binding.MessageVersion.Addressing);
+                    endpointDispatcher.DispatchRuntime.MessageInspectors.Add(inspector);
+                }
             }
-         }
-      }
+        }
 
-      private class MessageInspector : IDispatchMessageInspector
-      {
-         public object AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)
-         {
-            AddressingVersionExtension.Activate(_version);
-            return null;
-         }
+        private class MessageInspector : IDispatchMessageInspector
+        {
+            public object AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)
+            {
+                AddressingVersionExtension.Activate(_version);
+                ResourceUriHeader.ReadFrom(request);
+                MaxEnvelopeSizeHeader.ReadFrom(request);
+                return null;
+            }
 
-         public void BeforeSendReply(ref Message reply, object correlationState)
-         {
-         }
+            public void BeforeSendReply(ref Message reply, object correlationState)
+            {                
+            }
 
-         public MessageInspector(AddressingVersion version)
-         {
-            _version = version;
-         }
+            public MessageInspector(AddressingVersion version)
+            {
+                _version = version;
+            }
 
-         private readonly AddressingVersion _version;
-      }
-   }
+            private readonly AddressingVersion _version;
+        }
+    }
 }

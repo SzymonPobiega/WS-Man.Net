@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WSMan.NET</RootNamespace>
     <AssemblyName>WSMan.NET</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -39,6 +39,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -100,6 +101,7 @@
     <Compile Include="Management\ManagementServer.cs" />
     <Compile Include="DummyOperationContext.cs" />
     <Compile Include="Management\ManagementWSTransferFaultHandler.cs" />
+    <Compile Include="Management\MaxEnvelopeSizeHeader.cs" />
     <Compile Include="OperationContextProxy.cs" />
     <Compile Include="RealOperationContext.cs" />
     <Compile Include="Transfer\IWSTransferFaultHandler.cs" />

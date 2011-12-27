@@ -9,100 +9,100 @@ using System.Xml.Serialization;
 
 namespace WSMan.NET.Transfer
 {
-   public class MessageFactory
-   {
-      private readonly MessageVersion _version;
+    public class MessageFactory
+    {
+        private readonly MessageVersion _version;
 
-      public MessageFactory()
-      {
-      }
+        public MessageFactory()
+        {
+        }
 
-      public MessageFactory(MessageVersion version)
-      {
-         _version = version;
-      }
+        public MessageFactory(MessageVersion version)
+        {
+            _version = version;
+        }
 
-      public Message CreateGetRequest()
-      {
-         return CreateMessageWithPayload(null, Const.GetAction);
-      }
+        public Message CreateGetRequest()
+        {
+            return CreateMessageWithPayload(null, Const.GetAction);
+        }
 
-      public Message CreateGetResponse(object body)
-      {
-         return CreateMessageWithPayload(body, Const.GetResponseAction);
-      }
+        public Message CreateGetResponse(object body)
+        {
+            return CreateMessageWithPayload(body, Const.GetResponseAction);
+        }
 
-      public Message CreatePutRequest(object payload)
-      {
-         return CreateMessageWithPayload(payload, Const.PutAction);
-      }                   
+        public Message CreatePutRequest(object payload)
+        {
+            return CreateMessageWithPayload(payload, Const.PutAction);
+        }
 
-      public Message CreatePutResponse(object payload)
-      {
-         return CreateMessageWithPayload(payload, Const.PutResponseAction);
-      }
+        public Message CreatePutResponse(object payload)
+        {
+            return CreateMessageWithPayload(payload, Const.PutResponseAction);
+        }
 
-      public Message CreateCreateRequest(object payload)
-      {         
-         return CreateMessageWithPayload(payload, Const.CreateAction);
-      }
+        public Message CreateCreateRequest(object payload)
+        {
+            return CreateMessageWithPayload(payload, Const.CreateAction);
+        }
 
-      public Message CreateCreateResponse(EndpointAddress result)
-      {
-         return Message.CreateMessage(GetMessageVersion(), Const.CreateResponseAction,
-                                      new CreateRsponseBodyWriter(result, GetMessageVersion().Addressing));
-      }
+        public Message CreateCreateResponse(EndpointAddress result)
+        {
+            return Message.CreateMessage(GetMessageVersion(), Const.CreateResponseAction,
+                                         new CreateRsponseBodyWriter(result, GetMessageVersion().Addressing));
+        }
 
-      public Message CreateDeleteRequest()
-      {
-         return CreateMessageWithPayload(null, Const.DeleteAction);
-      }
+        public Message CreateDeleteRequest()
+        {
+            return CreateMessageWithPayload(null, Const.DeleteAction);
+        }
 
-      public Message CreateDeleteResponse()
-      {
-         return CreateMessageWithPayload(null, Const.DeleteResponseAction);
-      }
+        public Message CreateDeleteResponse()
+        {
+            return CreateMessageWithPayload(null, Const.DeleteResponseAction);
+        }
 
-      public EndpointAddress DeserializeCreateResponse(Message createResponseMessage)
-      {         
-         XmlDictionaryReader reader = createResponseMessage.GetReaderAtBodyContents();
-         reader.ReadStartElement(Const.CreateResponse_ResourceCreatedElement, Const.Namespace);
+        public EndpointAddress DeserializeCreateResponse(Message createResponseMessage)
+        {
+            XmlDictionaryReader reader = createResponseMessage.GetReaderAtBodyContents();
+            reader.ReadStartElement(Const.CreateResponse_ResourceCreatedElement, Const.Namespace);
 
-         EndpointAddress result = EndpointAddress.ReadFrom(reader);
+            EndpointAddress result = EndpointAddress.ReadFrom(reader);
 
-         if (reader.NodeType == XmlNodeType.EndElement)
-         {
-            reader.ReadEndElement();
-         }
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                reader.ReadEndElement();
+            }
 
-         return result;
-      }
+            return result;
+        }
 
-      public object DeserializeMessageWithPayload(Message messageWithPayload, Type expectedType)
-      {
-         if (messageWithPayload.IsEmpty)
-         {
-            return null;
-         }
-         if (typeof(IXmlSerializable).IsAssignableFrom(expectedType))
-         {
-            IXmlSerializable serializable = (IXmlSerializable)Activator.CreateInstance(expectedType);
-            serializable.ReadXml(messageWithPayload.GetReaderAtBodyContents());
-            return serializable;
-         }
-         XmlSerializer xs = new XmlSerializer(expectedType);         
-         return xs.Deserialize(messageWithPayload.GetReaderAtBodyContents());
-      }
+        public object DeserializeMessageWithPayload(Message messageWithPayload, Type expectedType)
+        {
+            if (messageWithPayload.IsEmpty)
+            {
+                return null;
+            }
+            if (typeof(IXmlSerializable).IsAssignableFrom(expectedType))
+            {
+                IXmlSerializable serializable = (IXmlSerializable)Activator.CreateInstance(expectedType);
+                serializable.ReadXml(messageWithPayload.GetReaderAtBodyContents());
+                return serializable;
+            }
+            XmlSerializer xs = new XmlSerializer(expectedType);
+            return xs.Deserialize(messageWithPayload.GetReaderAtBodyContents());
+        }
 
-      public Message CreateMessageWithPayload(object payload, string action)
+        public Message CreateMessageWithPayload(object payload, string action)
       {
          Message respose = Message.CreateMessage(GetMessageVersion(), action, new SerializerBodyWriter(payload));         
          return respose;
-      }  
-    
-      private MessageVersion GetMessageVersion()
-      {
-         return _version ?? OperationContext.Current.IncomingMessageVersion;
       }
-   }
+
+        private MessageVersion GetMessageVersion()
+        {
+            return _version ?? OperationContext.Current.IncomingMessageVersion;
+        }
+    }
 }

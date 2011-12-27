@@ -49,7 +49,7 @@ namespace WSMan.NET.Management
       PullResponse IWSEnumerationContract.Pull(PullRequest request)
       {
          ResourceUriHeader resourceUriHeader = OperationContextProxy.Current.FindHeader<ResourceUriHeader>();
-            
+           
          //TODO: Fault
          PullDelegate handler = _pullRoutingTable[resourceUriHeader.ResourceUri];
          return handler(request);
