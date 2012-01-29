@@ -1,37 +1,34 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ServiceModel.Channels;
 using System.Xml;
 using System.Xml.Serialization;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Transfer
 {
-   internal class SerializerBodyWriter : BodyWriter
-   {
-      private readonly object _toSerialize;
+    public class SerializerBodyWriter : IBodyWriter
+    {
+        private readonly object _toSerialize;
 
-      public SerializerBodyWriter(object toSerialize)
-         : base(false)
-      {
-         _toSerialize = toSerialize;
-      }
+        public SerializerBodyWriter(object toSerialize)
+        {
+            _toSerialize = toSerialize;
+        }
 
-      protected override void OnWriteBodyContents(XmlDictionaryWriter writer)
-      {
-         if (_toSerialize != null)
-         {
-            IXmlSerializable serializable = _toSerialize as IXmlSerializable;
+        public void OnWriteBodyContents(XmlWriter writer)
+        {
+            if (_toSerialize == null)
+            {
+                return;
+            }
+            var serializable = _toSerialize as IXmlSerializable;
             if (serializable != null)
             {
-               serializable.WriteXml(writer);
+                serializable.WriteXml(writer);
             }
             else
             {
-               XmlSerializer xs = new XmlSerializer(_toSerialize.GetType());
-               xs.Serialize(writer, _toSerialize);
+                var xs = new XmlSerializer(_toSerialize.GetType());
+                xs.Serialize(writer, _toSerialize);
             }
-         }
-      }
-   }
+        }
+    }
 }

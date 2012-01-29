@@ -68,9 +68,6 @@
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.ServiceModel">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -81,107 +78,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddressingVersionExtension.cs" />
-    <Compile Include="AddressingVersionExtensionServiceBehaviorAttribute.cs" />
-    <Compile Include="Enumeration\EnumerationItemList.cs" />
-    <Compile Include="Enumeration\EnumerationModeExtension.cs" />
-    <Compile Include="Eventing\CallbackThreadPoolPullSubscriptionClient.cs" />
-    <Compile Include="Fault\AddressingFaultFactory.cs" />
-    <Compile Include="Fault\EnumerationFaultFactory.cs" />
-    <Compile Include="Fault\FaultFactory.cs" />
-    <Compile Include="Enumeration\HandlerMapKey.cs" />
-    <Compile Include="Eventing\RenewRequest.cs" />
-    <Compile Include="Eventing\RenewResponse.cs" />
-    <Compile Include="Eventing\SubscriptionManager.cs" />
-    <Compile Include="Fault\FaultFactoryExtensions.cs" />
-    <Compile Include="Fault\Faults.cs" />
-    <Compile Include="Fault\ManagementFaultFactory.cs" />
-    <Compile Include="Fault\WSAddressingHelper.cs" />
-    <Compile Include="IOperationContext.cs" />
-    <Compile Include="Management\ManagementServer.cs" />
-    <Compile Include="DummyOperationContext.cs" />
-    <Compile Include="Management\ManagementWSTransferFaultHandler.cs" />
-    <Compile Include="Management\MaxEnvelopeSizeHeader.cs" />
-    <Compile Include="OperationContextProxy.cs" />
-    <Compile Include="RealOperationContext.cs" />
-    <Compile Include="Transfer\IWSTransferFaultHandler.cs" />
-    <Compile Include="WSHttpBindingAugust2004.cs" />
-    <Compile Include="Enumeration\Const.cs" />
-    <Compile Include="Enumeration\EndOfSequence.cs" />
-    <Compile Include="Enumeration\EnumerateRequest.cs" />
-    <Compile Include="Enumeration\EnumerateResponse.cs" />
-    <Compile Include="Enumeration\EnumerationClient.cs" />
-    <Compile Include="Enumeration\EnumerationContext.cs" />
-    <Compile Include="Enumeration\EnumerationContextKey.cs" />
-    <Compile Include="Enumeration\EnumerationState.cs" />
-    <Compile Include="Enumeration\EnumerationMode.cs" />
-    <Compile Include="Enumeration\FilterMap.cs" />
-    <Compile Include="Enumeration\FilterMapExtension.cs" />
-    <Compile Include="Enumeration\FilterMapExtensionServiceBehaviorAttribute.cs" />
-    <Compile Include="Enumeration\IFilterMapProvider.cs" />
-    <Compile Include="Enumeration\MaxElements.cs" />
-    <Compile Include="Enumeration\EnumerationServer.cs" />
-    <Compile Include="Enumeration\Expires.cs" />
-    <Compile Include="Enumeration\Filter.cs" />
-    <Compile Include="Enumeration\GetStatusRequest.cs" />
-    <Compile Include="Enumeration\GetStatusResponse.cs" />
-    <Compile Include="Enumeration\MaxTime.cs" />
-    <Compile Include="Eventing\Delivery.cs" />
-    <Compile Include="EndpointReference.cs" />
-    <Compile Include="Eventing\EventBuffer.cs" />
-    <Compile Include="Eventing\eventing.cs" />
-    <Compile Include="Eventing\EventingClient.cs" />
-    <Compile Include="Eventing\EventingPullDeliveryServer.cs" />
-    <Compile Include="Eventing\EventingServer.cs" />
-    <Compile Include="Eventing\IdentifierHeader.cs" />
-    <Compile Include="Eventing\IEventingRequestHandler.cs" />
-    <Compile Include="Enumeration\IEnumerationRequestHandler.cs" />
-    <Compile Include="Enumeration\EnumerationItem.cs" />
-    <Compile Include="Enumeration\IWSEnumerationContract.cs" />
-    <Compile Include="Enumeration\LanguageSpecificStringType.cs" />
-    <Compile Include="Enumeration\OptimizeEnumeration.cs" />
-    <Compile Include="Enumeration\PullRequest.cs" />
-    <Compile Include="Enumeration\PullResponse.cs" />
-    <Compile Include="Enumeration\Release.cs" />
-    <Compile Include="Enumeration\RenewRequest.cs" />
-    <Compile Include="Enumeration\RenewResponse.cs" />
-    <Compile Include="Enumeration\EnumerationEnd.cs" />
-    <Compile Include="Enumeration\RequestTotalItemsCountEstimate.cs" />
-    <Compile Include="Enumeration\TotalItemsCountEstimate.cs" />
-    <Compile Include="Enumeration\WsEnumerationTypesLogic.cs" />
-    <Compile Include="Eventing\Const.cs" />
-    <Compile Include="Eventing\IEventingRequestHandlerContext.cs" />
-    <Compile Include="Eventing\IPullSubscriptionClient.cs" />
-    <Compile Include="Eventing\ISubscriptionManager.cs" />
-    <Compile Include="Eventing\IWSEventingContract.cs" />
-    <Compile Include="Eventing\IWSEventingPullDeliveryContract.cs" />
-    <Compile Include="Eventing\PullDeliverySubscriptionManager.cs" />
-    <Compile Include="Eventing\PullSubscription.cs" />
-    <Compile Include="Eventing\PullSubscriptionClientImpl.cs" />
-    <Compile Include="Eventing\Subsciption.cs" />
-    <Compile Include="Eventing\SubscribeRequest.cs" />
-    <Compile Include="Eventing\SubscribeResponse.cs" />
-    <Compile Include="Eventing\UnsubscribeRequest.cs" />
-    <Compile Include="Management\Const.cs" />
-    <Compile Include="Management\FragmentTransferHeader.cs" />
-    <Compile Include="Management\IManagementRequestHandler.cs" />
-    <Compile Include="Management\ManagementClient.cs" />
-    <Compile Include="Management\ResourceUriHeader.cs" />
-    <Compile Include="Management\ManagementTransferRequestHandler.cs" />
-    <Compile Include="Management\XmlFragment.cs" />
-    <Compile Include="Enumeration\IPullRequestRouter.cs" />
-    <Compile Include="Transfer\Const.cs" />
-    <Compile Include="Transfer\CreateRsponseBodyWriter.cs" />
+    <Compile Include="Addressing\ActionHeader.cs" />
+    <Compile Include="Addressing\EndpointReference.cs" />
+    <Compile Include="SOAP\IBodyWriter.cs" />
+    <Compile Include="SOAP\IMessageHeader.cs" />
+    <Compile Include="SOAP\IncomingMessage.cs" />
+    <Compile Include="SOAP\MessageHeader.cs" />
+    <Compile Include="Transfer\HttpListenerTransferEndpoint.cs" />
+    <Compile Include="Transfer\IIncomingHeaders.cs" />
+    <Compile Include="Transfer\IOutgoingHeaders.cs" />
+    <Compile Include="Transfer\MessageVersion.cs" />
+    <Compile Include="SOAP\OutgoingMessage.cs" />
+    <Compile Include="SOAP\Constants.cs" />
+    <Compile Include="Transfer\Constants.cs" />
+    <Compile Include="Transfer\CreateResponseBodyWriter.cs" />
     <Compile Include="Transfer\ITransferRequestHandler.cs" />
-    <Compile Include="Transfer\IWSTransferContract.cs" />
     <Compile Include="Transfer\MessageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Management\Selector.cs" />
-    <Compile Include="Management\SelectorSetHeader.cs" />
     <Compile Include="Transfer\SerializerBodyWriter.cs" />
-    <Compile Include="Transfer\TransferClient.cs" />
-    <Compile Include="ClientContext.cs" />
+    <Compile Include="Addressing\ToHeader.cs" />
+    <Compile Include="Addressing\Constants.cs" />
     <Compile Include="Transfer\TransferServer.cs" />
+    <Compile Include="XmlReaderExtensions.cs" />
+    <Compile Include="XmlWriterExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -200,6 +119,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

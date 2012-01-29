@@ -1,84 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
+using WSMan.NET.Addressing;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Transfer
 {
     public class MessageFactory
     {
-        private readonly MessageVersion _version;
-
-        public MessageFactory()
+        public OutgoingMessage CreateGetRequest()
         {
+            return CreateMessage(Constants.GetAction);
         }
 
-        public MessageFactory(MessageVersion version)
+        public OutgoingMessage CreateGetResponse()
         {
-            _version = version;
+            return CreateMessage(Constants.GetResponseAction);
         }
 
-        public Message CreateGetRequest()
+        public OutgoingMessage CreatePutRequest()
         {
-            return CreateMessageWithPayload(null, Const.GetAction);
+            return CreateMessage(Constants.PutAction);
         }
 
-        public Message CreateGetResponse(object body)
+        public OutgoingMessage CreatePutResponse()
         {
-            return CreateMessageWithPayload(body, Const.GetResponseAction);
+            return CreateMessage(Constants.PutResponseAction);
         }
 
-        public Message CreatePutRequest(object payload)
+        public OutgoingMessage CreateCreateRequest()
         {
-            return CreateMessageWithPayload(payload, Const.PutAction);
+            return CreateMessage(Constants.CreateAction);
         }
 
-        public Message CreatePutResponse(object payload)
+        public OutgoingMessage CreateCreateResponse()
         {
-            return CreateMessageWithPayload(payload, Const.PutResponseAction);
+            return CreateMessage(Constants.CreateResponseAction);
         }
 
-        public Message CreateCreateRequest(object payload)
+        public OutgoingMessage CreateDeleteRequest()
         {
-            return CreateMessageWithPayload(payload, Const.CreateAction);
+            return CreateMessage(Constants.DeleteAction);
         }
 
-        public Message CreateCreateResponse(EndpointAddress result)
+        public OutgoingMessage CreateDeleteResponse()
         {
-            return Message.CreateMessage(GetMessageVersion(), Const.CreateResponseAction,
-                                         new CreateRsponseBodyWriter(result, GetMessageVersion().Addressing));
+            return CreateMessage(Constants.DeleteResponseAction);
         }
 
-        public Message CreateDeleteRequest()
+        public EndpointReference DeserializeCreateResponse(IncomingMessage createResponseMessage)
         {
-            return CreateMessageWithPayload(null, Const.DeleteAction);
-        }
-
-        public Message CreateDeleteResponse()
-        {
-            return CreateMessageWithPayload(null, Const.DeleteResponseAction);
-        }
-
-        public EndpointAddress DeserializeCreateResponse(Message createResponseMessage)
-        {
-            XmlDictionaryReader reader = createResponseMessage.GetReaderAtBodyContents();
-            reader.ReadStartElement(Const.CreateResponse_ResourceCreatedElement, Const.Namespace);
-
-            EndpointAddress result = EndpointAddress.ReadFrom(reader);
-
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                reader.ReadEndElement();
-            }
-
+            var reader = createResponseMessage.GetReaderAtBodyContents();
+            reader.ReadStartElement(Constants.CreateResponse_ResourceCreatedElement, Constants.Namespace);
+            var result = new EndpointReference();
+            result.ReadXml(reader);
+            reader.ReadEndElement();
             return result;
         }
 
-        public object DeserializeMessageWithPayload(Message messageWithPayload, Type expectedType)
+        public object DeserializeMessageWithPayload(IncomingMessage messageWithPayload, Type expectedType)
         {
             if (messageWithPayload.IsEmpty)
             {
@@ -86,23 +65,19 @@ namespace WSMan.NET.Transfer
             }
             if (typeof(IXmlSerializable).IsAssignableFrom(expectedType))
             {
-                IXmlSerializable serializable = (IXmlSerializable)Activator.CreateInstance(expectedType);
+                var serializable = (IXmlSerializable)Activator.CreateInstance(expectedType);
                 serializable.ReadXml(messageWithPayload.GetReaderAtBodyContents());
                 return serializable;
             }
-            XmlSerializer xs = new XmlSerializer(expectedType);
+            var xs = new XmlSerializer(expectedType);
             return xs.Deserialize(messageWithPayload.GetReaderAtBodyContents());
         }
 
-        public Message CreateMessageWithPayload(object payload, string action)
-      {
-         Message respose = Message.CreateMessage(GetMessageVersion(), action, new SerializerBodyWriter(payload));         
-         return respose;
-      }
-
-        private MessageVersion GetMessageVersion()
+        public OutgoingMessage CreateMessage(string action)
         {
-            return _version ?? OperationContext.Current.IncomingMessageVersion;
+            var respose = new OutgoingMessage();
+            respose.AddHeader(new ActionHeader(action), true);
+            return respose;
         }
     }
 }

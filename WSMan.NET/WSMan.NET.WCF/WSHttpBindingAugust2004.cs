@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using System.ServiceModel.Channels;
-using System.Text;
 
-namespace WSMan.NET
+namespace WSMan.NET.WCF
 {
     public class BasicHttpBindingWithAddressing : BasicHttpBinding
     {

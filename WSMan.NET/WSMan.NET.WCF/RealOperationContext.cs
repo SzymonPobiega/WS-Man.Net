@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Reflection;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
-namespace WSMan.NET
+namespace WSMan.NET.WCF
 {
    public class RealOperationContext : IOperationContext
    {

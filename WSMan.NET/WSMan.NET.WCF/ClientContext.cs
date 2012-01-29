@@ -1,11 +1,8 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using WSMan.NET.Transfer;
 
-namespace WSMan.NET
+namespace WSMan.NET.WCF
 {
    public class ClientContext<T> : IDisposable
    {
@@ -14,7 +11,7 @@ namespace WSMan.NET
 
       public ClientContext(Uri endpointUri, AddressingVersion addressingVersion, IChannelFactory<T> proxyFactory, AddressHeaderCreatorDelegate addressHeaderCreatorDelegate)
       {
-         EndpointAddressBuilder builder = new EndpointAddressBuilder();
+         var builder = new EndpointAddressBuilder();
          addressHeaderCreatorDelegate(builder.Headers);
          builder.Uri = endpointUri;
 
@@ -32,7 +29,7 @@ namespace WSMan.NET
       {
          _scope.Dispose();
 
-         ICommunicationObject comm = (ICommunicationObject)_channel;
+         var comm = (ICommunicationObject)_channel;
          if (comm != null)
          {
             try

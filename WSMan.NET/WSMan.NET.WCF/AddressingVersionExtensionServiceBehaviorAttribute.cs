@@ -8,7 +8,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.Text;
 using System.Xml;
-using WSMan.NET.Management;
+using WSMan.NET.WCF;
 
 namespace WSMan.NET
 {
@@ -40,8 +40,8 @@ namespace WSMan.NET
             public object AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)
             {
                 AddressingVersionExtension.Activate(_version);
-                ResourceUriHeader.ReadFrom(request);
-                MaxEnvelopeSizeHeader.ReadFrom(request);
+                //ResourceUriHeader.ReadFrom(request);
+                //MaxEnvelopeSizeHeader.ReadFrom(request);
                 return null;
             }
 

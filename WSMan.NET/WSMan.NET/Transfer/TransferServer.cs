@@ -1,45 +1,105 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
+using WSMan.NET.Addressing;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Transfer
 {
-   [AddressingVersionExtensionServiceBehavior]
-   public class TransferServer : IWSTransferContract
-   {
-      private readonly ITransferRequestHandler _handler;
-      private readonly MessageFactory _factory;
+    public class TransferServer
+    {
+        private readonly ITransferRequestHandler _handler;
+        private readonly MessageFactory _factory;
 
-      public TransferServer(ITransferRequestHandler handler)
-      {
-         _handler = handler;
-         _factory = new MessageFactory();
-      }
+        public TransferServer(ITransferRequestHandler handler)
+        {
+            _handler = handler;
+            _factory = new MessageFactory();
+        }
 
-      public Message Get(Message getRequest)
-      {
-         object payload = _handler.HandleGet();
-         return _factory.CreateGetResponse(payload);
-      }
+        public OutgoingMessage Handle(IncomingMessage request)
+        {
+            var actionHeader = request.GetHeader<ActionHeader>();
+            switch (actionHeader.Action)
+            {
+                case Constants.CreateAction:
+                    return Create(request);
+                case Constants.GetAction:
+                    return Get(request);
+                case Constants.PutAction:
+                    return Put(request);
+                case Constants.DeleteAction:
+                    return Delete(request);
+                default:
+                    throw new NotSupportedException();
+            }
+        }
 
-      public Message Put(Message putRequest)
-      {
-         object payload = _handler.HandlePut(x => _factory.DeserializeMessageWithPayload(putRequest, x));
-         return _factory.CreatePutResponse(payload);
-      }
+        private OutgoingMessage Get(IncomingMessage getRequest)
+        {
+            var response =  _factory.CreateGetResponse();          
+            var incomingHeaders = new IncomingHeaders(getRequest);
+            var outgoingHeaders = new OutgoingHeaders(response);
+            var payload = _handler.HandleGet(incomingHeaders, outgoingHeaders);
+            response.SetBody(new SerializerBodyWriter(payload));
+            return response;
+        }
 
-      public Message Create(Message createRequest)
-      {
-         EndpointAddress address = _handler.HandleCreate(x => _factory.DeserializeMessageWithPayload(createRequest, x));
-         return _factory.CreateCreateResponse(address);
-      }
+        private OutgoingMessage Put(IncomingMessage putRequest)
+        {
+            var response = _factory.CreatePutResponse();
+            var incomingHeaders = new IncomingHeaders(putRequest);
+            var outgoingHeaders = new OutgoingHeaders(response);
+            var payload = _handler.HandlePut(incomingHeaders, outgoingHeaders, x => _factory.DeserializeMessageWithPayload(putRequest, x));
+            response.SetBody(new SerializerBodyWriter(payload));
+            return response;
+        }
 
-      public Message Delete(Message deleteRequest)
-      {
-         _handler.HandlerDelete();
-         return _factory.CreateDeleteResponse();
-      }
-   }
+        private OutgoingMessage Create(IncomingMessage createRequest)
+        {
+            var response = _factory.CreateCreateResponse();
+            var incomingHeaders = new IncomingHeaders(createRequest);
+            var outgoingHeaders = new OutgoingHeaders(response);
+            var reference = _handler.HandleCreate(incomingHeaders, outgoingHeaders, x => _factory.DeserializeMessageWithPayload(createRequest, x));
+            response.SetBody(new CreateResponseBodyWriter(reference));
+            return response;
+        }
+
+        private OutgoingMessage Delete(IncomingMessage deleteRequest)
+        {
+            var response = _factory.CreateDeleteResponse();
+            var incomingHeaders = new IncomingHeaders(deleteRequest);
+            var outgoingHeaders = new OutgoingHeaders(response);
+            _handler.HandlerDelete(incomingHeaders, outgoingHeaders);
+            return response;
+        }
+
+        private class OutgoingHeaders : IOutgoingHeaders
+        {
+            private readonly OutgoingMessage _outgoingMessage;
+
+            public OutgoingHeaders(OutgoingMessage outgoingMessage)
+            {
+                _outgoingMessage = outgoingMessage;
+            }
+
+            public void AddHeader(IMessageHeader header, bool mustUnderstand)
+            {
+                _outgoingMessage.AddHeader(header, mustUnderstand);
+            }
+        }
+
+        private class IncomingHeaders : IIncomingHeaders
+        {
+            private readonly IncomingMessage _incomingMessage;
+
+            public IncomingHeaders(IncomingMessage incomingMessage)
+            {
+                _incomingMessage = incomingMessage;
+            }
+
+            public T GetHeader<T>() where T : class, IMessageHeader, new()
+            {
+                return _incomingMessage.GetHeader<T>();
+            }
+        }
+    }
 }

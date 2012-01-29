@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel;
 
-namespace WSMan.NET
+namespace WSMan.NET.WCF
 {
    public class DummyOperationContext : IOperationContext
    {
