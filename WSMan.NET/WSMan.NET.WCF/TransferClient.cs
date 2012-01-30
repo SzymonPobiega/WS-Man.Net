@@ -2,7 +2,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using WSMan.NET.Transfer;
 
 namespace WSMan.NET.WCF
 {

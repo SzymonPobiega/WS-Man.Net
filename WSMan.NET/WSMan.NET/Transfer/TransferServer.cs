@@ -18,6 +18,18 @@ namespace WSMan.NET.Transfer
         public OutgoingMessage Handle(IncomingMessage request)
         {
             var actionHeader = request.GetHeader<ActionHeader>();
+            var messageIdHeader = request.GetHeader<MessageIdHeader>();
+
+            var outgoingMessage = ProcessMessage(request, actionHeader);
+
+            outgoingMessage.AddHeader(MessageIdHeader.CreateRandom(), false);
+            outgoingMessage.AddHeader(new RelatesToHeader(messageIdHeader.MessageId),false);
+            outgoingMessage.AddHeader(ToHeader.Anonymous, false);
+            return outgoingMessage;
+        }
+
+        private OutgoingMessage ProcessMessage(IncomingMessage request, ActionHeader actionHeader)
+        {
             switch (actionHeader.Action)
             {
                 case Constants.CreateAction:

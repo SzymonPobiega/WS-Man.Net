@@ -2,12 +2,12 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace WSMan.NET.Management
+namespace WSMan.NET.WCF
 {
    public class XmlFragment<T> : IXmlSerializable
    {      
-      private readonly XmlSerializer _xs = new XmlSerializer(typeof(T), 
-         new XmlRootAttribute("XmlFragment"){Namespace = Const.Namespace.NamespaceName});
+      private readonly XmlSerializer _xs = new XmlSerializer(typeof(T),
+         new XmlRootAttribute("XmlFragment") { Namespace = Const.ManagementNamespace });
 
       private T _value;
 

@@ -1,117 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
-using System.Text;
-using System.ServiceModel.Channels;
-using System.Xml;
+using System.Xml.Linq;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Management
 {
-   public sealed class SelectorSetHeader : AddressHeader
-   {
-      internal const string ElementName = "SelectorSet";
-      private readonly List<Selector> _selectors;
+    public sealed class SelectorSetHeader : IMessageHeader
+    {
+        internal const string ElementName = "SelectorSet";
+        private readonly List<Selector> _selectors;
 
-      public override string Name
-      {
-         get { return ElementName; }
-      }
-      public override string Namespace
-      {
-         get { return Const.Namespace; }
-      }
+        public XName Name
+        {
+            get { return Const.Namespace + "SelectorSet"; }
+        }
 
-      public List<Selector> Selectors
-      {
-         get { return _selectors; }
-      }
+        public IEnumerable<XNode> Write()
+        {
+            return Selectors.Select(x => x.Write());
+        }
 
-      public SelectorSetHeader(params Selector[] selectors)
-      {
-         _selectors = new List<Selector>(selectors);
-      }
+        public void Read(IEnumerable<XNode> content)
+        {
+            _selectors.AddRange(content.Cast<XElement>().Select(x => new Selector(x)));
+        }
 
-      public SelectorSetHeader(IEnumerable<Selector> selectors)
-      {
-         _selectors = new List<Selector>(selectors);
-      }
+        public List<Selector> Selectors
+        {
+            get { return _selectors; }
+        }
 
-      private SelectorSetHeader()
-      {
-         _selectors = new List<Selector>();
-      }
+        public SelectorSetHeader()
+        {
+            _selectors = new List<Selector>();
+        }
 
-      public static IEnumerable<Selector> GetCurrent()
-      {
-         SelectorSetHeader header = OperationContextProxy.Current.FindHeader<SelectorSetHeader>();
-         if (header == null)
-         {
-            return new Selector[] {};
-         }
-         return header.Selectors;
-      }
+        public SelectorSetHeader(params Selector[] selectors)
+        {
+            _selectors = new List<Selector>(selectors);
+        }
 
-      public static SelectorSetHeader ReadFrom(Message message)
-      {
-         return ReadFrom(message.Headers);
-      }
-
-      public static SelectorSetHeader ReadFrom(EndpointAddress address)
-      {
-         AddressHeader header = address.Headers.FindHeader(ElementName, Const.Namespace);
-         if (header == null)
-         {
-            return null;
-         }
-         using (XmlDictionaryReader readerAtHeader = header.GetAddressHeaderReader())
-         {
-            return ReadFrom(readerAtHeader);
-         }
-      }
-      
-      public static SelectorSetHeader ReadFrom(XmlReader reader)
-      {
-         SelectorSetHeader result = new SelectorSetHeader();
-         reader.ReadStartElement(ElementName, Const.Namespace);
-         while (reader.LocalName == Selector.ElementName)
-         {
-            Selector newSelector = Selector.ReadFrom(reader);
-            result.Selectors.Add(newSelector);
-         }
-         if (reader.NodeType == XmlNodeType.EndElement)
-         {
-            reader.ReadEndElement();
-         }
-         return result;
-      }      
-      
-      public static SelectorSetHeader ReadFrom(MessageHeaders messageHeaders)
-      {
-         SelectorSetHeader result;
-         int index = messageHeaders.FindHeader(ElementName, Const.Namespace);
-         if (index < 0)
-         {
-            return null;
-         }
-         using (XmlDictionaryReader readerAtHeader = messageHeaders.GetReaderAtHeader(index))
-         {
-            result = ReadFrom(readerAtHeader);
-         }
-         MessageHeaderInfo headerInfo = messageHeaders[index];
-         if (!messageHeaders.UnderstoodHeaders.Contains(headerInfo))
-         {
-            messageHeaders.UnderstoodHeaders.Add(headerInfo);
-         }
-         return result;
-      }
-      
-      protected override void OnWriteAddressHeaderContents(XmlDictionaryWriter writer)
-      {
-         foreach (Selector selector in Selectors)
-         {
-            selector.WriteTo(writer);
-         }
-      }
-   }
+        public SelectorSetHeader(IEnumerable<Selector> selectors)
+        {
+            _selectors = new List<Selector>(selectors);
+        }
+    }
 }

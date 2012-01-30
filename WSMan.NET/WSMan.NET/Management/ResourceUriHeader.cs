@@ -1,80 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ServiceModel.Channels;
-using System.Xml;
+using System.Xml.Linq;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Management
 {
-   public class ResourceUriHeader : AddressHeader
-   {
-      private const string ElementName = "ResourceURI";
+    public class ResourceUriHeader : IMessageHeader
+    {
+        private string _resourceUri;
 
-      private readonly string _resourceUri;
+        public ResourceUriHeader()
+        {
+        }
 
-      public ResourceUriHeader(string resourceUri)
-      {
-         _resourceUri = resourceUri;
-      }
+        public ResourceUriHeader(string resourceUri)
+        {
+            _resourceUri = resourceUri;
+        }
 
-      public static ResourceUriHeader GetFrom(AddressHeaderCollection headerCollection)
-      {
-         return (ResourceUriHeader)headerCollection.FindHeader(ElementName, Const.Namespace);
-      }
+        public XName Name
+        {
+            get { return Const.Namespace + "ResourceURI"; }
+        }
 
-      public static ResourceUriHeader ReadFrom(XmlDictionaryReader reader)
-      {
-         reader.ReadStartElement(ElementName, Const.Namespace);
-         string result = reader.Value;
-         reader.Read();
-         reader.ReadEndElement();
-         return new ResourceUriHeader(result);
-      }
+        public string ResourceUri
+        {
+            get { return _resourceUri; }
+        }
 
-      public static ResourceUriHeader ReadFrom(Message message)
-      {
-         return ReadFrom(message.Headers);
-      }
+        public IEnumerable<XNode> Write()
+        {
+            yield return new XText(ResourceUri);
+        }
 
-      public static ResourceUriHeader ReadFrom(MessageHeaders messageHeaders)
-      {
-         ResourceUriHeader result;
-         int index = messageHeaders.FindHeader(ElementName, Const.Namespace);
-         if (index < 0)
-         {
-            return null;
-         }
-         using (XmlDictionaryReader readerAtHeader = messageHeaders.GetReaderAtHeader(index))
-         {
-            result = ReadFrom(readerAtHeader);
-         }
-         MessageHeaderInfo headerInfo = messageHeaders[index];
-         if (!messageHeaders.UnderstoodHeaders.Contains(headerInfo))
-         {
-            messageHeaders.UnderstoodHeaders.Add(headerInfo);
-         }
-         return result;
-      }
+        public void Read(IEnumerable<XNode> content)
+        {
+            var text = (XText)content.Single();
+            _resourceUri = text.Value;
+        }
 
-      protected override void OnWriteAddressHeaderContents(XmlDictionaryWriter writer)
-      {
-         writer.WriteValue(ResourceUri);
-      }
-
-      public override string Name
-      {
-         get { return ElementName; }
-      }
-
-      public override string Namespace
-      {
-         get { return Const.Namespace; }
-      }
-
-      public string ResourceUri
-      {
-         get { return _resourceUri; }
-      }
-   }
+    }
 }

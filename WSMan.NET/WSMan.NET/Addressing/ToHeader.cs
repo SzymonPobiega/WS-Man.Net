@@ -13,6 +13,8 @@ namespace WSMan.NET.Addressing
         {
         }
 
+        public static ToHeader Anonymous = new ToHeader("http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous");
+
         public ToHeader(string uri)
         {
             _uri = uri;

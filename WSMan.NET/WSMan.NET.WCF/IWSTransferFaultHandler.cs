@@ -1,9 +1,7 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.ServiceModel.Channels;
 
-namespace WSMan.NET.Transfer
+namespace WSMan.NET.WCF
 {
    public interface IWSTransferFaultHandler
    {

@@ -1,16 +1,11 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using System.Text;
-using System.Xml;
-using WSMan.NET.WCF;
 
-namespace WSMan.NET
+namespace WSMan.NET.WCF
 {
     public class AddressingVersionExtensionServiceBehaviorAttribute : Attribute, IServiceBehavior
     {

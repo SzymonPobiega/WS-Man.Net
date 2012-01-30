@@ -1,31 +1,42 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.ServiceModel;
+using WSMan.NET.Addressing;
 using WSMan.NET.Transfer;
 
 namespace WSMan.NET.Management
 {
     public class ManagementTransferRequestHandler : ITransferRequestHandler
     {
-        public object HandleGet()
+        public object HandleGet(IIncomingHeaders incomingHeaders, IOutgoingHeaders outgoingHeaders)
         {
-            return GetHandler().HandleGet(GetFragmentExpression(), GetSelectors());
+            var fragmentExpression = GetFragmentExpression(incomingHeaders, outgoingHeaders);
+            var selectors = GetSelectors(incomingHeaders);
+            var handler = GetHandler(incomingHeaders);
+
+            return handler.HandleGet(fragmentExpression, selectors);
         }
 
-        public object HandlePut(ExtractBodyDelegate extractBodyCallback)
+        public object HandlePut(IIncomingHeaders incomingHeaders, IOutgoingHeaders outgoingHeaders, ExtractBodyDelegate extractBodyCallback)
         {
-            return GetHandler().HandlePut(GetFragmentExpression(), GetSelectors(), extractBodyCallback);
+            var fragmentExpression = GetFragmentExpression(incomingHeaders, outgoingHeaders);
+            var selectors = GetSelectors(incomingHeaders);
+            var handler = GetHandler(incomingHeaders);
+
+            return handler.HandlePut(fragmentExpression, selectors, extractBodyCallback);
         }
 
-        public EndpointAddress HandleCreate(ExtractBodyDelegate extractBodyCallback)
+        public EndpointReference HandleCreate(IIncomingHeaders incomingHeaders, IOutgoingHeaders outgoingHeaders, ExtractBodyDelegate extractBodyCallback)
         {
-            return GetHandler().HandleCreate(extractBodyCallback);
+            var handler = GetHandler(incomingHeaders);
+
+            return handler.HandleCreate(extractBodyCallback);
         }
 
-        public void HandlerDelete()
+        public void HandlerDelete(IIncomingHeaders incomingHeaders, IOutgoingHeaders outgoingHeaders)
         {
-            GetHandler().HandlerDelete(GetSelectors());
+            var handler = GetHandler(incomingHeaders);
+
+            handler.HandlerDelete(GetSelectors(incomingHeaders));
         }
 
         public void Bind(Uri resourceUri, IManagementRequestHandler handler)
@@ -33,30 +44,30 @@ namespace WSMan.NET.Management
             _handlers[resourceUri.ToString()] = handler;
         }
 
-        private static string GetFragmentExpression()
+        private static string GetFragmentExpression(IIncomingHeaders incomingHeaders, IOutgoingHeaders outgoingHeaders)
         {
-            var fragmentTransferHeader = OperationContextProxy.Current.FindHeader<FragmentTransferHeader>();
+            var fragmentTransferHeader = incomingHeaders.GetHeader<FragmentTransferHeader>();
             string fragmentExpression = null;
             if (fragmentTransferHeader != null)
             {
-                OperationContextProxy.Current.AddHeader(fragmentTransferHeader);
+                //outgoingHeaders.AddHeader(fragmentTransferHeader, false);
                 fragmentExpression = fragmentTransferHeader.Expression;
             }
             return fragmentExpression;
         }
 
-        private IManagementRequestHandler GetHandler()
+        private IManagementRequestHandler GetHandler(IIncomingHeaders incomingHeaders)
         {
-            ResourceUriHeader resourceUriHeader = OperationContextProxy.Current.FindHeader<ResourceUriHeader>();
+            var resourceUriHeader = incomingHeaders.GetHeader<ResourceUriHeader>();
 
             //TODO: Fault
             return _handlers[resourceUriHeader.ResourceUri];
         }
 
 
-        private static List<Selector> GetSelectors()
+        private static IEnumerable<Selector> GetSelectors(IIncomingHeaders incomingHeaders)
         {
-            SelectorSetHeader selectorSetHeader = OperationContextProxy.Current.FindHeader<SelectorSetHeader>();
+            var selectorSetHeader = incomingHeaders.GetHeader<SelectorSetHeader>();
 
             List<Selector> selectors = selectorSetHeader != null
                ? selectorSetHeader.Selectors

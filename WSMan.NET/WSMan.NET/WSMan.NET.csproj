@@ -79,7 +79,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Addressing\ActionHeader.cs" />
+    <Compile Include="Addressing\RelatesToHeader.cs" />
+    <Compile Include="Addressing\MessageIDHeader.cs" />
     <Compile Include="Addressing\EndpointReference.cs" />
+    <Compile Include="Management\Const.cs" />
+    <Compile Include="Management\FragmentTransferHeader.cs" />
+    <Compile Include="Management\IManagementRequestHandler.cs" />
+    <Compile Include="Management\ManagementTransferRequestHandler.cs" />
+    <Compile Include="Management\MaxEnvelopeSizeHeader.cs" />
+    <Compile Include="Management\ResourceUriHeader.cs" />
+    <Compile Include="Management\Selector.cs" />
+    <Compile Include="Management\SelectorSetHeader.cs" />
+    <Compile Include="Management\XmlFragment.cs" />
     <Compile Include="SOAP\IBodyWriter.cs" />
     <Compile Include="SOAP\IMessageHeader.cs" />
     <Compile Include="SOAP\IncomingMessage.cs" />

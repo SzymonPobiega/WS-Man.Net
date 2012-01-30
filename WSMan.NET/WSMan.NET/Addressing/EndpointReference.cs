@@ -59,5 +59,10 @@ namespace WSMan.NET.Addressing
             writer.WriteString(_address);
             writer.WriteEndElement();
         }
+
+        public override string ToString()
+        {
+            return _address;
+        }
     }
 }

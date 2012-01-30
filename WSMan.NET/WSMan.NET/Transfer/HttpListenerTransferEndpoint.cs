@@ -11,7 +11,6 @@ namespace WSMan.NET.Transfer
     public class HttpListenerTransferEndpoint : IDisposable
     {
         private readonly HttpListener _listener;
-        private readonly Task _acceptingLoopTask;
         private readonly TransferServer _transferServer;
         private bool _disposed;
 
@@ -19,7 +18,7 @@ namespace WSMan.NET.Transfer
         {
             _listener = new HttpListener();
             _listener.Prefixes.Add(uriPrefix);
-            _acceptingLoopTask = Task.Factory.StartNew(AcceptingLoop);
+            Task.Factory.StartNew(AcceptingLoop);
             _transferServer = transferServer;
         }
 
@@ -42,7 +41,7 @@ namespace WSMan.NET.Transfer
 
         private void HandleRequest(HttpListenerContext ctx)
         {
-            ctx.Response.ContentType = @"application/soap+xml";
+            ctx.Response.ContentType = @"application/soap+xml; charset=utf-8";
 
             var reader = XmlReader.Create(ctx.Request.InputStream);
             using (var incomingMessage = new IncomingMessage(reader))

@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.ServiceModel;
+using WSMan.NET.Addressing;
 using WSMan.NET.Management;
 using WSMan.NET.Transfer;
 
 namespace ManagementDemo
 {
-    public class WsManHandler : IManagementRequestHandler
+    public class Handler : IManagementRequestHandler
     {
         public bool CanHandle(string resourceUri)
         {
@@ -25,15 +25,15 @@ namespace ManagementDemo
 
         public object HandlePut(string fragmentExpression, IEnumerable<Selector> selectors, ExtractBodyDelegate extractBodyCallback)
         {
-            SampleData value = (SampleData)extractBodyCallback(typeof(SampleData));
+            var value = (SampleData)extractBodyCallback(typeof(SampleData));
             Console.WriteLine("Server: putting fragment {0}: {1}", fragmentExpression, value);
             Console.WriteLine();
             return value;
         }
 
-        public EndpointAddress HandleCreate(ExtractBodyDelegate extractBodyCallback)
+        public EndpointReference HandleCreate(ExtractBodyDelegate extractBodyCallback)
         {
-            return new EndpointAddress("http://tempuri.org");
+            return new EndpointReference("http://tempuri.org");
         }
 
         public void HandlerDelete(IEnumerable<Selector> selectors)

@@ -13,5 +13,7 @@ namespace WSMan.NET.WCF
       public const string DeleteResponseAction = "http://schemas.xmlsoap.org/ws/2004/09/transfer/DeleteResponse";
 
       public const string CreateResponse_ResourceCreatedElement = "ResourceCreated";
+
+       public const string ManagementNamespace = @"http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd";
    }
 }
