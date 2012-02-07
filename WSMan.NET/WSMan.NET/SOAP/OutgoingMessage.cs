@@ -8,20 +8,23 @@ namespace WSMan.NET.SOAP
         private IBodyWriter _bodyWriter;
         private readonly List<MessageHeader> _headers = new List<MessageHeader>();
 
-        public void AddHeader(MessageHeader header)
+        public OutgoingMessage AddHeader(MessageHeader header)
         {
             _headers.Add(header);
+            return this;
         }
 
-        public void SetBody(IBodyWriter bodyWriter)
+        public OutgoingMessage SetBody(IBodyWriter bodyWriter)
         {
             _bodyWriter = bodyWriter;
+            return this;
         }
 
-        public void AddHeader(IMessageHeader typedHeader, bool mustUnderstand)
+        public OutgoingMessage AddHeader(IMessageHeader typedHeader, bool mustUnderstand)
         {
             var header = new MessageHeader(typedHeader.Name, typedHeader.Write(), mustUnderstand);
             _headers.Add(header);
+            return this;
         }
 
         public void Write(XmlWriter output)

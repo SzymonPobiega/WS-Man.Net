@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace WSMan.NET
@@ -6,7 +7,7 @@ namespace WSMan.NET
     public static class XmlReaderExtensions
     {
         public static XmlReader ReadStartElement(this XmlReader reader, XName elementName)
-        {
+        {            
             reader.ReadStartElement(elementName.LocalName, elementName.Namespace.NamespaceName);
             return reader;
         }

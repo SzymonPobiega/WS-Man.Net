@@ -1,10 +1,10 @@
-using System;
 using WSMan.NET.Addressing;
+using WSMan.NET.Server;
 using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Transfer
 {
-    public class TransferServer
+    public class TransferServer : AddressingBasedMessageHandler
     {
         private readonly ITransferRequestHandler _handler;
         private readonly MessageFactory _factory;
@@ -14,21 +14,8 @@ namespace WSMan.NET.Transfer
             _handler = handler;
             _factory = new MessageFactory();
         }
-
-        public OutgoingMessage Handle(IncomingMessage request)
-        {
-            var actionHeader = request.GetHeader<ActionHeader>();
-            var messageIdHeader = request.GetHeader<MessageIdHeader>();
-
-            var outgoingMessage = ProcessMessage(request, actionHeader);
-
-            outgoingMessage.AddHeader(MessageIdHeader.CreateRandom(), false);
-            outgoingMessage.AddHeader(new RelatesToHeader(messageIdHeader.MessageId),false);
-            outgoingMessage.AddHeader(ToHeader.Anonymous, false);
-            return outgoingMessage;
-        }
-
-        private OutgoingMessage ProcessMessage(IncomingMessage request, ActionHeader actionHeader)
+        
+        protected override OutgoingMessage ProcessMessage(IncomingMessage request, ActionHeader actionHeader)
         {
             switch (actionHeader.Action)
             {
@@ -41,7 +28,7 @@ namespace WSMan.NET.Transfer
                 case Constants.DeleteAction:
                     return Delete(request);
                 default:
-                    throw new NotSupportedException();
+                    return null;
             }
         }
 
@@ -60,7 +47,7 @@ namespace WSMan.NET.Transfer
             var response = _factory.CreatePutResponse();
             var incomingHeaders = new IncomingHeaders(putRequest);
             var outgoingHeaders = new OutgoingHeaders(response);
-            var payload = _handler.HandlePut(incomingHeaders, outgoingHeaders, x => _factory.DeserializeMessageWithPayload(putRequest, x));
+            var payload = _handler.HandlePut(incomingHeaders, outgoingHeaders, x => OutgoingMessageExtensions.GetPayload(putRequest, x));
             response.SetBody(new SerializerBodyWriter(payload));
             return response;
         }
@@ -70,7 +57,7 @@ namespace WSMan.NET.Transfer
             var response = _factory.CreateCreateResponse();
             var incomingHeaders = new IncomingHeaders(createRequest);
             var outgoingHeaders = new OutgoingHeaders(response);
-            var reference = _handler.HandleCreate(incomingHeaders, outgoingHeaders, x => _factory.DeserializeMessageWithPayload(createRequest, x));
+            var reference = _handler.HandleCreate(incomingHeaders, outgoingHeaders, x => OutgoingMessageExtensions.GetPayload(createRequest, x));
             response.SetBody(new CreateResponseBodyWriter(reference));
             return response;
         }

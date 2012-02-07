@@ -82,6 +82,102 @@
     <Compile Include="Addressing\RelatesToHeader.cs" />
     <Compile Include="Addressing\MessageIDHeader.cs" />
     <Compile Include="Addressing\EndpointReference.cs" />
+    <Compile Include="Enumeration\Constants.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EndOfSequence.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerateRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerateResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerationContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerationContextKey.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerationEnd.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\Faults\EnumerationFaultException.cs" />
+    <Compile Include="Enumeration\EnumerationItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerationItemList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerationMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerationServer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\EnumerationState.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\Expires.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\Faults\NotSupportedDialectFaultException.cs" />
+    <Compile Include="Enumeration\Filter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\FilterMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\GetStatusRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\GetStatusResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\HandlerMapKey.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\IEnumerationContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\IEnumerationRequestHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\Faults\InvalidEnumerationContextFaultException.cs" />
+    <Compile Include="Enumeration\LanguageSpecificString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\MaxElements.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\MaxTime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\OptimizeEnumeration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\PullRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\PullResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\Release.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\RenewRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\RenewResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\RequestTotalItemsCountEstimateHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enumeration\TotalItemsCountEstimateHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Management\Const.cs" />
     <Compile Include="Management\FragmentTransferHeader.cs" />
     <Compile Include="Management\IManagementRequestHandler.cs" />
@@ -91,18 +187,23 @@
     <Compile Include="Management\Selector.cs" />
     <Compile Include="Management\SelectorSetHeader.cs" />
     <Compile Include="Management\XmlFragment.cs" />
+    <Compile Include="Server\AddressingBasedMessageHandler.cs" />
+    <Compile Include="SOAP\Fault.cs" />
+    <Compile Include="SOAP\FaultException.cs" />
+    <Compile Include="SOAP\FaultMessage.cs" />
     <Compile Include="SOAP\IBodyWriter.cs" />
     <Compile Include="SOAP\IMessageHeader.cs" />
     <Compile Include="SOAP\IncomingMessage.cs" />
     <Compile Include="SOAP\MessageHeader.cs" />
-    <Compile Include="Transfer\HttpListenerTransferEndpoint.cs" />
+    <Compile Include="SOAP\OutgoingMessageExtensions.cs" />
+    <Compile Include="Server\HttpListenerTransferEndpoint.cs" />
     <Compile Include="Transfer\IIncomingHeaders.cs" />
     <Compile Include="Transfer\IOutgoingHeaders.cs" />
-    <Compile Include="Transfer\MessageVersion.cs" />
     <Compile Include="SOAP\OutgoingMessage.cs" />
     <Compile Include="SOAP\Constants.cs" />
     <Compile Include="Transfer\Constants.cs" />
     <Compile Include="Transfer\CreateResponseBodyWriter.cs" />
+    <Compile Include="Server\IRequestHandler.cs" />
     <Compile Include="Transfer\ITransferRequestHandler.cs" />
     <Compile Include="Transfer\MessageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

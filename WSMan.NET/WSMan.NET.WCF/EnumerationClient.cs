@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using WSMan.NET.Management;
 
-namespace WSMan.NET.Enumeration
+namespace WSMan.NET.WCF
 {
    public class EnumerationClient : IDisposable
    {      

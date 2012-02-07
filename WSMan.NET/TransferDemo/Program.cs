@@ -4,6 +4,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
+using WSMan.NET.Server;
 using WSMan.NET.Transfer;
 using WSMan.NET.WCF;
 using MessageVersion = System.ServiceModel.Channels.MessageVersion;

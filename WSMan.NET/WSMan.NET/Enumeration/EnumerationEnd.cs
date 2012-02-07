@@ -9,57 +9,26 @@ using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   
-   [Serializable]
-   
-   
-   [XmlType(AnonymousType = true, Namespace = Const.Namespace)]
-   [XmlRoot(Namespace = Const.Namespace, IsNullable = false)]
-   public class EnumerationEnd
-   {
-      private XmlAttribute[] anyAttrField;
-      private XmlElement[] anyField;
-      private string codeField;
-      private EnumerationContextKey enumerationContextField;
+    [Serializable]
+    [XmlType(AnonymousType = true, Namespace = Constants.NamespaceName)]
+    [XmlRoot(Namespace = Constants.NamespaceName, IsNullable = false)]
+    public class EnumerationEnd
+    {
+        [XmlElement]
+        public EnumerationContextKey EnumerationContext { get; set; }
 
-      private LanguageSpecificString[] reasonField;
+        [XmlElement]
+        public string Code { get; set; }
 
-
-      public EnumerationContextKey EnumerationContext
-      {
-         get { return enumerationContextField; }
-         set { enumerationContextField = value; }
-      }
+        [XmlElement("Reason")]
+        public LanguageSpecificString[] Reason { get; set; }
 
 
-      public string Code
-      {
-         get { return codeField; }
-         set { codeField = value; }
-      }
+        [XmlAnyElement]
+        public XmlElement[] Any { get; set; }
 
 
-      [XmlElement("Reason")]
-      public LanguageSpecificString[] Reason
-      {
-         get { return reasonField; }
-         set { reasonField = value; }
-      }
-
-
-      [XmlAnyElement]
-      public XmlElement[] Any
-      {
-         get { return anyField; }
-         set { anyField = value; }
-      }
-
-
-      [XmlAnyAttribute]
-      public XmlAttribute[] AnyAttr
-      {
-         get { return anyAttrField; }
-         set { anyAttrField = value; }
-      }
-   }
+        [XmlAnyAttribute]
+        public XmlAttribute[] AnyAttr { get; set; }
+    }
 }

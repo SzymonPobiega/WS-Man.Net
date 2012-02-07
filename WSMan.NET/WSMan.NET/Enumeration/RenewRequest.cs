@@ -1,50 +1,22 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   [Serializable]
-   [XmlType(AnonymousType = true, Namespace = Const.Namespace)]
-   [XmlRoot("Renew", Namespace = Const.Namespace, IsNullable = false)]
-   public class RenewRequest
-   {
-      private XmlAttribute[] anyAttrField;
-      private XmlElement[] anyField;
-      private EnumerationContextKey enumerationContextField;
+    [Serializable]
+    [XmlType(AnonymousType = true, Namespace = Constants.NamespaceName)]
+    [XmlRoot("Renew", Namespace = Constants.NamespaceName, IsNullable = false)]
+    public class RenewRequest
+    {
+        public EnumerationContextKey EnumerationContext { get; set; }
 
-      private string expiresField;
+        public string Expires { get; set; }
 
+        [XmlAnyElement]
+        public XmlElement[] Any { get; set; }
 
-      public EnumerationContextKey EnumerationContext
-      {
-         get { return enumerationContextField; }
-         set { enumerationContextField = value; }
-      }
-
-
-      public string Expires
-      {
-         get { return expiresField; }
-         set { expiresField = value; }
-      }
-
-
-      [XmlAnyElement]
-      public XmlElement[] Any
-      {
-         get { return anyField; }
-         set { anyField = value; }
-      }
-
-
-      [XmlAnyAttribute]
-      public XmlAttribute[] AnyAttr
-      {
-         get { return anyAttrField; }
-         set { anyAttrField = value; }
-      }
-   }
+        [XmlAnyAttribute]
+        public XmlAttribute[] AnyAttr { get; set; }
+    }
 }

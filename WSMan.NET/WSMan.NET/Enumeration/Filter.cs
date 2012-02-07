@@ -1,92 +1,79 @@
 using System;
-using System.Linq;
-using System.ServiceModel;
+using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   public class Filter : IXmlSerializable
-   {
-      private const string DialectAttribute = "Dialect";
-      private string _dialect;
-      private object _value;
+    public class Filter : IXmlSerializable
+    {
+        private const string DialectAttribute = "Dialect";
+        private string _dialect;
+        private string _rawValue;
+        private readonly object _value;
 
-      public Filter(string dialect, object value)
-      {
-         //TODO: Add test if value can be serialized using provided dialect.
-         _value = value;
-         _dialect = dialect;
-      }
+        public Filter(string dialect, object value)
+        {
+            _dialect = dialect;
+            _value = value;
+        }
 
-      public Filter()
-      {
-      }
+        public Filter()
+        {
+        }
+        
+        public string Dialect
+        {
+            get { return _dialect; }
+        }
 
-      public object Value
-      {
-         get { return _value; }
-      }
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
 
-      public string Dialect
-      {
-         get { return _dialect; }
-      }
+        public void ReadXml(XmlReader reader)
+        {
+            _dialect = reader.GetAttribute(DialectAttribute);
+            _rawValue = reader.ReadInnerXml();
+        }
 
-      public XmlSchema GetSchema()
-      {
-         return null;
-      }
+        public object DeserializeAs(Type type)
+        {
+            if (type == typeof(void))
+            {
+                return null;
+            }
+            var reader = XmlReader.Create(new StringReader(_rawValue));
+            if (typeof(IXmlSerializable).IsAssignableFrom(type))
+            {
+                var serializable = (IXmlSerializable)Activator.CreateInstance(type);
+                serializable.ReadXml(reader);
+                return serializable;
+            }
+            var serializer = new XmlSerializer(type);
+            if (!reader.IsEmptyElement)
+            {
+                return serializer.Deserialize(reader);
+            }
+            return null;
+        }
 
-      public void ReadXml(XmlReader reader)
-      {
-         _dialect = reader.GetAttribute(DialectAttribute);
-         Type type = FilterMapExtension.GetDialectType(_dialect);
-         if (type == null)
-         {
-            throw CreateNotSupportedDialectException();
-         }
-         if (type == typeof(void))
-         {
-            return;
-         }
-         if (typeof(IXmlSerializable).IsAssignableFrom(type))
-         {
-            IXmlSerializable serializable = (IXmlSerializable)Activator.CreateInstance(type);
-            serializable.ReadXml(reader);
-            return;
-         }
-         XmlSerializer serializer = new XmlSerializer(type);
-         if (!reader.IsEmptyElement)
-         {
-            reader.ReadStartElement("Filter", reader.NamespaceURI);
-            _value = serializer.Deserialize(reader);
-            reader.ReadEndElement();
-         }
-      }
-
-      public void WriteXml(XmlWriter writer)
-      {
-         writer.WriteAttributeString(DialectAttribute, _dialect);
-         IXmlSerializable serializable = _value as IXmlSerializable;
-         if (serializable != null)
-         {
-            serializable.WriteXml(writer);
-            return;
-         }
-         if (_value != null)
-         {
-            XmlSerializer serializer = new XmlSerializer(_value.GetType());
-            serializer.Serialize(writer, _value);
-         }
-      }
-
-      private static Exception CreateNotSupportedDialectException()
-      {
-         return new FaultException("The requested filtering dialect is not supported",
-                                  FaultCode.CreateSenderFaultCode("FilterDialectRequestedUnavailable", Const.Namespace),
-                                  "http://schemas.xmlsoap.org/ws/2004/09/enumeration/fault");
-      }
-   }
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString(DialectAttribute, _dialect);
+            var serializable = _value as IXmlSerializable;
+            if (serializable != null)
+            {
+                serializable.WriteXml(writer);
+                return;
+            }
+            if (_value != null)
+            {
+                var serializer = new XmlSerializer(_value.GetType());
+                serializer.Serialize(writer, _value);
+            }
+        }
+    }
 }

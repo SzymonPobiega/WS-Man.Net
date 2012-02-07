@@ -8,10 +8,10 @@ namespace WSMan.NET.Enumeration
    public class EnumerationContext : IEnumerationContext
    {
       private readonly string _context;
-      private readonly Filter _filter;
+      private readonly object _filter;
       private readonly IEnumerable<Selector> _selectors;
 
-      public EnumerationContext(string context, Filter filter, IEnumerable<Selector> selectors)
+      public EnumerationContext(string context, object filter, IEnumerable<Selector> selectors)
       {
          _context = context;
          _selectors = selectors;
@@ -23,7 +23,7 @@ namespace WSMan.NET.Enumeration
          get { return _context; }
       }
 
-      public Filter Filter
+      public object Filter
       {
          get { return _filter; }
       }

@@ -41,7 +41,7 @@ namespace WSMan.NET.Enumeration
          reader.ReadStartElement("Items", reader.NamespaceURI);
          while (reader.NodeType != XmlNodeType.EndElement)
          {
-            EnumerationItem item = new EnumerationItem();
+            var item = new EnumerationItem();
             item.ReadXml(reader);
             _items.Add(item);
          }
@@ -50,7 +50,7 @@ namespace WSMan.NET.Enumeration
 
       public void WriteXml(XmlWriter writer)
       {
-         foreach (EnumerationItem item in Items)
+         foreach (var item in Items)
          {
             item.WriteXml(writer);
          }

@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventingDemo", "EventingDem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{DB9D11BB-CA19-460F-920B-122BACE0F1EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSMan.NET.WCF", "WSMan.NET.WCF\WSMan.NET.WCF.csproj", "{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransferDemo", "TransferDemo\TransferDemo.csproj", "{74DCC9B4-02B0-4971-9498-8D4A336A78CC}"
 EndProject
 Global
@@ -81,16 +79,6 @@ Global
 		{DB9D11BB-CA19-460F-920B-122BACE0F1EC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DB9D11BB-CA19-460F-920B-122BACE0F1EC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DB9D11BB-CA19-460F-920B-122BACE0F1EC}.Release|x86.ActiveCfg = Release|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}.Release|x86.ActiveCfg = Release|Any CPU
 		{74DCC9B4-02B0-4971-9498-8D4A336A78CC}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{74DCC9B4-02B0-4971-9498-8D4A336A78CC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{74DCC9B4-02B0-4971-9498-8D4A336A78CC}.Debug|Mixed Platforms.Build.0 = Debug|x86

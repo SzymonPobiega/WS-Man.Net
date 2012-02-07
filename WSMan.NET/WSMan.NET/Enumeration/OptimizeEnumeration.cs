@@ -1,13 +1,8 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   [XmlType(Namespace = Const.Namespace)]
+   [XmlType(Namespace = Constants.NamespaceName)]
    public class OptimizeEnumeration
    {      
       public static OptimizeEnumeration True

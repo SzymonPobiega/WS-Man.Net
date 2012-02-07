@@ -15,7 +15,7 @@ namespace WSMan.NET.SOAP
         {
             _name = headerElement.Name;
             _content = headerElement.Nodes();
-            var mustUnderstandAttribute = headerElement.Attribute(Constants.EnvelopeNamespace + "mustUnderstand");
+            var mustUnderstandAttribute = headerElement.Attribute(Constants.Namespace + "mustUnderstand");
             if (mustUnderstandAttribute!= null)
             {
                 _mustUnderstand = XmlConvert.ToBoolean(mustUnderstandAttribute.Value);                
@@ -47,7 +47,7 @@ namespace WSMan.NET.SOAP
         public void Write(XmlWriter output)
         {
             output.WriteStartElement(_name);
-            output.WriteAttributeString("mustUnderstand",Constants.EnvelopeNamespace.NamespaceName, XmlConvert.ToString(_mustUnderstand));
+            output.WriteAttributeString("mustUnderstand",Constants.Namespace.NamespaceName, XmlConvert.ToString(_mustUnderstand));
             foreach (var node in _content)
             {
                 node.WriteTo(output);

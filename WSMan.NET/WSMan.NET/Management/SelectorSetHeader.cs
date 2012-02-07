@@ -13,7 +13,7 @@ namespace WSMan.NET.Management
 
         public XName Name
         {
-            get { return Const.Namespace + "SelectorSet"; }
+            get { return Const.Namespace + ElementName; }
         }
 
         public IEnumerable<XNode> Write()

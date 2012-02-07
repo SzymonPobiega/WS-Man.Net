@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace WSMan.NET.Enumeration
 {
@@ -29,7 +27,7 @@ namespace WSMan.NET.Enumeration
          {
             return false;
          }
-         HandlerMapKey other = (HandlerMapKey)obj;
+         var other = (HandlerMapKey)obj;
          return _resourceUri.Equals(other._resourceUri) &&
             _filterDialect.Equals(other._filterDialect);
       }

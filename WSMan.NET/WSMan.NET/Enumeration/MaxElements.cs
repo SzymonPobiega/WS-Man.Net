@@ -7,8 +7,8 @@ using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {   
-   [XmlType(Namespace = Management.Const.Namespace)]
-   public class MaxElements// : IXmlSerializable
+   [XmlType(Namespace = Management.Const.NamespaceName)]
+   public class MaxElements
    {
       [XmlText]
       public int Value { get; set; }

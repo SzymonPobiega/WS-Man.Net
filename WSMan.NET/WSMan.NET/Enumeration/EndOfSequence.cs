@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration

@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WSMan.NET.Management;
+﻿using System.Collections.Generic;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Enumeration
 {
-   public interface IEnumerationContext
+    public interface IEnumerationRequestHandler
    {
-      string Context { get; }
-      Filter Filter { get; }
-      IEnumerable<Selector> Selectors { get; }
-   }
-
-   public interface IEnumerationRequestHandler
-   {
-      IEnumerable<object> Enumerate(IEnumerationContext context);
-      int EstimateRemainingItemsCount(IEnumerationContext context);
+      IEnumerable<object> Enumerate(IEnumerationContext context, IncomingMessage incomingMessage, OutgoingMessage outgoingMessage);
+      int EstimateRemainingItemsCount(IEnumerationContext context, IncomingMessage incomingMessage, OutgoingMessage outgoingMessage);
    }
 }

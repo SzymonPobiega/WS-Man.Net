@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   [XmlType("EnumerationContext", Namespace = Const.Namespace)]
+   [XmlType("EnumerationContext", Namespace = Constants.NamespaceName)]
    public class EnumerationContextKey
    {
       [XmlText]
@@ -32,8 +32,9 @@ namespace WSMan.NET.Enumeration
 
       public override bool Equals(object obj)
       {
-         EnumerationContextKey other = obj as EnumerationContextKey;
-         return other != null && Text.Equals(other.Text);
+         var other = obj as EnumerationContextKey;
+         return other != null 
+             && Text.Equals(other.Text);
       }
    }
 }

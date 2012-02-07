@@ -46,7 +46,7 @@ namespace WSMan.NET
         public void It_reads_must_understand_from_attribute()
         {
             var headerElement = new XElement("headerName",
-                new XAttribute(Constants.EnvelopeNamespace + "mustUnderstand", true));
+                new XAttribute(Constants.Namespace + "mustUnderstand", true));
 
             var header = new MessageHeader(headerElement);
 
@@ -60,7 +60,7 @@ namespace WSMan.NET
 
             var headerElement = XElementExtensions.ParseGeneratedXml(header.Write);
 
-            Assert.AreEqual("True", headerElement.Attribute(Constants.EnvelopeNamespace + "mustUnderstand").Value);
+            Assert.AreEqual("True", headerElement.Attribute(Constants.Namespace + "mustUnderstand").Value);
         }
 
         [Test]

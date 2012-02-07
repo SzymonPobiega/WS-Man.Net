@@ -1,5 +1,6 @@
 ﻿using System;
 using WSMan.NET.Management;
+using WSMan.NET.Server;
 using WSMan.NET.Transfer;
 
 namespace ManagementDemo
@@ -16,7 +17,7 @@ namespace ManagementDemo
             var transferServer = new TransferServer(handler);
             using (new HttpListenerTransferEndpoint("http://localhost:12345/", transferServer))
             {
-                Client.PerformTest();
+                //Client.PerformTest();
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
             }

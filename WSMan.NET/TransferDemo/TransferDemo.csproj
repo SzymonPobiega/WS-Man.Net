@@ -52,10 +52,6 @@
     <Compile Include="SampleData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WSMan.NET.WCF\WSMan.NET.WCF.csproj">
-      <Project>{7D1E93A9-2433-4C54-8D0E-3B19E74041E9}</Project>
-      <Name>WSMan.NET.WCF</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WSMan.NET\WSMan.NET.csproj">
       <Project>{B649731C-C299-45AE-A0AC-9AFC2B8B0072}</Project>
       <Name>WSMan.NET</Name>

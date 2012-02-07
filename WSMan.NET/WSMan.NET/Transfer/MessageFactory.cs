@@ -57,22 +57,6 @@ namespace WSMan.NET.Transfer
             return result;
         }
 
-        public object DeserializeMessageWithPayload(IncomingMessage messageWithPayload, Type expectedType)
-        {
-            if (messageWithPayload.IsEmpty)
-            {
-                return null;
-            }
-            if (typeof(IXmlSerializable).IsAssignableFrom(expectedType))
-            {
-                var serializable = (IXmlSerializable)Activator.CreateInstance(expectedType);
-                serializable.ReadXml(messageWithPayload.GetReaderAtBodyContents());
-                return serializable;
-            }
-            var xs = new XmlSerializer(expectedType);
-            return xs.Deserialize(messageWithPayload.GetReaderAtBodyContents());
-        }
-
         public OutgoingMessage CreateMessage(string action)
         {
             var respose = new OutgoingMessage();

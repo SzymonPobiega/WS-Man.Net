@@ -1,25 +1,26 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using WSMan.NET.SOAP;
 
-namespace WSMan.NET.Transfer
+namespace WSMan.NET.Server
 {
     public class HttpListenerTransferEndpoint : IDisposable
     {
+        private readonly IRequestHandler[] _handlers;
         private readonly HttpListener _listener;
-        private readonly TransferServer _transferServer;
         private bool _disposed;
 
-        public HttpListenerTransferEndpoint(string uriPrefix, TransferServer transferServer)
+        public HttpListenerTransferEndpoint(string uriPrefix, params IRequestHandler[] handlers)
         {
+            _handlers = handlers;
             _listener = new HttpListener();
             _listener.Prefixes.Add(uriPrefix);
             Task.Factory.StartNew(AcceptingLoop);
-            _transferServer = transferServer;
         }
 
         private void AcceptingLoop()
@@ -30,12 +31,26 @@ namespace WSMan.NET.Transfer
                 try
                 {
                     var ctx = _listener.GetContext();
-                    Task.Factory.StartNew(() => HandleRequest(ctx));
+                    Task.Factory.StartNew(() => TryHandleRequest(ctx));
                 }
                 catch (HttpListenerException)
                 {
                     //Listener shut down - swallow
                 }
+            }
+        }
+
+        private void TryHandleRequest(HttpListenerContext ctx)
+        {
+            try
+            {
+                HandleRequest(ctx);
+            }
+            catch (Exception ex)
+            {
+                ctx.Response.StatusCode = 500;
+                ctx.Response.Close();
+                Console.WriteLine(ex);
             }
         }
 
@@ -46,25 +61,31 @@ namespace WSMan.NET.Transfer
             var reader = XmlReader.Create(ctx.Request.InputStream);
             using (var incomingMessage = new IncomingMessage(reader))
             {
-                var outgoingMessage = _transferServer.Handle(incomingMessage);
-                byte[] buffer;
+                var outgoingMessage = InvokeHandlers(incomingMessage);
                 using (var memoryStream = new MemoryStream())
                 {
                     var settings = new XmlWriterSettings
                                        {
-                                           Encoding = Encoding.UTF8
+                                           Encoding = Encoding.UTF8                                           
                                        };
                     using (var writer = XmlWriter.Create(memoryStream, settings))
                     {
                         outgoingMessage.Write(writer);
                         writer.Flush();
                     }
-                    buffer = memoryStream.GetBuffer();
+                    var buffer = memoryStream.GetBuffer();
+                    ctx.Response.ContentLength64 = memoryStream.Length;
+                    ctx.Response.OutputStream.Write(buffer, 0, (int)memoryStream.Length);
                 }
-                ctx.Response.ContentLength64 = buffer.Length;
-                ctx.Response.OutputStream.Write(buffer, 0, buffer.Length);
                 ctx.Response.Close();
             }
+        }
+
+        private OutgoingMessage InvokeHandlers(IncomingMessage incomingMessage)
+        {
+            return _handlers
+                .Select(x => x.Handle(incomingMessage))
+                .First(x => x != null);
         }
 
         public void Dispose()
