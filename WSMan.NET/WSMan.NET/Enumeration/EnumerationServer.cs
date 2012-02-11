@@ -10,7 +10,7 @@ using WSMan.NET.Transfer;
 
 namespace WSMan.NET.Enumeration
 {
-    public class EnumerationServer : AddressingBasedMessageHandler
+    public class EnumerationServer : AddressingBasedRequestHandler
     {
         private readonly Dictionary<EnumerationContextKey, EnumerationState> _activeEnumerations = new Dictionary<EnumerationContextKey, EnumerationState>();
         private readonly Dictionary<HandlerMapKey, IEnumerationRequestHandler> _handlerMap = new Dictionary<HandlerMapKey, IEnumerationRequestHandler>();

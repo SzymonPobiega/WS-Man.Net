@@ -11,7 +11,7 @@ namespace WSMan.NET.Enumeration
         [XmlElement(Namespace = Constants.NamespaceName)]
         public MaxTime MaxTime { get; set; }
 
-        [XmlElement(Namespace = Management.Const.NamespaceName)]
+        [XmlElement(Namespace = Management.Constants.NamespaceName)]
         public MaxElements MaxElements { get; set; }
     }
 }

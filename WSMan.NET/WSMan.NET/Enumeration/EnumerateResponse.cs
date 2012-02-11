@@ -11,10 +11,10 @@ namespace WSMan.NET.Enumeration
       [XmlElement(Namespace = Constants.NamespaceName)]
       public EnumerationContextKey EnumerationContext { get; set; }
 
-      [XmlElement(Namespace = Management.Const.NamespaceName)]      
+      [XmlElement(Namespace = Management.Constants.NamespaceName)]      
       public EnumerationItemList Items { get; set; }
 
-      [XmlElement(Namespace = Management.Const.NamespaceName)]
+      [XmlElement(Namespace = Management.Constants.NamespaceName)]
       public EndOfSequence EndOfSequence { get; set; }
    }
 }

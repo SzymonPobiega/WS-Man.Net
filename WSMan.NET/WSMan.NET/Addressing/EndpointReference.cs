@@ -1,17 +1,22 @@
-﻿using System.Xml;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Addressing
 {
     public class EndpointReference : IXmlSerializable
     {
-        private string _address;
-
         private static readonly XName EndpointRefereceElement = Constants.Namespace + "EndpointReference";
         private static readonly XName AddressElement = Constants.Namespace + "Address";
+        private static readonly XName ReferencePropertiesElement = Constants.Namespace + "ReferenceProperties";
 
+        private string _address;
+        private readonly HeaderCollection _properties = new HeaderCollection();
+       
         public EndpointReference()
         {
         }
@@ -20,6 +25,29 @@ namespace WSMan.NET.Addressing
         {
             _address = address;
         }
+
+        public EndpointReference AddProperty(MessageHeader messageHeader)
+        {
+            _properties.AddHeader(messageHeader);
+            return this;
+        }
+
+        public EndpointReference AddProperty(IMessageHeader typedHeader, bool mustUnderstand)
+        {
+            _properties.AddHeader(typedHeader, mustUnderstand);
+            return this;
+        }
+
+        public MessageHeader GetProperty(XName name)
+        {
+            return _properties.GetHeader(name);
+        }
+
+        public T GetProperty<T>() where T : class, IMessageHeader, new()
+        {
+            return _properties.GetHeader<T>();
+        }
+
 
         public string Address
         {
@@ -31,11 +59,27 @@ namespace WSMan.NET.Addressing
             return null;
         }
 
-        public void ReadXml(XmlReader reader)
+        public void ReadOuterXml(XmlReader reader)
         {
             reader.ReadStartElement(EndpointRefereceElement);
-            ReadAddress(reader);
+            ReadXml(reader);
             reader.ReadEndElement();
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            ReadAddress(reader);
+            ReadProperties(reader);
+        }
+
+        private void ReadProperties(XmlReader reader)
+        {
+            if (reader.Name() == ReferencePropertiesElement)
+            {
+                reader.ReadStartElement(ReferencePropertiesElement);
+                _properties.Read(reader, ReferencePropertiesElement);
+                reader.ReadEndElement();
+            }
         }
 
         private void ReadAddress(XmlReader reader)
@@ -46,11 +90,27 @@ namespace WSMan.NET.Addressing
             reader.ReadEndElement();
         }
 
-        public void WriteXml(XmlWriter writer)
+        public void WriteOuterXml(XmlWriter writer)
         {
             writer.WriteStartElement(EndpointRefereceElement);
-            WriteAddress(writer);
+            WriteXml(writer);
             writer.WriteEndElement();
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            WriteAddress(writer);
+            WriteProperties(writer);
+        }
+
+        private void WriteProperties(XmlWriter writer)
+        {
+            if (!_properties.IsEmpty)
+            {
+                writer.WriteStartElement(ReferencePropertiesElement);
+                _properties.Write(writer);
+                writer.WriteEndElement();
+            }
         }
 
         private void WriteAddress(XmlWriter writer)
@@ -64,5 +124,6 @@ namespace WSMan.NET.Addressing
         {
             return _address;
         }
+
     }
 }

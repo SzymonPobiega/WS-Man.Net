@@ -15,7 +15,7 @@ namespace WSMan.NET.Enumeration
         private string _rawValue;
         private EndpointReference _eprValue;
         private EnumerationMode _mode;
-        private static readonly XName ItemElementName = Management.Const.Namespace + "Item";
+        private static readonly XName ItemElementName = Management.Constants.Namespace + "Item";
 
         public EndpointReference EPRValue
         {
@@ -65,7 +65,7 @@ namespace WSMan.NET.Enumeration
                 _rawValue = reader.ReadOuterXml();
             }
             _eprValue = new EndpointReference();
-            _eprValue.ReadXml(reader);
+            _eprValue.ReadOuterXml(reader);
             if (IncludeObject())
             {
                 reader.ReadEndElement();
@@ -80,7 +80,7 @@ namespace WSMan.NET.Enumeration
                 var serializer = new XmlSerializer(_objectValue.GetType());
                 serializer.Serialize(writer, _objectValue);
             }
-            _eprValue.WriteXml(writer);
+            _eprValue.WriteOuterXml(writer);
             if (IncludeObject())
             {
                 writer.WriteEndElement();

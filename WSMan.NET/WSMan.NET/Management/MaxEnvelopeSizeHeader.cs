@@ -20,7 +20,7 @@ namespace WSMan.NET.Management
 
         public XName Name
         {
-            get { return Const.Namespace + "MaxEnvelopeSize"; }
+            get { return Constants.Namespace + "MaxEnvelopeSize"; }
         }
 
         public int Value

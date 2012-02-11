@@ -9,19 +9,19 @@ namespace WSMan.NET.Enumeration
         [XmlElement(Namespace = Constants.NamespaceName)]
         public EndpointReference EndTo { get; set; }
 
-        [XmlElement(Namespace = Management.Const.NamespaceName)]
+        [XmlElement(Namespace = Management.Constants.NamespaceName)]
         public Filter Filter { get; set; }
 
         [XmlElement(Namespace = Constants.NamespaceName)]
         public Expires Expires { get; set; }
 
-        [XmlElement(Namespace = Management.Const.NamespaceName)]
+        [XmlElement(Namespace = Management.Constants.NamespaceName)]
         public EnumerationMode EnumerationMode { get; set; }
 
-        [XmlElement(Namespace = Management.Const.NamespaceName)]
+        [XmlElement(Namespace = Management.Constants.NamespaceName)]
         public OptimizeEnumeration OptimizeEnumeration { get; set; }
 
-        [XmlElement(Namespace = Management.Const.NamespaceName)]
+        [XmlElement(Namespace = Management.Constants.NamespaceName)]
         public MaxElements MaxElements { get; set; }
 
     }

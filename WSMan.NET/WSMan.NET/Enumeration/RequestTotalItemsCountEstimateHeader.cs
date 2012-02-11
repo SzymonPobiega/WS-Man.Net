@@ -17,7 +17,7 @@ namespace WSMan.NET.Enumeration
 
         public XName Name
         {
-            get { return Management.Const.Namespace + "RequestTotalItemsCountEstimate"; }
+            get { return Management.Constants.Namespace + "RequestTotalItemsCountEstimate"; }
         }
     }
 }

@@ -93,7 +93,6 @@
     <Compile Include="MessageHeaderTests.cs" />
     <Compile Include="OutgoingMessageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scratchpad.cs" />
     <Compile Include="ToHeaderTests.cs" />
     <Compile Include="XElementExtensions.cs" />
   </ItemGroup>

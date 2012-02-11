@@ -16,7 +16,10 @@ namespace WSMan.NET
                 element.Save(writer);
                 writer.Flush();
             }
-            return XmlReader.Create(new StringReader(buffer.ToString()));
+            return XmlReader.Create(new StringReader(buffer.ToString()), new XmlReaderSettings
+                                                                             {
+                                                                                 IgnoreWhitespace = true
+                                                                             });
         }
 
         public static XElement ParseGeneratedXml(Action<XmlWriter> writeAction)

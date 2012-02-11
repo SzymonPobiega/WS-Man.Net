@@ -20,7 +20,7 @@ namespace WSMan.NET.Management
 
         public XName Name
         {
-            get { return Const.Namespace + "ResourceURI"; }
+            get { return Constants.Namespace + "ResourceURI"; }
         }
 
         public string ResourceUri

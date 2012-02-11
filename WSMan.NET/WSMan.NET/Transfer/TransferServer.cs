@@ -4,7 +4,7 @@ using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Transfer
 {
-    public class TransferServer : AddressingBasedMessageHandler
+    public class TransferServer : AddressingBasedRequestHandler
     {
         private readonly ITransferRequestHandler _handler;
         private readonly MessageFactory _factory;

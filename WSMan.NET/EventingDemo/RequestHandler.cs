@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading;
+using WSMan.NET.Addressing;
 using WSMan.NET.Eventing;
 
 namespace EventingDemo
@@ -17,7 +18,7 @@ namespace EventingDemo
          _timer = new Timer(Publish, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));         
       }
 
-      public void Bind(IEventingRequestHandlerContext context, EndpointAddressBuilder addressBuilder)
+      public void Bind(IEventingRequestHandlerContext context, EndpointReference subscriptionManagerReference)
       {             
          Console.WriteLine("Got subscription with filter {0}.", context.Filter);
          _subscribers.Add(context);

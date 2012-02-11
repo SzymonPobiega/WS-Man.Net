@@ -47,14 +47,14 @@ namespace WSMan.NET.Management
             else if(element.FirstNode.NodeType == XmlNodeType.Element)
             {
                 var reference = new EndpointReference();
-                reference.ReadXml(element.FirstNode.CreateReader());
+                reference.ReadOuterXml(element.FirstNode.CreateReader());
                 _addressReferenceValue = reference;
             }
         }
 
         public XNode Write()
         {
-            return new XElement(Const.Namespace + "Selector",
+            return new XElement(Constants.Namespace + "Selector",
                                 new XAttribute("Name", _name),
                                 IsSimpleValue
                                     ? new XText(_simpleValue)
@@ -67,7 +67,7 @@ namespace WSMan.NET.Management
             var buffer= new StringBuilder();
             using (var writer = XmlWriter.Create(buffer))
             {
-                _addressReferenceValue.WriteXml(writer);
+                _addressReferenceValue.WriteOuterXml(writer);
                 writer.Flush();
             }
             return XElement.Parse(buffer.ToString());

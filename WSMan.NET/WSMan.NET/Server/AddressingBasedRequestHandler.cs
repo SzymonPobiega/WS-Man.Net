@@ -3,7 +3,7 @@ using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Server
 {
-    public abstract class AddressingBasedMessageHandler : IRequestHandler
+    public abstract class AddressingBasedRequestHandler : IRequestHandler
     {
         public OutgoingMessage Handle(IncomingMessage request)
         {
@@ -16,7 +16,10 @@ namespace WSMan.NET.Server
                 return null;
             }
             outgoingMessage.AddHeader(MessageIdHeader.CreateRandom(), false);
-            outgoingMessage.AddHeader(new RelatesToHeader(messageIdHeader.MessageId), false);
+            if (messageIdHeader != null)
+            {
+                outgoingMessage.AddHeader(new RelatesToHeader(messageIdHeader.MessageId), false);
+            }
             outgoingMessage.AddHeader(ToHeader.Anonymous, false);
             return outgoingMessage;
         }

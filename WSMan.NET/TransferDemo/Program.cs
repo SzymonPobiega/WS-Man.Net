@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Text;
 using WSMan.NET.Server;
 using WSMan.NET.Transfer;
-using WSMan.NET.WCF;
-using MessageVersion = System.ServiceModel.Channels.MessageVersion;
 
 namespace TransferDemo
 {
@@ -15,35 +8,27 @@ namespace TransferDemo
     {
         static void Main(string[] args)
         {
+            const string serverUrl = "http://localhost:12345/";
+
             var transferServer = new TransferServer(new RequestHandler());
-            using (var transferEndpoint = new HttpListenerTransferEndpoint("http://localhost:12345/", transferServer))
+            using (new HttpListenerTransferEndpoint(serverUrl, transferServer))
             {
-                var channelFactory = new ChannelFactory<IWSTransferContract>(new BasicHttpBindingWithAddressing());
-                var transferClient = new TransferClient(new Uri("http://localhost:12345/Transfer"),
-                                                        channelFactory,
-                                                        MessageVersion.Soap12WSAddressingAugust2004,
-                                                        new WSTransferFaultHandler());
+                var transferClient = new SOAPClient(serverUrl);
 
                 Console.Write("Create...");
-                var address = transferClient.Create(x => { }, x => { }, new SampleData());
-                Console.WriteLine(address.Uri);
+                var address = transferClient.BuildMessage().Create(new SampleData());
+                Console.WriteLine(address.Address);
                 Console.Write("Put...");
-                var data = transferClient.Put<SampleData>(x => { }, x => { }, new SampleData {A = "AAA"});
+                var data = transferClient.BuildMessage().Put<SampleData>(new SampleData {A = "AAA"});
                 Console.WriteLine(data.A);
                 Console.Write("Get...");
-                data = transferClient.Get<SampleData>(x => { }, x => { });
+                data = transferClient.BuildMessage().Get<SampleData>();
                 Console.WriteLine(data.A);
                 Console.Write("Delete...");
-                transferClient.Delete(x => { }, x => { });
+                transferClient.BuildMessage();
                 Console.WriteLine("OK");
-            }
-        }
-
-        private class WSTransferFaultHandler : IWSTransferFaultHandler
-        {
-            public Exception HandleFault(Message faultMessage)
-            {
-                return new FaultException(MessageFault.CreateFault(faultMessage, int.MaxValue));
+                Console.WriteLine("Press any key to exit");
+                Console.ReadKey();
             }
         }
     }

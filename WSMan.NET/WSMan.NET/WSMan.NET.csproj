@@ -178,19 +178,87 @@
     <Compile Include="Enumeration\TotalItemsCountEstimateHeader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Management\Const.cs" />
+    <Compile Include="Eventing\Constants.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\Delivery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\EventBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\eventing.cs" />
+    <Compile Include="Eventing\EventingPullDeliveryServer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\EventingServer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\IdentifierHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\IEventingRequestHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\IEventingRequestHandlerContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\IPullSubscriptionClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\ISubscriptionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\PullDeliverySubscriptionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\PullSubscription.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\RenewRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\RenewResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\Subsciption.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\SubscribeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\SubscribeResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\SubscriptionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Eventing\UnsubscribeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Management\Constants.cs" />
+    <Compile Include="Management\Faults\EnumerationFaultException.cs" />
+    <Compile Include="Management\Faults\TimedOutFaultException.cs" />
     <Compile Include="Management\FragmentTransferHeader.cs" />
     <Compile Include="Management\IManagementRequestHandler.cs" />
+    <Compile Include="Management\ManagementClient.cs" />
+    <Compile Include="Management\ManagementClientExtensions.cs" />
     <Compile Include="Management\ManagementTransferRequestHandler.cs" />
     <Compile Include="Management\MaxEnvelopeSizeHeader.cs" />
     <Compile Include="Management\ResourceUriHeader.cs" />
     <Compile Include="Management\Selector.cs" />
     <Compile Include="Management\SelectorSetHeader.cs" />
     <Compile Include="Management\XmlFragment.cs" />
-    <Compile Include="Server\AddressingBasedMessageHandler.cs" />
+    <Compile Include="Server\AddressingBasedRequestHandler.cs" />
+    <Compile Include="Server\IMessageBuilder.cs" />
+    <Compile Include="Server\IMessageSender.cs" />
+    <Compile Include="Server\MessageBuilder.cs" />
+    <Compile Include="Server\SOAPClient.cs" />
+    <Compile Include="Server\SOAPException.cs" />
     <Compile Include="SOAP\Fault.cs" />
     <Compile Include="SOAP\FaultException.cs" />
     <Compile Include="SOAP\FaultMessage.cs" />
+    <Compile Include="SOAP\HeaderCollection.cs" />
     <Compile Include="SOAP\IBodyWriter.cs" />
     <Compile Include="SOAP\IMessageHeader.cs" />
     <Compile Include="SOAP\IncomingMessage.cs" />
@@ -210,6 +278,7 @@
     <Compile Include="Transfer\SerializerBodyWriter.cs" />
     <Compile Include="Addressing\ToHeader.cs" />
     <Compile Include="Addressing\Constants.cs" />
+    <Compile Include="Transfer\TransferClient.cs" />
     <Compile Include="Transfer\TransferServer.cs" />
     <Compile Include="XmlReaderExtensions.cs" />
     <Compile Include="XmlWriterExtensions.cs" />

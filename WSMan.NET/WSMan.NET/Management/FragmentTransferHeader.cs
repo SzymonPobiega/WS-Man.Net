@@ -20,7 +20,7 @@ namespace WSMan.NET.Management
 
         public XName Name
         {
-            get { return Const.Namespace + "FragmentTransfer"; }
+            get { return Constants.Namespace + "FragmentTransfer"; }
         }
 
         public string Expression

@@ -7,6 +7,7 @@ using WSMan.NET;
 using WSMan.NET.Enumeration;
 using WSMan.NET.Eventing;
 using WSMan.NET.Management;
+using WSMan.NET.Server;
 
 namespace EventingDemo
 {   
@@ -17,44 +18,14 @@ namespace EventingDemo
 
       static void Main(string[] args)
       {
-         EventingServer eventingServer = new EventingServer();
+         var eventingServer = new EventingServer();
          eventingServer.BindWithPullDelivery(new Uri(ResourceUri), FilterMap.DefaultDialect, typeof(JmxNotificationFilter), new RequestHandler(), new Uri(ResourceDeliveryUri));
-         
-         ServiceHost sh = new ServiceHost(eventingServer);
 
-         Binding binding = new WSHttpBindingAugust2004(SecurityMode.None);
-         sh.AddServiceEndpoint(typeof(IWSEventingPullDeliveryContract), binding, "http://localhost/Contract");
-         sh.AddServiceEndpoint(typeof(IWSEventingContract), binding, "http://localhost/Contract");
-
-         ServiceBehaviorAttribute behavior = sh.Description.Behaviors.Find<ServiceBehaviorAttribute>();
-         behavior.ConcurrencyMode = ConcurrencyMode.Multiple;
-         behavior.InstanceContextMode = InstanceContextMode.Single;
-         //behavior.IncludeExceptionDetailInFaults = true;
-         behavior.AddressFilterMode = AddressFilterMode.Any;
-
-         sh.Open();
-
-         Console.WriteLine("WARNING! TimedOut exception which will cause your Visual Studio to break into");
-         Console.WriteLine("debugging mode are part of WS-Eventing protocol and should be skipped");
-         Console.WriteLine("with F5 while debugging.");
-         Console.WriteLine();
-
-         EventingClient client = new EventingClient(new Uri("http://localhost/Contract"), binding);
-         client.BindFilterDialect(FilterMap.DefaultDialect, typeof(JmxNotificationFilter));         
-
-         using (
-            client.SubscribeUsingPullDelivery<EventData>(
-               x => Console.WriteLine(x.Value),
-               true,
-               new Uri(ResourceUri),
-               new Uri(ResourceUri),
-               new Filter(FilterMap.DefaultDialect, new JmxNotificationFilter()),
-               new Selector("name", "value")))
+         using (new HttpListenerTransferEndpoint("http://localhost:12345/", eventingServer))
          {
-            Console.WriteLine("Press any key to exit.");
-            Console.ReadKey();
+             Console.WriteLine("Press any key to exit.");
+             Console.ReadKey();
          }
-         sh.Close();
       }
    }
 }

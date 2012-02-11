@@ -16,7 +16,7 @@ namespace WSMan.NET.Transfer
         public void OnWriteBodyContents(XmlWriter writer)
         {
             writer.WriteStartElement(Constants.CreateResponse_ResourceCreatedElement, Constants.Namespace);
-            _body.WriteXml(writer);
+            _body.WriteOuterXml(writer);
             writer.WriteEndElement();
         }
     }

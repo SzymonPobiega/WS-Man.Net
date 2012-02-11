@@ -60,7 +60,7 @@ namespace WSMan.NET
 
             var headerElement = XElementExtensions.ParseGeneratedXml(header.Write);
 
-            Assert.AreEqual("True", headerElement.Attribute(Constants.Namespace + "mustUnderstand").Value);
+            Assert.AreEqual("true", headerElement.Attribute(Constants.Namespace + "mustUnderstand").Value);
         }
 
         [Test]

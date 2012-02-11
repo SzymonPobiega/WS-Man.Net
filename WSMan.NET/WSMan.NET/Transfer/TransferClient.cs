@@ -1,88 +1,54 @@
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Collections.Generic;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
+using WSMan.NET.Addressing;
+using WSMan.NET.Server;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Transfer
 {
-   public delegate void HeaderCreatorDelegate(MessageHeaders headers);
+    public static class TransferClient
+    {
+        public static T Get<T>(this IMessageBuilder messageBuilder)
+        {
+            var responseMessage = messageBuilder
+                .AddHeader(new ActionHeader(Constants.GetAction), true)
+                .SendAndGetResponse();
 
-   public delegate void AddressHeaderCreatorDelegate(Collection<AddressHeader> addressHeaders);
+            return responseMessage.GetPayload<T>();
+        }
 
-   public class TransferClient
-   {
-      private readonly Uri _endpointUri;
-      private readonly IChannelFactory<IWSTransferContract> _proxyFactory;
-      private readonly MessageFactory _factory;
-      private readonly AddressingVersion _addressingVersion;
-      private readonly IWSTransferFaultHandler _faultHandler;
+        public static T Put<T>(this IMessageBuilder messageBuilder, object payload)
+        {
+            var responseMessage = messageBuilder
+                .AddHeader(new ActionHeader(Constants.PutAction), true)
+                .AddBody(payload)
+                .SendAndGetResponse();
 
-      public TransferClient(Uri endpointUri, 
-         IChannelFactory<IWSTransferContract> proxyFactory, 
-         MessageVersion version, IWSTransferFaultHandler faultHandler)
-      {
-         _endpointUri = endpointUri;
-         _faultHandler = faultHandler;
-         _proxyFactory = proxyFactory;
-         _factory = new MessageFactory(version);
-         _addressingVersion = version.Addressing;
-      }
+            return responseMessage.GetPayload<T>();
+        }
 
-      public T Get<T>(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback)
-      {
-         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
-         {
-            headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
-            Message response = ctx.Channel.Get(_factory.CreateGetRequest());
-            if (response.IsFault)
-            {
-               throw _faultHandler.HandleFault(response);
-            }
-            return (T)_factory.DeserializeMessageWithPayload(response, typeof(T));
-         }
-      }
+        public static EndpointReference Create(this IMessageBuilder messageBuilder, object payload)
+        {
+            var responseMessage = messageBuilder
+                .AddHeader(new ActionHeader(Constants.CreateAction), true)
+                .AddBody(payload)
+                .SendAndGetResponse();
 
-      public T Put<T>(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback, object payload)
-      {
-         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
-         {
-            headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
-            Message response = ctx.Channel.Put(_factory.CreatePutRequest(payload));
-            if (response.IsFault)
-            {
-               throw _faultHandler.HandleFault(response);
-            }
-            return (T)_factory.DeserializeMessageWithPayload(response, typeof(T));
-         }
-      }
+            return DeserializeCreateResponse(responseMessage);
+        }
 
-      public EndpointAddress Create(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback, object payload)
-      {
-         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
-         {
-            headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
-            Message response = ctx.Channel.Create(_factory.CreateCreateRequest(payload));
-            if (response.IsFault)
-            {
-               throw _faultHandler.HandleFault(response);
-            }
-            return _factory.DeserializeCreateResponse(response);
-         }
-      }
+        private static EndpointReference DeserializeCreateResponse(IncomingMessage createResponseMessage)
+        {
+            var reader = createResponseMessage.GetReaderAtBodyContents();
+            reader.ReadStartElement(Constants.CreateResponse_ResourceCreatedElement, Constants.Namespace);
+            var result = new EndpointReference();
+            result.ReadOuterXml(reader);
+            return result;
+        }
 
-      public void Delete(AddressHeaderCreatorDelegate addressHeaderCreatorDelegate, HeaderCreatorDelegate headerCreatorCallback)
-      {
-         using (ClientContext<IWSTransferContract> ctx = new ClientContext<IWSTransferContract>(_endpointUri, _addressingVersion, _proxyFactory, addressHeaderCreatorDelegate))
-         {
-            headerCreatorCallback(OperationContext.Current.OutgoingMessageHeaders);
-            Message response = ctx.Channel.Delete(_factory.CreateDeleteRequest());
-            if (response.IsFault)
-            {
-               throw _faultHandler.HandleFault(response);
-            }
-         }
-      }      
-   }
+        public static void Delete(this IMessageBuilder messageBuilder)
+        {
+            messageBuilder
+                .AddHeader(new ActionHeader(Constants.DeleteAction), true)
+                .SendAndGetResponse();
+        }
+    }
 }

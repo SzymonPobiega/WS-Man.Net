@@ -1,29 +1,26 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace WSMan.NET.Eventing
 {
-   [XmlType(Namespace = Const.Namespace)]
-   public class Delivery
-   {
-      public static Delivery Pull()
-      {
-         return new Delivery { Mode = DeliveryModePull };
-      }
+    [XmlType(Namespace = Constants.NamespaceName)]
+    public class Delivery
+    {
+        public const string DeliveryModePull = @"http://schemas.dmtf.org/wbem/wsman/1/wsman/Pull";
 
-      [XmlAttribute(DataType = "anyURI")]
-      public string Mode { get; set; }
+        public static Delivery Pull()
+        {
+            return new Delivery { Mode = DeliveryModePull };
+        }
 
-      [XmlAnyElement]
-      public XmlNode[] Any { get; set; }
+        [XmlAttribute(DataType = "anyURI")]
+        public string Mode { get; set; }
 
-      [XmlAnyAttribute]
-      public XmlAttribute[] AnyAttr { get; set; }
+        [XmlAnyElement]
+        public XmlNode[] Any { get; set; }
 
-      public const string DeliveryModePull = @"http://schemas.dmtf.org/wbem/wsman/1/wsman/Pull";
-   }   
+        [XmlAnyAttribute]
+        public XmlAttribute[] AnyAttr { get; set; }
+
+    }
 }

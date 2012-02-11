@@ -1,9 +1,11 @@
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
 using WSMan.NET.Addressing;
+using WSMan.NET.SOAP;
 using WSMan.NET.Transfer;
 using Constants = WSMan.NET.Addressing.Constants;
 
@@ -25,6 +27,23 @@ namespace WSMan.NET
 
             Assert.AreEqual("http://example.com",endpointReference.Address);
         }
+
+        [Test]
+        public void It_reads_embedded_headers()
+        {
+            var endpointReferenceElement
+                = new XElement(Constants.Namespace + "EndpointReference",
+                               new XElement(Constants.Namespace + "Address",
+                                            new XText("http://example.com")),
+                               new XElement(Constants.Namespace + "ReferenceProperties",
+                                            new XElement("someHeader", new XText("someValue"))));
+
+            var endpointReference = FromXml(endpointReferenceElement);
+
+            var header = endpointReference.GetProperty("someHeader");
+
+            Assert.AreEqual("someValue", ((XText)header.Content.First()).Value);
+        }
         
         [Test]
         public void It_writes_address_property()
@@ -35,6 +54,20 @@ namespace WSMan.NET
 
             var addressElement = xml.Element(Constants.Namespace + "Address");
             Assert.AreEqual("http://example.com", addressElement.Value);
+        }
+
+        [Test]
+        public void It_writes_embedded_headers()
+        {
+            var endpointReference = new EndpointReference("http://example.com");
+            endpointReference.AddProperty(new MessageHeader("someHeader", new[] {new XText("someText")}, false));
+
+            var xml = ToXml(endpointReference);
+
+            var parametersElement = xml.Element(Constants.Namespace + "ReferenceProperties");
+            var headerElement = parametersElement.Element("someHeader");
+            var headerText = (XText)headerElement.FirstNode;
+            Assert.AreEqual("someText", headerText.Value);
         }
 
         private static EndpointReference FromXml(XElement endpointReferenceElement)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace WSMan.NET.SOAP
@@ -6,11 +7,11 @@ namespace WSMan.NET.SOAP
     public class OutgoingMessage
     {
         private IBodyWriter _bodyWriter;
-        private readonly List<MessageHeader> _headers = new List<MessageHeader>();
+        private readonly HeaderCollection _headers = new HeaderCollection();
 
         public OutgoingMessage AddHeader(MessageHeader header)
         {
-            _headers.Add(header);
+            _headers.AddHeader(header);
             return this;
         }
 
@@ -22,8 +23,7 @@ namespace WSMan.NET.SOAP
 
         public OutgoingMessage AddHeader(IMessageHeader typedHeader, bool mustUnderstand)
         {
-            var header = new MessageHeader(typedHeader.Name, typedHeader.Write(), mustUnderstand);
-            _headers.Add(header);
+            _headers.AddHeader(typedHeader, mustUnderstand);
             return this;
         }
 
@@ -31,10 +31,7 @@ namespace WSMan.NET.SOAP
         {
             output.WriteStartElement(Constants.Envelope);
             output.WriteStartElement(Constants.Header);
-            foreach (var header in _headers)
-            {
-                header.Write(output);
-            }
+            _headers.Write(output);
             output.WriteEndElement();
             output.WriteStartElement(Constants.Body);
             if (_bodyWriter != null)
@@ -43,6 +40,6 @@ namespace WSMan.NET.SOAP
             }
             output.WriteEndElement();
             output.WriteEndElement();
-        }
+        }       
     }
 }

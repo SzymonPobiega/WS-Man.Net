@@ -1,6 +1,4 @@
-using System;
-using System.Linq;
-using System.ServiceModel;
+using WSMan.NET.Addressing;
 
 namespace WSMan.NET.Eventing
 {
@@ -10,7 +8,7 @@ namespace WSMan.NET.Eventing
 
    public interface IEventingRequestHandler
    {
-      void Bind(IEventingRequestHandlerContext context, EndpointAddressBuilder susbcriptionManagerEndpointAddress);
+      void Bind(IEventingRequestHandlerContext context, EndpointReference subscriptionManagerReference);
       void Unbind(IEventingRequestHandlerContext context);
    }
 }

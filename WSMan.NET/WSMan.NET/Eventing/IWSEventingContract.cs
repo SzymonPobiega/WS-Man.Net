@@ -9,13 +9,13 @@ namespace WSMan.NET.Eventing
    [XmlSerializerFormat(Style = OperationFormatStyle.Document, Use = OperationFormatUse.Literal)]
    public interface IWSEventingContract
    {
-      [OperationContract(Action = Const.SubscribeAction, ReplyAction = Const.SubscribeResponseAction)]
+      [OperationContract(Action = Constants.SubscribeAction, ReplyAction = Constants.SubscribeResponseAction)]
       SubscribeResponse Subscribe(SubscribeRequest request);
 
-      [OperationContract(Action = Const.UnsubscribeAction, IsOneWay = true)]
+      [OperationContract(Action = Constants.UnsubscribeAction, IsOneWay = true)]
       void Unsubscribe(UnsubscribeRequest request);
 
-      [OperationContract(Action = Const.RenewAction, ReplyAction = Const.RenewResponseAction)]
+      [OperationContract(Action = Constants.RenewAction, ReplyAction = Constants.RenewResponseAction)]
       RenewResponse Renew(RenewRequest request);
    }
 }

@@ -1,26 +1,20 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ServiceModel;
 using System.Xml;
 using System.Xml.Serialization;
+using WSMan.NET.Addressing;
 using WSMan.NET.Enumeration;
 
 namespace WSMan.NET.Eventing
 {
-   [MessageContract(IsWrapped = true, WrapperName = "SubscribeResponse", WrapperNamespace = Const.Namespace)]
+   [XmlRoot(ElementName = "SubscribeResponse", Namespace = Constants.NamespaceName)]
    public class SubscribeResponse
-   {
-      [MessageBodyMember(Order = 0)]
-      [XmlElement(Namespace = Const.Namespace)]
-      public SubscriptionManager SubscriptionManager { get; set; }      
-
-      [MessageBodyMember(Order = 1)]
-      [XmlElement(Namespace = Const.Namespace)]
+   {      
+      [XmlElement(Namespace = Constants.NamespaceName)]
+      public EndpointReference SubscriptionManager { get; set; }      
+    
+      [XmlElement(Namespace = Constants.NamespaceName)]
       public Expires Expires { get; set; }
 
-      [MessageBodyMember(Order = 2)]
-      [XmlElement(Namespace = Enumeration.Const.Namespace)]
+      [XmlElement(Namespace = Enumeration.Constants.NamespaceName)]
       public EnumerationContextKey EnumerationContext { get; set; }
 
       [XmlAnyElement]

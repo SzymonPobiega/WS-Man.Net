@@ -7,7 +7,7 @@ namespace WSMan.NET.Management
    public class XmlFragment<T> : IXmlSerializable
    {      
       private readonly XmlSerializer _xs = new XmlSerializer(typeof(T), 
-         new XmlRootAttribute("XmlFragment"){Namespace = Const.Namespace.NamespaceName});
+         new XmlRootAttribute("XmlFragment"){Namespace = Constants.Namespace.NamespaceName});
 
       private T _value;
 

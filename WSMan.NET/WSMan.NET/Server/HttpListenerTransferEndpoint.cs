@@ -44,7 +44,16 @@ namespace WSMan.NET.Server
         {
             try
             {
-                HandleRequest(ctx);
+                OutgoingMessage responseMessage;
+                try
+                {
+                    responseMessage = HandleRequest(ctx);
+                }
+                catch (FaultException ex)
+                {
+                    responseMessage = ex.CreateMessage();                    
+                }
+                WriteResponse(ctx, responseMessage);
             }
             catch (Exception ex)
             {
@@ -54,31 +63,35 @@ namespace WSMan.NET.Server
             }
         }
 
-        private void HandleRequest(HttpListenerContext ctx)
+        private OutgoingMessage HandleRequest(HttpListenerContext ctx)
         {
             ctx.Response.ContentType = @"application/soap+xml; charset=utf-8";
 
             var reader = XmlReader.Create(ctx.Request.InputStream);
             using (var incomingMessage = new IncomingMessage(reader))
             {
-                var outgoingMessage = InvokeHandlers(incomingMessage);
-                using (var memoryStream = new MemoryStream())
-                {
-                    var settings = new XmlWriterSettings
-                                       {
-                                           Encoding = Encoding.UTF8                                           
-                                       };
-                    using (var writer = XmlWriter.Create(memoryStream, settings))
-                    {
-                        outgoingMessage.Write(writer);
-                        writer.Flush();
-                    }
-                    var buffer = memoryStream.GetBuffer();
-                    ctx.Response.ContentLength64 = memoryStream.Length;
-                    ctx.Response.OutputStream.Write(buffer, 0, (int)memoryStream.Length);
-                }
-                ctx.Response.Close();
+                return InvokeHandlers(incomingMessage);
             }
+        }
+
+        private static void WriteResponse(HttpListenerContext ctx, OutgoingMessage outgoingMessage)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                var settings = new XmlWriterSettings
+                                   {
+                                       Encoding = Encoding.UTF8
+                                   };
+                using (var writer = XmlWriter.Create(memoryStream, settings))
+                {
+                    outgoingMessage.Write(writer);
+                    writer.Flush();
+                }
+                var buffer = memoryStream.GetBuffer();
+                ctx.Response.ContentLength64 = memoryStream.Length;
+                ctx.Response.OutputStream.Write(buffer, 0, (int)memoryStream.Length);
+            }
+            ctx.Response.Close();
         }
 
         private OutgoingMessage InvokeHandlers(IncomingMessage incomingMessage)
