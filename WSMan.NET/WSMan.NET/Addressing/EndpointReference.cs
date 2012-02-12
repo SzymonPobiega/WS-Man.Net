@@ -62,14 +62,17 @@ namespace WSMan.NET.Addressing
         public void ReadOuterXml(XmlReader reader)
         {
             reader.ReadStartElement(EndpointRefereceElement);
-            ReadXml(reader);
+            ReadAddress(reader);
+            ReadProperties(reader);
             reader.ReadEndElement();
         }
 
         public void ReadXml(XmlReader reader)
         {
+            reader.ReadStartElement();
             ReadAddress(reader);
             ReadProperties(reader);
+            reader.ReadEndElement();
         }
 
         private void ReadProperties(XmlReader reader)

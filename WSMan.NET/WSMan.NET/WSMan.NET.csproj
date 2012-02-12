@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Addressing\ActionHeader.cs" />
+    <Compile Include="Addressing\MessageBuilderExtensions.cs" />
     <Compile Include="Addressing\RelatesToHeader.cs" />
     <Compile Include="Addressing\MessageIDHeader.cs" />
     <Compile Include="Addressing\EndpointReference.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="Enumeration\EnumerateResponse.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Enumeration\EnumerationClient.cs" />
+    <Compile Include="Enumeration\EnumerationClientExtensions.cs" />
     <Compile Include="Enumeration\EnumerationContext.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -178,6 +181,7 @@
     <Compile Include="Enumeration\TotalItemsCountEstimateHeader.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Eventing\CallbackThreadPoolPullSubscriptionClient.cs" />
     <Compile Include="Eventing\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -188,6 +192,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\eventing.cs" />
+    <Compile Include="Eventing\EventingClient.cs" />
     <Compile Include="Eventing\EventingPullDeliveryServer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -215,6 +220,7 @@
     <Compile Include="Eventing\PullSubscription.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Eventing\PullSubscriptionClientImpl.cs" />
     <Compile Include="Eventing\RenewRequest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -252,6 +258,7 @@
     <Compile Include="Server\AddressingBasedRequestHandler.cs" />
     <Compile Include="Server\IMessageBuilder.cs" />
     <Compile Include="Server\IMessageSender.cs" />
+    <Compile Include="Server\ISOAPClient.cs" />
     <Compile Include="Server\MessageBuilder.cs" />
     <Compile Include="Server\SOAPClient.cs" />
     <Compile Include="Server\SOAPException.cs" />

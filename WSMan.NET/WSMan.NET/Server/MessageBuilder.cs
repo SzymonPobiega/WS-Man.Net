@@ -3,12 +3,12 @@ using WSMan.NET.Transfer;
 
 namespace WSMan.NET.Server
 {
-    class MessageBuilder : IMessageBuilder
+    public class MessageBuilder : IMessageBuilder
     {
-        private readonly SOAPClient _soapClient;
+        private readonly ISOAPClient _soapClient;
         private readonly OutgoingMessage _outgoingMessage = new OutgoingMessage();
 
-        public MessageBuilder(SOAPClient soapClient)
+        public MessageBuilder(ISOAPClient soapClient)
         {
             _soapClient = soapClient;
         }

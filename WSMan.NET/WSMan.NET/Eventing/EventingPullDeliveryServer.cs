@@ -73,7 +73,7 @@ namespace WSMan.NET.Eventing
         /// <param name="items"></param>
         private static void ReturnTimedOutFaultIfNoPendingEvents(EnumerationItemList items)
         {
-            if (items.Items.Count() == 0)
+            if (items.Count() == 0)
             {
                 throw new TimedOutFaultException();
             }

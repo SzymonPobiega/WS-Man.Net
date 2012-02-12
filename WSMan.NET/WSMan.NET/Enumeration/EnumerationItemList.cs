@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
@@ -7,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace WSMan.NET.Enumeration
 {
-   public class EnumerationItemList : IXmlSerializable
+   public class EnumerationItemList : IXmlSerializable, IEnumerable<EnumerationItem>
    {
       private readonly List<EnumerationItem> _items;
 
@@ -19,12 +20,7 @@ namespace WSMan.NET.Enumeration
       public EnumerationItemList(IEnumerable<EnumerationItem> items)
       {
          _items = new List<EnumerationItem>(items);
-      }
-
-      public IEnumerable<EnumerationItem> Items
-      {
-         get { return _items; }
-      }
+      }      
 
       public XmlSchema GetSchema()
       {
@@ -50,10 +46,20 @@ namespace WSMan.NET.Enumeration
 
       public void WriteXml(XmlWriter writer)
       {
-         foreach (var item in Items)
+         foreach (var item in _items)
          {
             item.WriteXml(writer);
          }
       }
+
+       public IEnumerator<EnumerationItem> GetEnumerator()
+       {
+           return _items.GetEnumerator();
+       }
+
+       IEnumerator IEnumerable.GetEnumerator()
+       {
+           return GetEnumerator();
+       }
    }
 }

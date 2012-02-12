@@ -2,11 +2,12 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
+using WSMan.NET.Addressing;
 using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Server
 {
-    public class SOAPClient
+    public class SOAPClient : ISOAPClient
     {
         private readonly string _serverUrl;
 
@@ -25,6 +26,7 @@ namespace WSMan.NET.Server
             var httpRequest = (HttpWebRequest)WebRequest.Create(_serverUrl);
             httpRequest.Method = "POST";
             httpRequest.MediaType = "application/soap+xml; charset=utf-8";
+            requestMessage.AddHeader(new ToHeader(_serverUrl), true);
             SerializeRequestBody(httpRequest, requestMessage);
             var response = (HttpWebResponse)httpRequest.GetResponse();
             if (response.StatusCode == HttpStatusCode.OK)

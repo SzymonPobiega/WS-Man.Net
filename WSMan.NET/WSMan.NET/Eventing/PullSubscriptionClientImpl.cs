@@ -1,129 +1,103 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
+using WSMan.NET.Addressing;
 using WSMan.NET.Enumeration;
 using WSMan.NET.Management;
+using WSMan.NET.Management.Faults;
+using WSMan.NET.Server;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Eventing
 {
-   public class PullSubscriptionClientImpl<T> : IPullSubscriptionClient<T>
-   {
-      public IEnumerable<T> PullOnce()
-      {
-         PullResponse pullResponse = PullNextBatch(_context, 100, new Selector[] {});
-         _context = pullResponse.EnumerationContext;
-         if (pullResponse.Items == null)
-         {
-            return new T[] {};
-         }
-         return pullResponse.Items.Items.Select(x => x.ObjectValue).Cast<T>();         
-      }      
+    public class PullSubscriptionClientImpl<T> : IPullSubscriptionClient<T>
+    {
+        private bool _disposed;
+        private readonly ISOAPClient _soapClient;
+        private readonly string _resourceUri;
+        private EnumerationContextKey _context;
 
-      public IEnumerable<T> Pull()
-      {
-         bool endOfSequence = false;
-         while (!endOfSequence)
-         {
-            PullResponse pullResponse = PullNextBatch(_context, 100, new Selector[] { });
-            if (pullResponse.Items != null)
-            {
-               foreach (EnumerationItem item in pullResponse.Items.Items)
-               {
-                  yield return (T) item.ObjectValue;
-               }
-            }
-            endOfSequence = pullResponse.EndOfSequence != null;
+        public PullSubscriptionClientImpl(ISOAPClient soapClient, EnumerationContextKey context, string resourceUri)
+        {
+            _soapClient = soapClient;
+            _resourceUri = resourceUri;
+            _context = context;
+        }
+
+        public IEnumerable<T> PullOnce()
+        {
+            var pullResponse = PullNextBatch(_context, 100, Enumerable.Empty<Selector>());
             _context = pullResponse.EnumerationContext;
-         }
-      }
+            return pullResponse.Items == null 
+                ? Enumerable.Empty<T>() 
+                : pullResponse.Items.Select(x => x.DeserializeAs(typeof(T))).Cast<T>();
+        }
 
-      private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
-      {
-         using (ClientContext<IWSEventingPullDeliveryContract> ctx =
-            new ClientContext<IWSEventingPullDeliveryContract>(_endpointUri, _binding.MessageVersion.Addressing, _enumerationProxyFactory,
-               mx =>
-                  {
-                     mx.Add(new ResourceUriHeader(_resourceUri));
-                     mx.Add(new SelectorSetHeader(selectors));
-                  }))
-         {
-            FilterMapExtension.Activate(_filterMap);
-            EnumerationModeExtension.Activate(EnumerationMode.EnumerateObjectAndEPR, typeof(T));
+        public IEnumerable<T> Pull()
+        {
+            bool endOfSequence = false;
+            while (!endOfSequence)
+            {
+                PullResponse pullResponse = PullNextBatch(_context, 100, Enumerable.Empty<Selector>());
+                if (pullResponse.Items != null)
+                {
+                    foreach (EnumerationItem item in pullResponse.Items)
+                    {
+                        yield return (T)item.DeserializeAs(typeof(T));
+                    }
+                }
+                endOfSequence = pullResponse.EndOfSequence != null;
+                _context = pullResponse.EnumerationContext;
+            }
+        }
+
+        private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
+        {
+            var requestMessage = _soapClient.BuildMessage()
+                .WithAction(Enumeration.Constants.PullAction)
+                .WithResourceUri(_resourceUri)
+                .WithSelectors(selectors)
+                .AddBody(new PullRequest
+                             {
+                                 MaxTime = new MaxTime(TimeSpan.FromSeconds(1)),
+                                 EnumerationContext = context,
+                                 MaxElements = new MaxElements(maxElements)
+                             });
             try
             {
-               return ctx.Channel.Pull(new PullRequest
-               {
-                  MaxTime = new MaxTime(TimeSpan.FromSeconds(1)),
-                  EnumerationContext = context,
-                  MaxElements = new MaxElements(maxElements)
-               });
+                var responseMessage = requestMessage.SendAndGetResponse();
+                return responseMessage.GetPayload<PullResponse>();
             }
             catch (FaultException ex)
             {
-               if (ex.IsA(Faults.TimedOut))
-               {
-                  return new PullResponse {EnumerationContext = context};
-               }
-               throw;
-            }            
-         }
-      }
+                if (new TimedOutFaultException().Equals(ex))
+                {
+                    return new PullResponse
+                               {
+                                   EnumerationContext = context
+                               };
+                }
+                throw;
+            }
+        }
 
-      private void Unsubscribe()
-      {
-         using (ClientContext<IWSEventingContract> ctx =
-            new ClientContext<IWSEventingContract>(_endpointUri, _binding.MessageVersion.Addressing, _eventingProxyFactory, 
-               mx =>
-                  {
-                     mx.Add(new ResourceUriHeader(_resourceUri));
-                     mx.Add(new IdentifierHeader(_context.Text));
-                  }))
-         {
-            ctx.Channel.Unsubscribe(new UnsubscribeRequest());
-         }
-      }
+        private void Unsubscribe()
+        {
+            _soapClient.BuildMessage()
+                .WithAction(Constants.UnsubscribeAction)
+                .WithResourceUri(_resourceUri)
+                .AddHeader(new IdentifierHeader(_context.Text), true)
+                .SendAndGetResponse();
+        }
 
-      public void Dispose()
-      {
-         if (_disposed)
-         {
-            return;
-         }
-         try
-         {
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
             Unsubscribe();
-            _enumerationProxyFactory.Close();
-         }
-         catch (Exception)
-         {
-            _enumerationProxyFactory.Abort();
-         }
-         _disposed = true;
-      }
-
-      public PullSubscriptionClientImpl(Uri endpointUri, Binding binding, FilterMap filterMap, 
-         EnumerationContextKey context, string resourceUri,
-         //IChannelFactory<IWSEnumerationContract> enumerationProxyFactory, 
-         IChannelFactory<IWSEventingContract> eventingProxyFactory)
-      {
-         _endpointUri = endpointUri;
-         _resourceUri = resourceUri;
-         _eventingProxyFactory = eventingProxyFactory;
-         _context = context;
-         _filterMap = filterMap;
-         _binding = binding;
-         _enumerationProxyFactory = new ChannelFactory<IWSEventingPullDeliveryContract>(binding);
-      }
-
-      private bool _disposed;
-      private readonly Uri _endpointUri;
-      private readonly string _resourceUri;
-      private readonly IChannelFactory<IWSEventingPullDeliveryContract> _enumerationProxyFactory;
-      private readonly IChannelFactory<IWSEventingContract> _eventingProxyFactory;
-      private readonly FilterMap _filterMap = new FilterMap();
-      private readonly Binding _binding;
-      private EnumerationContextKey _context;
-   }
+            _disposed = true;
+        }
+    }
 }

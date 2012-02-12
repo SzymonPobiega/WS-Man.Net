@@ -10,6 +10,7 @@ namespace WSMan.NET.SOAP
     {
         private bool _empty;
         private readonly XmlReader _reader;
+        private XmlReader _bodyReader;
         private readonly HeaderCollection _headers = new HeaderCollection();
 
         public IncomingMessage(XmlReader reader)
@@ -45,7 +46,11 @@ namespace WSMan.NET.SOAP
             {
                 throw new InvalidOperationException("Can't get body reader for message with empty body.");
             }
-            return XmlReader.Create(_reader, new XmlReaderSettings());
+            if (_bodyReader == null)
+            {
+                _bodyReader = XmlReader.Create(_reader, new XmlReaderSettings());
+            }
+            return _bodyReader;
         }
 
         public MessageHeader GetHeader(XName name)

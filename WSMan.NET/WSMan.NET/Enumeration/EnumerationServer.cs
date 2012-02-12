@@ -16,10 +16,10 @@ namespace WSMan.NET.Enumeration
         private readonly Dictionary<HandlerMapKey, IEnumerationRequestHandler> _handlerMap = new Dictionary<HandlerMapKey, IEnumerationRequestHandler>();
         private readonly FilterMap _filterMap = new FilterMap();
 
-        public EnumerationServer Bind(Uri resourceUri, string dialect, Type filterType, IEnumerationRequestHandler handler)
+        public EnumerationServer Bind(string resourceUri, string dialect, Type filterType, IEnumerationRequestHandler handler)
         {
             _filterMap.Bind(dialect, filterType);
-            _handlerMap[new HandlerMapKey(resourceUri.ToString(), dialect)] = handler;
+            _handlerMap[new HandlerMapKey(resourceUri, dialect)] = handler;
             return this;
         }
         
@@ -107,10 +107,7 @@ namespace WSMan.NET.Enumeration
         private OutgoingMessage HandleOptimizedEnumerate(IncomingMessage requestMessage, EnumerationContextKey contextKey, EnumerateRequest request, EnumerationContext context)
         {
             var responseMessage = CreateEnumerateResponse();
-            var maxElements = request.MaxElements != null
-                                 ? request.MaxElements.Value
-                                 : 1;
-
+            var maxElements = CalculateMaxElements(request.MaxElements);
             if (request.EnumerationMode == EnumerationMode.EnumerateEPR)
             {
                 var enumerator = GetHandler(request.Filter, requestMessage)
@@ -135,6 +132,7 @@ namespace WSMan.NET.Enumeration
             throw new NotSupportedException();
         }
 
+        
         private OutgoingMessage Pull(IncomingMessage requestMessage)
         {
             var response = CreatePullResponse();
@@ -145,10 +143,7 @@ namespace WSMan.NET.Enumeration
                 throw new InvalidEnumerationContextFaultException();
             }
 
-            var maxElements = request.MaxElements != null
-                                  ? request.MaxElements.Value
-                                  : 1;
-
+            var maxElements = CalculateMaxElements(request.MaxElements);
             bool endOfSequence;
             var items =
                 new EnumerationItemList(PullItems(maxElements, holder.Mode, holder.Enumerator, out endOfSequence));
@@ -191,13 +186,18 @@ namespace WSMan.NET.Enumeration
 
         private IEnumerationRequestHandler GetHandler(Filter filter, IncomingMessage requestMessage)
         {
-            //TODO: Add fault if not found
             var resourceUriHeader = requestMessage.GetHeader<ResourceUriHeader>();
             var dialect = (filter != null && filter.Dialect != null)
                ? filter.Dialect
                : FilterMap.DefaultDialect;
 
-            return _handlerMap[new HandlerMapKey(resourceUriHeader.ResourceUri, dialect)];
+            var key = new HandlerMapKey(resourceUriHeader.ResourceUri, dialect);
+            IEnumerationRequestHandler supportedDialectHandler;
+            if (_handlerMap.TryGetValue(key, out supportedDialectHandler))
+            {
+                return supportedDialectHandler;
+            }
+            throw new NotSupportedDialectFaultException();
         }
 
         private static OutgoingMessage CreatePullResponse()
@@ -212,6 +212,12 @@ namespace WSMan.NET.Enumeration
                 .AddHeader(new ActionHeader(Constants.EnumerateResponseAction), false);
         }
 
-        
+        private static int CalculateMaxElements(MaxElements maxElementsElement)
+        {
+            return maxElementsElement != null
+                       ? maxElementsElement.Value
+                       : 1;
+        }
+
     }
 }

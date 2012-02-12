@@ -16,14 +16,20 @@ namespace WSMan.NET.SOAP
             {
                 return null;
             }
+            if (messageWithPayload.IsFault())
+            {
+                var faultException = messageWithPayload.CreateFaultException();
+                throw faultException;
+            }
+            var bodyReader = messageWithPayload.GetReaderAtBodyContents();
             if (typeof(IXmlSerializable).IsAssignableFrom(expectedType))
             {
                 var serializable = (IXmlSerializable)Activator.CreateInstance(expectedType);
-                serializable.ReadXml(messageWithPayload.GetReaderAtBodyContents());
+                serializable.ReadXml(bodyReader);
                 return serializable;
             }
             var xs = new XmlSerializer(expectedType);
-            return xs.Deserialize(messageWithPayload.GetReaderAtBodyContents());
+            return xs.Deserialize(bodyReader);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace WSMan.NET.Transfer
         public static T Get<T>(this IMessageBuilder messageBuilder)
         {
             var responseMessage = messageBuilder
-                .AddHeader(new ActionHeader(Constants.GetAction), true)
+                .WithAction(Constants.GetAction)
                 .SendAndGetResponse();
 
             return responseMessage.GetPayload<T>();
@@ -18,7 +18,7 @@ namespace WSMan.NET.Transfer
         public static T Put<T>(this IMessageBuilder messageBuilder, object payload)
         {
             var responseMessage = messageBuilder
-                .AddHeader(new ActionHeader(Constants.PutAction), true)
+                .WithAction(Constants.PutAction)
                 .AddBody(payload)
                 .SendAndGetResponse();
 
@@ -28,7 +28,7 @@ namespace WSMan.NET.Transfer
         public static EndpointReference Create(this IMessageBuilder messageBuilder, object payload)
         {
             var responseMessage = messageBuilder
-                .AddHeader(new ActionHeader(Constants.CreateAction), true)
+                .WithAction(Constants.CreateAction)
                 .AddBody(payload)
                 .SendAndGetResponse();
 
@@ -47,7 +47,7 @@ namespace WSMan.NET.Transfer
         public static void Delete(this IMessageBuilder messageBuilder)
         {
             messageBuilder
-                .AddHeader(new ActionHeader(Constants.DeleteAction), true)
+                .WithAction(Constants.DeleteAction)
                 .SendAndGetResponse();
         }
     }

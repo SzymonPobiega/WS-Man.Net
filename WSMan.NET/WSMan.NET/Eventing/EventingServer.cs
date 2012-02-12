@@ -17,17 +17,18 @@ namespace WSMan.NET.Eventing
         private readonly Dictionary<HandlerMapKey, ISubscriptionManager> _enumHandlers = new Dictionary<HandlerMapKey, ISubscriptionManager>();
         private readonly EventingPullDeliveryServer _pullDeliveryServer;        
 
-        public void BindWithPullDelivery(
-           Uri listeningResourceUri,
+        public EventingServer BindWithPullDelivery(
+           string listeningResourceUri,
            string dialect,
            Type filterType,
            IEventingRequestHandler eventSource,
-           Uri deliveryResourceUri
+           string deliveryResourceUri
            )
         {
-            var enumHandler = new PullDeliverySubscriptionManager(deliveryResourceUri.ToString(), _pullDeliveryServer, eventSource);
+            var enumHandler = new PullDeliverySubscriptionManager(deliveryResourceUri, _pullDeliveryServer, eventSource);
             _filterMap.Bind(dialect, filterType);
-            _enumHandlers[new HandlerMapKey(listeningResourceUri.ToString(), dialect)] = enumHandler;
+            _enumHandlers[new HandlerMapKey(listeningResourceUri, dialect)] = enumHandler;
+            return this;
         }
 
         protected override OutgoingMessage ProcessMessage(IncomingMessage request, ActionHeader actionHeader)
@@ -75,17 +76,16 @@ namespace WSMan.NET.Eventing
             }
 
             //R7.2.4-1
-            responseMessage.SetBody(
-                new SerializerBodyWriter(new SubscribeResponse
-                                             {
-                                                 SubscriptionManager = subscriptionManagerReference,
-                                                 EnumerationContext = request.Delivery.Mode == Delivery.DeliveryModePull
-                                                                          ? new EnumerationContextKey(
-                                                                                subsciption.Identifier)
-                                                                          : null,
-                                                 Expires = expiration
-                                             }));
-
+            var body = new SubscribeResponse
+                           {
+                               SubscriptionManager = subscriptionManagerReference,
+                               EnumerationContext = request.Delivery.Mode == Delivery.DeliveryModePull
+                                                        ? new EnumerationContextKey(
+                                                              subsciption.Identifier)
+                                                        : null,
+                               Expires = expiration
+                           };
+            responseMessage.SetBody(new SerializerBodyWriter(body));
             return responseMessage;
         }
 

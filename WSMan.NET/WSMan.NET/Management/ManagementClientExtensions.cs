@@ -10,8 +10,8 @@ namespace WSMan.NET.Management
         public static T Get<T>(this IMessageBuilder messageBuilder, string resourceUri, string fragmentTransferExpression, IEnumerable<Selector> selectors)
         {
             return messageBuilder
-                .AddHeader(new SelectorSetHeader(selectors), true)
-                .AddHeader(new ResourceUriHeader(resourceUri), true)
+                .WithResourceUri(resourceUri)
+                .WithSelectors(selectors)
                 .AddHeader(new FragmentTransferHeader(fragmentTransferExpression), true)
                 .Get<T>();
         }
@@ -19,8 +19,8 @@ namespace WSMan.NET.Management
         public static T Put<T>(this IMessageBuilder messageBuilder, string resourceUri, string fragmentTransferExpression, object payload, IEnumerable<Selector> selectors)
         {
             return messageBuilder
-                .AddHeader(new SelectorSetHeader(selectors), true)
-                .AddHeader(new ResourceUriHeader(resourceUri), true)
+                .WithResourceUri(resourceUri)
+                .WithSelectors(selectors)
                 .AddHeader(new FragmentTransferHeader(fragmentTransferExpression), true)
                 .Put<T>(payload);
         }
@@ -28,16 +28,26 @@ namespace WSMan.NET.Management
         public static EndpointReference Create(this IMessageBuilder messageBuilder, string resourceUri, object payload)
         {
             return messageBuilder
-                .AddHeader(new ResourceUriHeader(resourceUri), true)
+                .WithResourceUri(resourceUri)
                 .Create(payload);
         }
 
         public static void Delete(this IMessageBuilder messageBuilder, string resourceUri, IEnumerable<Selector> selectors)
         {
             messageBuilder
-                .AddHeader(new SelectorSetHeader(selectors), true)
-                .AddHeader(new ResourceUriHeader(resourceUri), true)
+                .WithResourceUri(resourceUri)
+                .WithSelectors(selectors)
                 .Delete();
+        }
+
+        public static IMessageBuilder WithResourceUri(this IMessageBuilder messageBuilder, string resourceUri)
+        {
+            return messageBuilder.AddHeader(new ResourceUriHeader(resourceUri), true);
+        }
+
+        public static IMessageBuilder WithSelectors(this IMessageBuilder messageBuilder, IEnumerable<Selector> selectors)
+        {
+            return messageBuilder.AddHeader(new SelectorSetHeader(selectors), true);
         }
     }
 }

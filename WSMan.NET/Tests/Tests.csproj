@@ -88,6 +88,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EndpointReferenceTests.cs" />
+    <Compile Include="Enumeration\Test1.cs" />
+    <Compile Include="Enumeration\TestingSOAPClient.cs" />
     <Compile Include="FaultMessageTests.cs" />
     <Compile Include="IncomingMessageTests.cs" />
     <Compile Include="MessageHeaderTests.cs" />
