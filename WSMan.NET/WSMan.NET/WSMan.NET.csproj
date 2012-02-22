@@ -181,62 +181,56 @@
     <Compile Include="Enumeration\TotalItemsCountEstimateHeader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\CallbackThreadPoolPullSubscriptionClient.cs" />
+    <Compile Include="Eventing\Client\CallbackThreadPoolPullSubscriptionClient.cs" />
     <Compile Include="Eventing\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\Delivery.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\EventBuffer.cs">
+    <Compile Include="Eventing\Server\EventBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\eventing.cs" />
-    <Compile Include="Eventing\EventingClient.cs" />
-    <Compile Include="Eventing\EventingPullDeliveryServer.cs">
+    <Compile Include="Eventing\Client\EventingClient.cs" />
+    <Compile Include="Eventing\Server\EventingPullDeliveryServer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\EventingServer.cs">
+    <Compile Include="Eventing\Server\EventingServer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\IdentifierHeader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\IEventingRequestHandler.cs">
+    <Compile Include="Eventing\Server\EventPushedEventArgs.cs" />
+    <Compile Include="Eventing\Server\IEventingRequestHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\IEventingRequestHandlerContext.cs">
+    <Compile Include="Eventing\Client\IPullSubscriptionClient.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\IPullSubscriptionClient.cs">
+    <Compile Include="Eventing\Server\IEventSink.cs" />
+    <Compile Include="Eventing\Server\IEventSource.cs" />
+    <Compile Include="Eventing\Server\ISubscription.cs" />
+    <Compile Include="Eventing\Server\PullDeliveryExtensions.cs" />
+    <Compile Include="Eventing\Server\PullSubscription.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\ISubscriptionManager.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eventing\PullDeliverySubscriptionManager.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eventing\PullSubscription.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eventing\PullSubscriptionClientImpl.cs" />
+    <Compile Include="Eventing\Client\PullSubscriptionClientImpl.cs" />
     <Compile Include="Eventing\RenewRequest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\RenewResponse.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Eventing\Subsciption.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Eventing\Server\Subscription.cs" />
+    <Compile Include="Eventing\Server\SubscriptionCollection.cs" />
+    <Compile Include="Eventing\Server\SubscribedEventArgs.cs" />
+    <Compile Include="Eventing\Server\UnsubscribedEventArgs.cs" />
     <Compile Include="Eventing\SubscribeRequest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\SubscribeResponse.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eventing\SubscriptionManager.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\UnsubscribeRequest.cs">
@@ -272,8 +266,9 @@
     <Compile Include="SOAP\MessageHeader.cs" />
     <Compile Include="SOAP\OutgoingMessageExtensions.cs" />
     <Compile Include="Server\HttpListenerTransferEndpoint.cs" />
-    <Compile Include="Transfer\IIncomingHeaders.cs" />
-    <Compile Include="Transfer\IOutgoingHeaders.cs" />
+    <Compile Include="SOAP\IIncomingHeaders.cs" />
+    <Compile Include="SOAP\IncomingHeaders.cs" />
+    <Compile Include="SOAP\IOutgoingHeaders.cs" />
     <Compile Include="SOAP\OutgoingMessage.cs" />
     <Compile Include="SOAP\Constants.cs" />
     <Compile Include="Transfer\Constants.cs" />
@@ -282,6 +277,7 @@
     <Compile Include="Transfer\ITransferRequestHandler.cs" />
     <Compile Include="Transfer\MessageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SOAP\OutgoingHeaders.cs" />
     <Compile Include="Transfer\SerializerBodyWriter.cs" />
     <Compile Include="Addressing\ToHeader.cs" />
     <Compile Include="Addressing\Constants.cs" />

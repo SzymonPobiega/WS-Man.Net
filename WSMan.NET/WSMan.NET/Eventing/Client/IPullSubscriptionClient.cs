@@ -1,8 +1,7 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
-namespace WSMan.NET.Eventing
+namespace WSMan.NET.Eventing.Client
 {
    public interface IPullSubscriptionClient<T> : IDisposable
    {

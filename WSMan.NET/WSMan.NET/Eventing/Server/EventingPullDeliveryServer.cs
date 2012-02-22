@@ -9,20 +9,25 @@ using WSMan.NET.Server;
 using WSMan.NET.SOAP;
 using WSMan.NET.Transfer;
 
-namespace WSMan.NET.Eventing
+namespace WSMan.NET.Eventing.Server
 {    
     public class EventingPullDeliveryServer : AddressingBasedRequestHandler
     {
         private readonly Dictionary<string, PullSubscription> _subscriptions = new Dictionary<string, PullSubscription>();
 
-        public void AddSubscription(PullSubscription subscription)
+        public void OnSubscriptionAdded(object sender, SubscribedEventArgs args)
         {
-            _subscriptions[subscription.Identifier] = subscription;
+            _subscriptions[args.Identifier] = new PullSubscription(args.EventSource);
         }
 
-        public void RemoveSubscription(PullSubscription subscription)
+        public void OnSubscriptionRemoved(object sender, UnsubscribedEventArgs args)
         {
-            _subscriptions.Remove(subscription.Identifier);
+            PullSubscription subscription;
+            if (_subscriptions.TryGetValue(args.Identifier, out subscription))
+            {
+                _subscriptions.Remove(args.Identifier);
+                subscription.Dispose();
+            }
         }
 
         protected override OutgoingMessage ProcessMessage(IncomingMessage requestMessage, ActionHeader actionHeader)
@@ -43,7 +48,7 @@ namespace WSMan.NET.Eventing
             var subsciption = RetrieveSubscription(request);
             var maxElements = CalculateMaxElements(request);
             var maxTime = CalculateMaxTime(request);
-            var items = new EnumerationItemList(PullItems(subsciption.Buffer.FetchNotifications(maxElements, maxTime)));
+            var items = new EnumerationItemList(PullItems(subsciption.FetchNotifications(maxElements, maxTime)));
 
             ReturnTimedOutFaultIfNoPendingEvents(items);
             SetResponseBody(request, items, responseMessage);
@@ -73,7 +78,7 @@ namespace WSMan.NET.Eventing
         /// <param name="items"></param>
         private static void ReturnTimedOutFaultIfNoPendingEvents(EnumerationItemList items)
         {
-            if (items.Count() == 0)
+            if (items.IsEmpty)
             {
                 throw new TimedOutFaultException();
             }

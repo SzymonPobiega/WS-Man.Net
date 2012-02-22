@@ -1,5 +1,6 @@
 using System;
 using WSMan.NET.Addressing;
+using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Transfer
 {

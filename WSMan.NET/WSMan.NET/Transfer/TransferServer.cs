@@ -71,34 +71,6 @@ namespace WSMan.NET.Transfer
             return response;
         }
 
-        private class OutgoingHeaders : IOutgoingHeaders
-        {
-            private readonly OutgoingMessage _outgoingMessage;
-
-            public OutgoingHeaders(OutgoingMessage outgoingMessage)
-            {
-                _outgoingMessage = outgoingMessage;
-            }
-
-            public void AddHeader(IMessageHeader header, bool mustUnderstand)
-            {
-                _outgoingMessage.AddHeader(header, mustUnderstand);
-            }
-        }
-
-        private class IncomingHeaders : IIncomingHeaders
-        {
-            private readonly IncomingMessage _incomingMessage;
-
-            public IncomingHeaders(IncomingMessage incomingMessage)
-            {
-                _incomingMessage = incomingMessage;
-            }
-
-            public T GetHeader<T>() where T : class, IMessageHeader, new()
-            {
-                return _incomingMessage.GetHeader<T>();
-            }
-        }
+        
     }
 }

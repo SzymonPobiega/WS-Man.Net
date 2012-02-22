@@ -6,7 +6,7 @@ using WSMan.NET.Management;
 using WSMan.NET.Server;
 using WSMan.NET.SOAP;
 
-namespace WSMan.NET.Eventing
+namespace WSMan.NET.Eventing.Client
 {
     public class EventingClient
     {

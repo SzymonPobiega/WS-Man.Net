@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml;
+﻿using System.Xml;
 
 namespace WSMan.NET.SOAP
 {
-    public class OutgoingMessage
+    public class OutgoingMessage : IOutgoingHeaders
     {
         private IBodyWriter _bodyWriter;
         private readonly HeaderCollection _headers = new HeaderCollection();
@@ -40,6 +38,11 @@ namespace WSMan.NET.SOAP
             }
             output.WriteEndElement();
             output.WriteEndElement();
-        }       
+        }
+
+        void IOutgoingHeaders.AddHeader(IMessageHeader header, bool mustUnderstand)
+        {
+            this.AddHeader(header, mustUnderstand);
+        }
     }
 }

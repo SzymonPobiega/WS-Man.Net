@@ -1,4 +1,5 @@
 ﻿using WSMan.NET.Addressing;
+using WSMan.NET.SOAP;
 using WSMan.NET.Transfer;
 
 namespace TransferDemo

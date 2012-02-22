@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using WSMan.NET.Addressing;
+using WSMan.NET.SOAP;
 using WSMan.NET.Transfer;
 
 namespace WSMan.NET.Management

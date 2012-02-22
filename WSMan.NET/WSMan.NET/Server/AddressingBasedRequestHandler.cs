@@ -1,4 +1,5 @@
-﻿using WSMan.NET.Addressing;
+﻿using System.Collections.Generic;
+using WSMan.NET.Addressing;
 using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Server

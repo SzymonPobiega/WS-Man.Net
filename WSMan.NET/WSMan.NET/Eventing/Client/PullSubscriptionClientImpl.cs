@@ -8,7 +8,7 @@ using WSMan.NET.Management.Faults;
 using WSMan.NET.Server;
 using WSMan.NET.SOAP;
 
-namespace WSMan.NET.Eventing
+namespace WSMan.NET.Eventing.Client
 {
     public class PullSubscriptionClientImpl<T> : IPullSubscriptionClient<T>
     {

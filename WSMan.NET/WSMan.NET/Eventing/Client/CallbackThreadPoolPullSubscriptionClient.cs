@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace WSMan.NET.Eventing
+namespace WSMan.NET.Eventing.Client
 {
     public class CallbackThreadPoolPullSubscriptionClient<T> : IDisposable
     {

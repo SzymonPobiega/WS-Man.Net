@@ -1,6 +1,4 @@
-﻿using WSMan.NET.SOAP;
-
-namespace WSMan.NET.Transfer
+﻿namespace WSMan.NET.SOAP
 {
     public interface IOutgoingHeaders
     {

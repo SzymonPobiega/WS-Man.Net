@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace WSMan.NET.SOAP
 {
-    public class IncomingMessage : IDisposable
+    public class IncomingMessage : IDisposable, IIncomingHeaders
     {
         private bool _empty;
         private readonly XmlReader _reader;
