@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net.Config;
 using WSMan.NET.Enumeration;
 using WSMan.NET.Eventing.Client;
 using WSMan.NET.Eventing.Server;
@@ -10,6 +11,8 @@ namespace EventingDemo
     {
         static void Main(string[] args)
         {            
+            XmlConfigurator.Configure();
+
             var eventingServer = new EventingServer(new RequestHandler());
             var pullServer = new PullServer();
             eventingServer.EnablePullDeliveryUsing(pullServer);
