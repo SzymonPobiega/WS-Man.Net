@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
-using Rhino.Mocks;
 using WSMan.NET.Enumeration.Faults;
 using WSMan.NET.SOAP;
 
@@ -16,7 +16,7 @@ namespace WSMan.NET.Enumeration
         {
             var enumerationServer = new EnumerationServer()
                 .Bind("http://tempuri.org", "supportedDialect", typeof (object),
-                      MockRepository.GenerateMock<IEnumerationRequestHandler>());
+                      new Mock<IEnumerationRequestHandler>().Object);
 
             var soapClient = new TestingSOAPClient(enumerationServer);
             var enumerationClient = new EnumerationClient(false, soapClient);
