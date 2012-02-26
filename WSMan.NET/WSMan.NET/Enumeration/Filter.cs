@@ -41,7 +41,7 @@ namespace WSMan.NET.Enumeration
 
         public object DeserializeAs(Type type)
         {
-            if (type == typeof(void))
+            if (type == typeof(void) || string.IsNullOrWhiteSpace(_rawValue))
             {
                 return null;
             }

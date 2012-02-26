@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WSMan.NET.Eventing.Server
 {
@@ -17,11 +18,14 @@ namespace WSMan.NET.Eventing.Server
         private void OnPushed(object s, EventPushedEventArgs e)
         {
             _buffer.Push(e.Event);
+            Console.WriteLine("Event pushed.");
         }
 
-        public IEnumerable<object> FetchNotifications(int maxElements, TimeSpan maxTime)
+        public IList<object> FetchNotifications(int maxElements, TimeSpan maxTime)
         {
-            return _buffer.FetchNotifications(maxElements, maxTime);
+            var notifications = _buffer.FetchNotifications(maxElements, maxTime).ToList();
+            Console.WriteLine("Fetched "+notifications.Count());
+            return notifications;
         }
 
         public void Dispose()

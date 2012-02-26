@@ -1,13 +1,14 @@
+using System;
 using System.Collections.Generic;
 
 namespace WSMan.NET.Enumeration
 {
-   public class EnumerationState
+   public class EnumerationStartedEventArgs : EventArgs
    {
       private readonly IEnumerator<object> _enumerator;
       private readonly EnumerationMode _mode;
-      
-      public EnumerationState(IEnumerator<object> enumerator, EnumerationMode mode)
+
+      public EnumerationStartedEventArgs(IEnumerator<object> enumerator, EnumerationMode mode)
       {
          _enumerator = enumerator;
          _mode = mode;

@@ -40,9 +40,9 @@ namespace WSMan.NET.Management
             handler.HandlerDelete(GetSelectors(incomingHeaders));
         }
 
-        public void Bind(Uri resourceUri, IManagementRequestHandler handler)
+        public void Bind(string resourceUri, IManagementRequestHandler handler)
         {
-            _handlers[resourceUri.ToString()] = handler;
+            _handlers[resourceUri] = handler;
         }
 
         private static string GetFragmentExpression(IIncomingHeaders incomingHeaders, IOutgoingHeaders outgoingHeaders)

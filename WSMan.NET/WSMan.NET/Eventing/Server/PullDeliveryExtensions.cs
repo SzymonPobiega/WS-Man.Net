@@ -1,15 +1,13 @@
-using WSMan.NET.Server;
+using WSMan.NET.Enumeration;
 
 namespace WSMan.NET.Eventing.Server
 {
     public static class PullDeliveryExtensions
     {
-        public static IRequestHandler EnablePullDelivery(this EventingServer eventingServer)
+        public static void EnablePullDeliveryUsing(this EventingServer eventingServer, PullServer pullServer)
         {
-            var pullDeliveryServer = new EventingPullDeliveryServer();
-            eventingServer.Subscribed += pullDeliveryServer.OnSubscriptionAdded;
-            eventingServer.Unsubscribed += pullDeliveryServer.OnSubscriptionRemoved;
-            return pullDeliveryServer;
+            eventingServer.Subscribed += (s, args) => pullServer.RegisterPullHandler(args.Identifier, new EventingPullHandler(args.EventSource));
+            eventingServer.Unsubscribed += (s, args) => pullServer.UnregisterPullHandler(args.Identifier);
         }
     }
 }

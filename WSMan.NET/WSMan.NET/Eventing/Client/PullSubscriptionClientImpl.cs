@@ -1,12 +1,7 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
-using WSMan.NET.Addressing;
 using WSMan.NET.Enumeration;
-using WSMan.NET.Management;
-using WSMan.NET.Management.Faults;
 using WSMan.NET.Server;
-using WSMan.NET.SOAP;
 
 namespace WSMan.NET.Eventing.Client
 {
@@ -14,20 +9,20 @@ namespace WSMan.NET.Eventing.Client
     {
         private bool _disposed;
         private readonly ISOAPClient _soapClient;
-        private readonly string _resourceUri;
-        private EnumerationContextKey _context;
+        private string _context;
+        private readonly IEnumerable<IMessageHeaderWithMustUnderstandSpecification> _additionalHeaders;
 
-        public PullSubscriptionClientImpl(ISOAPClient soapClient, EnumerationContextKey context, string resourceUri)
+        public PullSubscriptionClientImpl(ISOAPClient soapClient, string context, IEnumerable<IMessageHeaderWithMustUnderstandSpecification> additionalHeaders)
         {
             _soapClient = soapClient;
-            _resourceUri = resourceUri;
             _context = context;
+            _additionalHeaders = additionalHeaders;
         }
 
         public IEnumerable<T> PullOnce()
         {
-            var pullResponse = PullNextBatch(_context, 100, Enumerable.Empty<Selector>());
-            _context = pullResponse.EnumerationContext;
+            var pullResponse = PullNextBatch(_context, 100);
+            _context = pullResponse.EnumerationContext.Text;
             return pullResponse.Items == null 
                 ? Enumerable.Empty<T>() 
                 : pullResponse.Items.Select(x => x.DeserializeAs(typeof(T))).Cast<T>();
@@ -38,56 +33,33 @@ namespace WSMan.NET.Eventing.Client
             bool endOfSequence = false;
             while (!endOfSequence)
             {
-                PullResponse pullResponse = PullNextBatch(_context, 100, Enumerable.Empty<Selector>());
+                PullResponse pullResponse = PullNextBatch(_context, 100);
                 if (pullResponse.Items != null)
                 {
-                    foreach (EnumerationItem item in pullResponse.Items)
+                    foreach (var item in pullResponse.Items)
                     {
                         yield return (T)item.DeserializeAs(typeof(T));
                     }
                 }
                 endOfSequence = pullResponse.EndOfSequence != null;
-                _context = pullResponse.EnumerationContext;
+                _context = pullResponse.EnumerationContext.Text;
             }
         }
 
-        private PullResponse PullNextBatch(EnumerationContextKey context, int maxElements, IEnumerable<Selector> selectors)
+        private PullResponse PullNextBatch(string context, int maxElements)
         {
-            var requestMessage = _soapClient.BuildMessage()
-                .WithAction(Enumeration.Constants.PullAction)
-                .WithResourceUri(_resourceUri)
-                .WithSelectors(selectors)
-                .AddBody(new PullRequest
-                             {
-                                 MaxTime = new MaxTime(TimeSpan.FromSeconds(1)),
-                                 EnumerationContext = context,
-                                 MaxElements = new MaxElements(maxElements)
-                             });
-            try
-            {
-                var responseMessage = requestMessage.SendAndGetResponse();
-                return responseMessage.GetPayload<PullResponse>();
-            }
-            catch (FaultException ex)
-            {
-                if (new TimedOutFaultException().Equals(ex))
-                {
-                    return new PullResponse
-                               {
-                                   EnumerationContext = context
-                               };
-                }
-                throw;
-            }
+            return _soapClient
+                .BuildMessage()
+                .AddHeaders(_additionalHeaders)
+                .PullNextBatch(context, maxElements);
         }
 
         private void Unsubscribe()
         {
-            _soapClient.BuildMessage()
-                .WithAction(Constants.UnsubscribeAction)
-                .WithResourceUri(_resourceUri)
-                .AddHeader(new IdentifierHeader(_context.Text), true)
-                .SendAndGetResponse();
+            _soapClient
+                .BuildMessage()
+                .AddHeaders(_additionalHeaders)
+                .Unsubscribe(_context);
         }
 
         public void Dispose()

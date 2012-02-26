@@ -12,9 +12,14 @@ namespace WSMan.NET.Enumeration
 {
     public class EnumerationServer : AddressingBasedRequestHandler
     {
-        private readonly Dictionary<EnumerationContextKey, EnumerationState> _activeEnumerations = new Dictionary<EnumerationContextKey, EnumerationState>();
         private readonly Dictionary<HandlerMapKey, IEnumerationRequestHandler> _handlerMap = new Dictionary<HandlerMapKey, IEnumerationRequestHandler>();
         private readonly FilterMap _filterMap = new FilterMap();
+        private readonly PullServer _pullServer = new PullServer();
+
+        public PullServer PullServer
+        {
+            get { return _pullServer; }
+        }
 
         public EnumerationServer Bind(string resourceUri, string dialect, Type filterType, IEnumerationRequestHandler handler)
         {
@@ -22,18 +27,12 @@ namespace WSMan.NET.Enumeration
             _handlerMap[new HandlerMapKey(resourceUri, dialect)] = handler;
             return this;
         }
-        
+
         protected override OutgoingMessage ProcessMessage(IncomingMessage request, ActionHeader actionHeader)
         {
-            switch (actionHeader.Action)
-            {
-                case Constants.EnumerateAction:
-                    return Enumerate(request);
-                case Constants.PullAction:
-                    return Pull(request);
-                default:
-                    return null;
-            }
+            return actionHeader.Action == Constants.EnumerateAction
+                ? Enumerate(request)
+                : PullServer.Handle(request);
         }
 
         private OutgoingMessage Enumerate(IncomingMessage requestMessage)
@@ -74,10 +73,9 @@ namespace WSMan.NET.Enumeration
         private OutgoingMessage HandleNormalEnumerate(IncomingMessage requestMessage, EnumerationContextKey contextKey, EnumerateRequest request, EnumerationContext context)
         {
             var responseMessage = CreateEnumerateResponse();
-            IEnumerator<object> enumerator = GetHandler(request.Filter, requestMessage)
-                .Enumerate(context, requestMessage, responseMessage)
-                .GetEnumerator();
-            _activeEnumerations[contextKey] = new EnumerationState(enumerator, request.EnumerationMode);
+            var enumerator = GetEnumerator(request, requestMessage, context, responseMessage);
+
+            OnEnumerationStarted(context.Context, enumerator, request.EnumerationMode);
 
             responseMessage.SetBody(
                 new SerializerBodyWriter(new EnumerateResponse
@@ -88,7 +86,18 @@ namespace WSMan.NET.Enumeration
             return responseMessage;
         }
 
-        
+        private IEnumerator<object> GetEnumerator(EnumerateRequest request, IncomingMessage requestMessage, EnumerationContext context, OutgoingMessage responseMessage)
+        {
+            return GetHandler(request.Filter, requestMessage)
+                .Enumerate(context, requestMessage, responseMessage)
+                .GetEnumerator();
+        }
+
+        private void OnEnumerationStarted(string context, IEnumerator<object> enumerator, EnumerationMode enumerationMode)
+        {
+            _pullServer.RegisterPullHandler(context, new EnumerationPullHandler(enumerator, enumerationMode));
+        }
+
 
         private OutgoingMessage HandleCountEnumerate(IncomingMessage requestMessage, EnumerationContextKey contextKey, EnumerateRequest request, EnumerationContext context)
         {
@@ -110,79 +119,24 @@ namespace WSMan.NET.Enumeration
             var maxElements = CalculateMaxElements(request.MaxElements);
             if (request.EnumerationMode == EnumerationMode.EnumerateEPR)
             {
-                var enumerator = GetHandler(request.Filter, requestMessage)
-                    .Enumerate(context, requestMessage,responseMessage)
-                    .GetEnumerator();
-
+                var enumerator = GetEnumerator(request, requestMessage, context, responseMessage);
                 bool endOfSequence;
-                var items = new EnumerationItemList(PullItems(maxElements, request.EnumerationMode, enumerator, out endOfSequence));
+                var items = enumerator.Take(maxElements, out endOfSequence);
                 if (!endOfSequence)
                 {
-                    _activeEnumerations[contextKey] = new EnumerationState(enumerator, request.EnumerationMode);
+                    OnEnumerationStarted(context.Context, enumerator, request.EnumerationMode);
                 }
                 responseMessage.SetBody(new SerializerBodyWriter(
                                      new EnumerateResponse
                                          {
-                                             Items = items,
+                                             Items = new EnumerationItemList(items, request.EnumerationMode),
                                              EndOfSequence = endOfSequence ? new EndOfSequence() : null,
                                              EnumerationContext = endOfSequence ? null : contextKey
                                          }));
                 return responseMessage;
             }
             throw new NotSupportedException();
-        }
-
-        
-        private OutgoingMessage Pull(IncomingMessage requestMessage)
-        {
-            var response = CreatePullResponse();
-            var request = requestMessage.GetPayload<PullRequest>();
-            EnumerationState holder;
-            if (!_activeEnumerations.TryGetValue(request.EnumerationContext, out holder))
-            {
-                throw new InvalidEnumerationContextFaultException();
-            }
-
-            var maxElements = CalculateMaxElements(request.MaxElements);
-            bool endOfSequence;
-            var items =
-                new EnumerationItemList(PullItems(maxElements, holder.Mode, holder.Enumerator, out endOfSequence));
-            if (endOfSequence)
-            {
-                _activeEnumerations.Remove(request.EnumerationContext);
-            }
-            response.SetBody(
-                new SerializerBodyWriter(new PullResponse
-                                             {
-                                                 Items = items,
-                                                 EndOfSequence = endOfSequence ? new EndOfSequence() : null,
-                                                 EnumerationContext = endOfSequence ? null : request.EnumerationContext
-                                             }));
-            return response;
-        }        
-
-        private static IEnumerable<EnumerationItem> PullItems(int maximum, EnumerationMode mode, IEnumerator<object> enumerator, out bool endOfSequence)
-        {
-            int i = 0;
-            var result = new List<EnumerationItem>();
-            bool moveNext = false;
-            while (i < maximum && (moveNext = enumerator.MoveNext()))
-            {
-                if (mode == EnumerationMode.EnumerateEPR)
-                {
-                    result.Add(new EnumerationItem((EndpointReference)enumerator.Current));
-                }
-                else
-                {
-                    result.Add(new EnumerationItem(
-                                  new EndpointReference("http://tempuri.org"),
-                                  enumerator.Current));
-                }
-                i++;
-            }
-            endOfSequence = !moveNext || i < maximum;
-            return result;
-        }
+        }                     
 
         private IEnumerationRequestHandler GetHandler(Filter filter, IncomingMessage requestMessage)
         {
@@ -198,13 +152,7 @@ namespace WSMan.NET.Enumeration
                 return supportedDialectHandler;
             }
             throw new NotSupportedDialectFaultException();
-        }
-
-        private static OutgoingMessage CreatePullResponse()
-        {
-            return new OutgoingMessage()
-                .AddHeader(new ActionHeader(Constants.PullResponseAction), false);
-        }
+        }        
 
         private static OutgoingMessage CreateEnumerateResponse()
         {

@@ -79,6 +79,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Addressing\ActionHeader.cs" />
+    <Compile Include="Addressing\Faults\AddressingFaultException.cs" />
+    <Compile Include="Addressing\Faults\DestinationUnreachableFaultException.cs" />
+    <Compile Include="Addressing\Faults\EndpointUnavailableFaultException.cs" />
     <Compile Include="Addressing\MessageBuilderExtensions.cs" />
     <Compile Include="Addressing\RelatesToHeader.cs" />
     <Compile Include="Addressing\MessageIDHeader.cs" />
@@ -106,6 +109,8 @@
     <Compile Include="Enumeration\EnumerationEnd.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Enumeration\EnumerationPullHandler.cs" />
+    <Compile Include="Enumeration\EnumeratorExtensions.cs" />
     <Compile Include="Enumeration\Faults\EnumerationFaultException.cs" />
     <Compile Include="Enumeration\EnumerationItem.cs">
       <SubType>Code</SubType>
@@ -119,7 +124,7 @@
     <Compile Include="Enumeration\EnumerationServer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Enumeration\EnumerationState.cs">
+    <Compile Include="Enumeration\EnumerationStartedEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Enumeration\Expires.cs">
@@ -148,6 +153,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Enumeration\Faults\InvalidEnumerationContextFaultException.cs" />
+    <Compile Include="Enumeration\IPullHandler.cs" />
     <Compile Include="Enumeration\LanguageSpecificString.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -160,12 +166,14 @@
     <Compile Include="Enumeration\OptimizeEnumeration.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Enumeration\PullServer.cs" />
     <Compile Include="Enumeration\PullRequest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Enumeration\PullResponse.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Enumeration\PullResult.cs" />
     <Compile Include="Enumeration\Release.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -182,6 +190,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Eventing\Client\CallbackThreadPoolPullSubscriptionClient.cs" />
+    <Compile Include="Eventing\Client\EventingClientExtensions.cs" />
     <Compile Include="Eventing\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -196,6 +205,7 @@
     <Compile Include="Eventing\Server\EventingPullDeliveryServer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Eventing\Server\EventingPullHandler.cs" />
     <Compile Include="Eventing\Server\EventingServer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -250,10 +260,14 @@
     <Compile Include="Management\SelectorSetHeader.cs" />
     <Compile Include="Management\XmlFragment.cs" />
     <Compile Include="Server\AddressingBasedRequestHandler.cs" />
+    <Compile Include="Server\IMessageHeaderWithMustUnderstandSpecification.cs" />
     <Compile Include="Server\IMessageBuilder.cs" />
     <Compile Include="Server\IMessageSender.cs" />
     <Compile Include="Server\ISOAPClient.cs" />
+    <Compile Include="Server\Mandatory.cs" />
     <Compile Include="Server\MessageBuilder.cs" />
+    <Compile Include="Server\MessageBuilderExtensions.cs" />
+    <Compile Include="Server\Optional.cs" />
     <Compile Include="Server\SOAPClient.cs" />
     <Compile Include="Server\SOAPException.cs" />
     <Compile Include="SOAP\Fault.cs" />

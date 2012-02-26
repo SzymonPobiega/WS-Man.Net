@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using WSMan.NET.Addressing;
 
 namespace WSMan.NET.Enumeration
 {
@@ -20,6 +21,28 @@ namespace WSMan.NET.Enumeration
         public EnumerationItemList(IEnumerable<EnumerationItem> items)
         {
             _items = new List<EnumerationItem>(items);
+        }
+
+        public EnumerationItemList(IEnumerable<object> items, EnumerationMode enumerationMode)
+            : this(EncapsulateItems(items, enumerationMode))
+        {
+        }
+
+        private static IEnumerable<EnumerationItem> EncapsulateItems(IEnumerable<object> enumerable, EnumerationMode enumerationMode)
+        {
+            return enumerationMode == EnumerationMode.EnumerateEPR ?
+                EncapsulateEPRs(enumerable)
+                : EncapsulateObjects(enumerable);
+        }
+
+        private static IEnumerable<EnumerationItem> EncapsulateObjects(IEnumerable<object> enumerable)
+        {
+            return enumerable.Select(x => new EnumerationItem(new EndpointReference("http://tempuri.org"), x));
+        }
+
+        private static IEnumerable<EnumerationItem> EncapsulateEPRs(IEnumerable<object> enumerable)
+        {
+            return enumerable.Select(x => new EnumerationItem((EndpointReference)x));
         }
 
         public XmlSchema GetSchema()

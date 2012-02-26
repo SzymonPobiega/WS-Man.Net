@@ -12,7 +12,7 @@ namespace ManagementDemo
         static void Main(string[] args)
         {
             var handler = new ManagementTransferRequestHandler();
-            handler.Bind(new Uri(ResourceUri), new Handler());
+            handler.Bind(ResourceUri, new Handler());
 
             var transferServer = new TransferServer(handler);
             using (new HttpListenerTransferEndpoint("http://localhost:12345/", transferServer))
