@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net.Config;
 using WSMan.NET.Management;
 using WSMan.NET.Server;
 using WSMan.NET.Transfer;
@@ -11,6 +12,7 @@ namespace ManagementDemo
 
         static void Main(string[] args)
         {
+            XmlConfigurator.Configure();
             var handler = new ManagementTransferRequestHandler();
             handler.Bind(ResourceUri, new Handler());
 
