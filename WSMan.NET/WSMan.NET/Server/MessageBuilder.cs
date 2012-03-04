@@ -33,7 +33,14 @@ namespace WSMan.NET.Server
 
         public IncomingMessage SendAndGetResponse()
         {
-            return _soapClient.SendRequest(_outgoingMessage);
+            return _soapClient.SendRequest(_outgoingMessage);            
+        }
+
+        public IncomingMessage SendAndGetResponse(out IMessageBuilder nextMessageBuilder)
+        {
+            var response = _soapClient.SendRequest(_outgoingMessage);
+            nextMessageBuilder = new MessageBuilder(_soapClient);
+            return response;
         }
     }
 }

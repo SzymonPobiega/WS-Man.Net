@@ -23,16 +23,10 @@ namespace WSMan.NET.Enumeration
         {
         }
 
-
         public EnumerationClient BindFilterDialect(string dialect, Type implementationType)
         {
             _filterMap.Bind(dialect, implementationType);
             return this;
-        }
-
-        public IEnumerable<EndpointReference> EnumerateEPR(string resourceUri, Filter filter, int maxElements, params Selector[] selectors)
-        {
-            return EnumerateEPR(resourceUri, filter, maxElements, (IEnumerable<Selector>)selectors);
         }
 
         public int EstimateCount(string resourceUri, Filter filter, params Selector[] selectors)
@@ -44,37 +38,23 @@ namespace WSMan.NET.Enumeration
         {
             return _soapClient
                 .BuildMessage()
-                .EstimateEnumerationCount(resourceUri, filter, selectors);
+                .WithResourceUri(resourceUri)
+                .WithSelectors(selectors)
+                .EstimateEnumerationCount(filter);
+        }
+
+        public IEnumerable<EndpointReference> EnumerateEPR(string resourceUri, Filter filter, int maxElements, params Selector[] selectors)
+        {
+            return EnumerateEPR(resourceUri, filter, maxElements, (IEnumerable<Selector>)selectors);
         }
 
         public IEnumerable<EndpointReference> EnumerateEPR(string resourceUri, Filter filter, int maxElements, IEnumerable<Selector> selectors)
         {
-            var response = _soapClient
+            return _soapClient
                 .BuildMessage()
-                .StartEnumeration(resourceUri, selectors, filter, EnumerationMode.EnumerateEPR, _optimize);            
-
-            if (response.Items != null)
-            {
-                foreach (var item in response.Items)
-                {
-                    yield return item.EPRValue;
-                }
-            }
-            var context = response.EnumerationContext;
-            var endOfSequence = response.EndOfSequence != null;
-            while (!endOfSequence)
-            {
-                var pullResponse = _soapClient
-                    .BuildMessage()
-                    .PullNextBatch(context, resourceUri, maxElements, selectors);
-
-                foreach (var item in pullResponse.Items)
-                {
-                    yield return item.EPRValue;
-                }
-                endOfSequence = pullResponse.EndOfSequence != null;
-                context = pullResponse.EnumerationContext;
-            }
+                .WithResourceUri(resourceUri)
+                .WithSelectors(selectors)
+                .EnumerateEPR(filter, maxElements, _optimize);
         }
     }
 }

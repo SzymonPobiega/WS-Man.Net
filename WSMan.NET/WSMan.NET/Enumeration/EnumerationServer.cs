@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using WSMan.NET.Addressing;
 using WSMan.NET.Enumeration.Faults;
-using WSMan.NET.Management;
 using WSMan.NET.Server;
 using WSMan.NET.SOAP;
 using WSMan.NET.Transfer;
@@ -12,7 +11,7 @@ namespace WSMan.NET.Enumeration
 {
     public class EnumerationServer : AddressingBasedRequestHandler
     {
-        private readonly Dictionary<HandlerMapKey, IEnumerationRequestHandler> _handlerMap = new Dictionary<HandlerMapKey, IEnumerationRequestHandler>();
+        private readonly Dictionary<string , IEnumerationRequestHandler> _handlerMap = new Dictionary<string, IEnumerationRequestHandler>();
         private readonly FilterMap _filterMap = new FilterMap();
         private readonly PullServer _pullServer = new PullServer();
 
@@ -21,10 +20,10 @@ namespace WSMan.NET.Enumeration
             get { return _pullServer; }
         }
 
-        public EnumerationServer Bind(string resourceUri, string dialect, Type filterType, IEnumerationRequestHandler handler)
+        public EnumerationServer Bind(string dialect, Type filterType, IEnumerationRequestHandler handler)
         {
             _filterMap.Bind(dialect, filterType);
-            _handlerMap[new HandlerMapKey(resourceUri, dialect)] = handler;
+            _handlerMap[dialect] = handler;
             return this;
         }
 
@@ -39,10 +38,8 @@ namespace WSMan.NET.Enumeration
         {
             var request = requestMessage.GetPayload<EnumerateRequest>();
             var contextKey = EnumerationContextKey.Unique();
-            var selectorSetHeader = requestMessage.GetHeader<SelectorSetHeader>();
-            var selectors = selectorSetHeader != null ? selectorSetHeader.Selectors : Enumerable.Empty<Selector>();
             var filter = CreateFilterInstance(request.Filter);
-            var context = new EnumerationContext(contextKey.Text, filter, selectors);
+            var context = new EnumerationContext(contextKey.Text, filter);
 
             if (IsCountRequest(requestMessage))
             {
@@ -92,7 +89,7 @@ namespace WSMan.NET.Enumeration
 
         private IEnumerator<object> GetEnumerator(EnumerateRequest request, IncomingMessage requestMessage, EnumerationContext context, OutgoingMessage responseMessage)
         {
-            return GetHandler(request.Filter, requestMessage)
+            return GetHandler(request.Filter)
                 .Enumerate(context, requestMessage, responseMessage)
                 .GetEnumerator();
         }
@@ -106,7 +103,7 @@ namespace WSMan.NET.Enumeration
         private OutgoingMessage HandleCountEnumerate(IncomingMessage requestMessage, EnumerationContextKey contextKey, EnumerateRequest request, EnumerationContext context)
         {
             var responseMessage = CreateEnumerateResponse();
-            int count = GetHandler(request.Filter, requestMessage)
+            int count = GetHandler(request.Filter)
                 .EstimateRemainingItemsCount(context, requestMessage, responseMessage);
 
             responseMessage.AddHeader(new TotalItemsCountEstimateHeader(count), false);
@@ -142,16 +139,14 @@ namespace WSMan.NET.Enumeration
             throw new NotSupportedException();
         }                     
 
-        private IEnumerationRequestHandler GetHandler(Filter filter, IncomingMessage requestMessage)
+        private IEnumerationRequestHandler GetHandler(Filter filter)
         {
-            var resourceUriHeader = requestMessage.GetHeader<ResourceUriHeader>();
             var dialect = (filter != null && filter.Dialect != null)
                ? filter.Dialect
                : FilterMap.DefaultDialect;
 
-            var key = new HandlerMapKey(resourceUriHeader.ResourceUri, dialect);
             IEnumerationRequestHandler supportedDialectHandler;
-            if (_handlerMap.TryGetValue(key, out supportedDialectHandler))
+            if (_handlerMap.TryGetValue(dialect, out supportedDialectHandler))
             {
                 return supportedDialectHandler;
             }

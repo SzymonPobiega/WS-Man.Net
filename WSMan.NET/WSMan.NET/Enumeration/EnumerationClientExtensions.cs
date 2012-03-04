@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using WSMan.NET.Addressing;
-using WSMan.NET.Management;
 using WSMan.NET.Server;
 using WSMan.NET.SOAP;
 
@@ -9,12 +8,10 @@ namespace WSMan.NET.Enumeration
 {
     public static class EnumerationClientExtensions
     {
-        public static int EstimateEnumerationCount(this IMessageBuilder messageBuilder, string resourceUri, Filter filter, IEnumerable<Selector> selectors)
+        public static int EstimateEnumerationCount(this IMessageBuilder messageBuilder, Filter filter)
         {
             var responseMessage = messageBuilder
                 .WithAction(Constants.EnumerateAction)
-                .WithResourceUri(resourceUri)
-                .WithSelectors(selectors)
                 .AddHeader(new RequestTotalItemsCountEstimateHeader(), true)
                 .AddBody(new EnumerateRequest
                              {
@@ -31,37 +28,62 @@ namespace WSMan.NET.Enumeration
             return totalCountEstimateHeader.Value;
         }
 
-        public static  EnumerateResponse StartEnumeration(this IMessageBuilder messageBuilder, string resourceUri, IEnumerable<Selector> selectors, Filter filter, EnumerationMode enumerationMode, bool optimize)
+        public static EnumerateResponse StartEnumeration(this IMessageBuilder messageBuilder, Filter filter, EnumerationMode enumerationMode, bool optimize, out IMessageBuilder nextMessageBuilder)
         {
             var responseMessage = messageBuilder
-                .WithAction(Constants.EnumerateAction)
-                .WithResourceUri(resourceUri)
-                .WithSelectors(selectors)
+                .WithAction(Constants.EnumerateAction)               
                 .AddBody(new EnumerateRequest
                              {
                                  EnumerationMode = enumerationMode,
                                  OptimizeEnumeration = optimize ? new OptimizeEnumeration() : null,
                                  Filter = filter,
                              })
-                .SendAndGetResponse();
+                .SendAndGetResponse(out nextMessageBuilder);
 
             return responseMessage.GetPayload<EnumerateResponse>();
         }
 
-        public static PullResponse PullNextBatch(this IMessageBuilder messageBuilder, EnumerationContextKey context, string resourceUri, int maxElements, IEnumerable<Selector> selectors)
+        public static PullResponse PullNextBatch(this IMessageBuilder messageBuilder, EnumerationContextKey context, int maxElements, out IMessageBuilder nextMessageBuilder)
         {
             var responseMessage = messageBuilder
-                .WithAction(Constants.PullAction)
-                .WithResourceUri(resourceUri)
-                .WithSelectors(selectors)
+                .WithAction(Constants.PullAction)               
                 .AddBody(new PullRequest
                              {
                                  EnumerationContext = context,
                                  MaxElements = new MaxElements(maxElements)
                              })
-                .SendAndGetResponse();
+                .SendAndGetResponse(out nextMessageBuilder);
 
             return responseMessage.GetPayload<PullResponse>();
+        }
+
+        public static IEnumerable<EndpointReference> EnumerateEPR(this IMessageBuilder messageBuilder, Filter filter, int maxElements, bool optimize)
+        {
+            IMessageBuilder nextMessageBuilder;
+            var response = messageBuilder
+                .StartEnumeration(filter, EnumerationMode.EnumerateEPR, optimize, out nextMessageBuilder);
+
+            if (response.Items != null)
+            {
+                foreach (var item in response.Items)
+                {
+                    yield return item.EPRValue;
+                }
+            }
+            var context = response.EnumerationContext;
+            var endOfSequence = response.EndOfSequence != null;
+            while (!endOfSequence)
+            {
+                var pullResponse = nextMessageBuilder
+                    .PullNextBatch(context, maxElements, out nextMessageBuilder);
+
+                foreach (var item in pullResponse.Items)
+                {
+                    yield return item.EPRValue;
+                }
+                endOfSequence = pullResponse.EndOfSequence != null;
+                context = pullResponse.EnumerationContext;
+            }
         }
     }
 }

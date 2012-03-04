@@ -86,7 +86,7 @@ namespace WSMan.NET
             var buffer = new StringBuilder();
             using (var writer = XmlWriter.Create(buffer))
             {
-                endpointAddress.WriteXml(writer);
+                endpointAddress.WriteOuterXml(writer);
                 writer.Flush();
             }
 

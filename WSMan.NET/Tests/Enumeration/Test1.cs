@@ -15,8 +15,7 @@ namespace WSMan.NET.Enumeration
         public void It_returns_proper_fault_if_filter_dialect_is_not_supported()
         {
             var enumerationServer = new EnumerationServer()
-                .Bind("http://tempuri.org", "supportedDialect", typeof (object),
-                      new Mock<IEnumerationRequestHandler>().Object);
+                .Bind("supportedDialect", typeof (object), new Mock<IEnumerationRequestHandler>().Object);
 
             var soapClient = new TestingSOAPClient(enumerationServer);
             var enumerationClient = new EnumerationClient(false, soapClient);

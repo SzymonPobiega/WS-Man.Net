@@ -51,7 +51,7 @@ namespace WSMan.NET.Management
             string fragmentExpression = null;
             if (fragmentTransferHeader != null)
             {
-                //outgoingHeaders.AddHeader(fragmentTransferHeader, false);
+                outgoingHeaders.AddHeader(fragmentTransferHeader, true);
                 fragmentExpression = fragmentTransferHeader.Expression;
             }
             return fragmentExpression;

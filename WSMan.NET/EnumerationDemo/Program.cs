@@ -9,7 +9,7 @@ namespace EnumerationTests
       static void Main(string[] args)
       {
           var enumerationServer = new EnumerationServer()
-              .Bind("http://tempuri.org", FilterMap.DefaultDialect, typeof (JmxNotificationFilter), new RequestHandler());
+              .Bind(FilterMap.DefaultDialect, typeof (JmxNotificationFilter), new RequestHandler());
 
          using (new HttpListenerTransferEndpoint("http://localhost:12345/", enumerationServer))
          {
