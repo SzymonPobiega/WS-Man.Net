@@ -2,6 +2,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
+using log4net;
 using WSMan.NET.Addressing;
 using WSMan.NET.SOAP;
 
@@ -9,6 +10,7 @@ namespace WSMan.NET.Server
 {
     public class SOAPClient : ISOAPClient
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof (SOAPClient));
         private readonly string _serverUrl;
 
         public SOAPClient(string serverUrl)
@@ -27,6 +29,10 @@ namespace WSMan.NET.Server
             httpRequest.Method = "POST";
             httpRequest.MediaType = "application/soap+xml; charset=utf-8";
             requestMessage.AddHeader(new ToHeader(_serverUrl), true);
+            if (requestMessage.GetHeader<MessageIdHeader>() == null)
+            {
+                requestMessage.AddHeader(MessageIdHeader.CreateRandom(), false);
+            }
             SerializeRequestBody(httpRequest, requestMessage);
             var response = (HttpWebResponse)httpRequest.GetResponse();
             if (response.StatusCode == HttpStatusCode.OK)

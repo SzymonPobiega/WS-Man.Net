@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using System.Xml.Linq;
 
 namespace WSMan.NET.SOAP
 {
@@ -23,6 +24,17 @@ namespace WSMan.NET.SOAP
         {
             _headers.AddHeader(typedHeader, mustUnderstand);
             return this;
+        }
+
+        public MessageHeader GetHeader(XName name)
+        {
+            return _headers.GetHeader(name);
+        }
+
+        public T GetHeader<T>()
+            where T : class, IMessageHeader, new()
+        {
+            return _headers.GetHeader<T>();
         }
 
         public void Write(XmlWriter output)
