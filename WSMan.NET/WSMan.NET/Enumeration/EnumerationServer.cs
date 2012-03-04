@@ -57,6 +57,10 @@ namespace WSMan.NET.Enumeration
 
         private object CreateFilterInstance(Filter filter)
         {
+            if (filter == null)
+            {
+                return null;
+            }
             var filterType = _filterMap.GetFilterType(filter.Dialect);
             if (filterType == null)
             {
