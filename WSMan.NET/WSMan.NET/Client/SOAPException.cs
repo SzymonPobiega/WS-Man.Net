@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace WSMan.NET.Server
+namespace WSMan.NET.Client
 {
     [Serializable]
     public class SOAPException : Exception

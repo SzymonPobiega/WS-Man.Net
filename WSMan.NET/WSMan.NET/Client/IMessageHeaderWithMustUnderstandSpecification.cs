@@ -1,7 +1,6 @@
-﻿using System;
-using WSMan.NET.SOAP;
+﻿using WSMan.NET.SOAP;
 
-namespace WSMan.NET.Server
+namespace WSMan.NET.Client
 {
     public interface IMessageHeaderWithMustUnderstandSpecification
     {

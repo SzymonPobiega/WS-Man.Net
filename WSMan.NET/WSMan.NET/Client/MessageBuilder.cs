@@ -1,7 +1,7 @@
 ﻿using WSMan.NET.SOAP;
 using WSMan.NET.Transfer;
 
-namespace WSMan.NET.Server
+namespace WSMan.NET.Client
 {
     public class MessageBuilder : IMessageBuilder
     {

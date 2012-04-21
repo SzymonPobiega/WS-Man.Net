@@ -1,6 +1,6 @@
 ﻿using WSMan.NET.SOAP;
 
-namespace WSMan.NET.Server
+namespace WSMan.NET.Client
 {
     public sealed class Optional<T> : IMessageHeaderWithMustUnderstandSpecification
         where T : IMessageHeader

@@ -6,7 +6,7 @@ using log4net;
 using WSMan.NET.Addressing;
 using WSMan.NET.SOAP;
 
-namespace WSMan.NET.Server
+namespace WSMan.NET.Client
 {
     public class SOAPClient : ISOAPClient
     {

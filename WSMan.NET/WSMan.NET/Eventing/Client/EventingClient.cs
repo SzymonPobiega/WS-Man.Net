@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WSMan.NET.Client;
 using WSMan.NET.Enumeration;
 using WSMan.NET.Server;
 using WSMan.NET.SOAP;

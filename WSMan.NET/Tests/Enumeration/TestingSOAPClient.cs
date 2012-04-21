@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using WSMan.NET.Addressing;
+using WSMan.NET.Client;
 using WSMan.NET.Server;
 using WSMan.NET.SOAP;
 

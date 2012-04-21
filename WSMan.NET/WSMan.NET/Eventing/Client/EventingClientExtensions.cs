@@ -1,5 +1,6 @@
 ﻿using System;
 using WSMan.NET.Addressing;
+using WSMan.NET.Client;
 using WSMan.NET.Enumeration;
 using WSMan.NET.Management.Faults;
 using WSMan.NET.Server;

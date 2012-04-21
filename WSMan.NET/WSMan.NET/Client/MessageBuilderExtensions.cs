@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WSMan.NET.Server
+namespace WSMan.NET.Client
 {
     public static class MessageBuilderExtensions
     {        

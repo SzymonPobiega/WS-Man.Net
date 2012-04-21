@@ -1,3 +1,4 @@
+using WSMan.NET.Client;
 using WSMan.NET.Server;
 
 namespace WSMan.NET.Addressing

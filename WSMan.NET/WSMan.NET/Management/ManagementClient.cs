@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using WSMan.NET.Addressing;
+using WSMan.NET.Client;
 using WSMan.NET.Server;
 
 namespace WSMan.NET.Management

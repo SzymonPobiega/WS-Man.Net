@@ -1,4 +1,5 @@
 ﻿using System;
+using WSMan.NET.Client;
 using WSMan.NET.Server;
 using WSMan.NET.Transfer;
 
